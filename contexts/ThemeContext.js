@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import { createTheme, ThemeProvider as MUIThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
 const ThemeContext = createContext();
 
@@ -37,9 +39,28 @@ export const ThemeProvider = ({ children }) => {
         Cookies.set("theme", newTheme, { expires: 30 });
     };
 
+    const muiTheme = createTheme({
+        palette: {
+            mode: theme,
+            primary: {
+                main: '#FFA500',
+            },
+            background: {
+                default: theme === 'dark' ? '#121212' : '#ffffff',
+                paper: theme === 'dark' ? '#1E1E1E' : '#ffffff',
+            },
+            text: {
+                primary: theme === 'dark' ? '#ffffff' : '#111111',
+            },
+        },
+    });
+
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
-            {children}
+            <MUIThemeProvider theme={muiTheme}>
+                <CssBaseline />
+                {children}
+            </MUIThemeProvider>
         </ThemeContext.Provider>
     );
 };
