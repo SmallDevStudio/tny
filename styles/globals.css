@@ -2,11 +2,190 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, "Prompt", serif, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+/* ✅ กำหนดตัวแปรสำหรับ Light Mode */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #111;
+  --sidebar-bg: #f4f4f4;
+  --sidebar-text: #333;
+  --sidebar-active: #ddd; /* 🎨 สีเมนูที่ Active (Light Mode) */
+  --header-bg: #eaeaea;
+  --hover-bg: rgba(0, 0, 0, 0.1);
 }
 
+/* ✅ Dark Mode */
+[data-theme="dark"] {
+  --bg-color: #021526;
+  --text-color: #ffffff;
+  --sidebar-bg: #09122C;
+  --sidebar-text: #ddd;
+  --sidebar-active: #444; /* 🎨 สีเมนูที่ Active (Dark Mode) */
+  --header-bg: #09122C;
+  --hover-bg: rgba(255, 255, 255, 0.2);
+}
+
+/* ✅ ใช้ตัวแปรใน Layout */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background 0.3s, color 0.3s;
+  font-family: "Prompt", sans-serif !important;
+  overflow-x: hidden;
+}
+
+.main-content {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background 0.3s, color 0.3s;
+  font-family: "Prompt", sans-serif !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ✅ Sidebar ใช้ตัวแปรสี */
+.sidebar {
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  width: 250px; /* ค่าเริ่มต้น */
+}
+
+/* ✅ Sidebar หดลง */
+.sidebar.collapsed {
+  width: 70px;
+}
+
+/* ✅ HeaderBar */
+.header-bar {
+  background-color: var(--header-bg);
+}
+
+/* ✅ Menu Item */
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  color: var(--sidebar-text);
+}
+
+/* ✅ เมนูที่ Active */
+.menu-item.active {
+  background-color: var(--sidebar-active);
+  border-left: 4px solid #ffcc00; /* เส้นข้างเมนู Active */
+}
+
+/* ✅ Menu */
+.menu-item:hover {
+  background-color: var(--hover-bg);
+}
+
+/* ✅ ปุ่มสลับ Theme */
+.theme-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  margin-left: auto;
+  color: var(--text-color);
+  transition: color 0.3s;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.error-container h1 {
+  font-size: 5rem;
+  margin-bottom: 10px;
+}
+
+.error-container p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.error-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #ff4d4d;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.error-btn:hover {
+  background-color: #cc0000;
+}
+
+/* ✅ Background Gradient */
+.signin-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  background: linear-gradient(135deg, #FFA500 0%, #996300 100%);
+  color: #ffffff;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.register-container {
+  height: 100vh;
+  background: linear-gradient(135deg, #FFA500 0%, #996300 100%);
+  color: #ffffff;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+
+
+/* ✅ Responsive: เมื่อหน้าจอเล็ก (Tablet, Mobile) */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 70px; /* Sidebar หดอัตโนมัติ */
+  }
+
+  .sidebar.collapsed {
+    width: 70px;
+  }
+
+  .main-container {
+    margin-left: 70px;
+  }
+
+  .header-bar {
+    left: 70px;
+  }
+}
+
+/* ✅ Responsive: เมื่อหน้าจอใหญ่ */
+@media screen and (min-width: 769px) {
+  .sidebar {
+    width: 250px;
+  }
+
+  .sidebar.collapsed {
+    width: 70px;
+  }
+
+  .main-container {
+    margin-left: 250px;
+  }
+
+  .header-bar {
+    left: 250px;
+  }
+}

@@ -1,0 +1,115 @@
+/* ✅ Layout แบบ Flexbox */
+.layout {
+    display: flex;
+    height: 100vh;
+}
+
+/* ✅ Sidebar */
+.sidebar {
+    height: 100vh;
+    width: 250px;
+    transition: width 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+/* ✅ Menu List */
+.menu-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: var(--sidebar-text);
+    position: relative;
+}
+
+/* ✅ Submenu Icon (ลูกศรไปทางขวา) */
+.submenu-icon {
+    margin-left: auto;
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+/* ✅ แสดง Active Menu */
+.menu-item.active {
+    background-color: var(--sidebar-active);
+    border-left: 4px solid #ffcc00;
+}
+
+.menu-item:hover {
+    background-color: var(--hover-bg);
+}
+
+.menu-item.active .submenu-icon {
+    transform: rotate(90deg);
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ✅ Main Container */
+.main-container {
+    flex-grow: 1;
+    margin-left: 250px;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.sidebar.collapsed ~ .main-container {
+    margin-left: 70px;
+}
+
+/* ✅ HeaderBar ติดขอบบน */
+.header-bar {
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 250px;
+    right: 0;
+    transition: left 0.3s ease-in-out;
+}
+
+.sidebar.collapsed ~ .main-container .header-bar {
+    left: 70px;
+}
+
+.menu-icon {
+    font-size: 24px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.header-title {
+    font-size: 20px;
+}
+
+/* ✅ Main Content */
+.main-content {
+    flex-grow: 1;
+    padding: 80px 20px 20px; /* เผื่อให้ HeaderBar ไม่ทับ */
+    transition: margin-left 0.3s ease-in-out;
+}
+

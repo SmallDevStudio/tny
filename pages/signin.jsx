@@ -1,134 +1,149 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/react';
-import { signIn } from 'next-auth/react';
-import { Divider } from '@mui/material';
-import Image from 'next/image';
+import { useState } from "react";
+import { IoEye, IoEyeOff } from "react-icons/io5";
+import { Divider } from "@mui/material";
+import Image from "next/image";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+
+export async function getStaticProps() {
+    return {
+        props: {
+            title: "Sign In",
+            description: "เข้าสู่ระบบ The New You Academy"
+        }
+    };
+}
 
 export default function SignIn() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
+
+    const handleSignIn = async (e) => {
+        e.preventDefault();
+        await signIn("credentials", { email, password, redirect: false });
+    };
+
+    const handleGoogleSignIn = async () => {
+        await signIn("google", { callbackUrl: "/" });
+    };
+
     return (
-        <div className='flex flex-col justify-center items-center h-screen gap-2'>
-            <div className='flex flex-col justify-center lg:w-2/6 md:w-2/5 sm:w-1/2'>
+        <div className="signin-container max-h-screen">
+            <div className="flex flex-col justify-center lg:w-2/6 md:w-2/5 sm:w-1/2">
                 {/* Header */}
-                <div className='flex flex-col w-full mb-2'>
-                    
-                    <span className='text-3xl text-[#FFA500] font-bold'>The New You </span>
-                    <span className='text-2xl text-black font-bold'>Admin Console</span>
-                    
+                <div className="flex flex-col w-full mb-2">
+                    <span className="text-3xl text-white font-bold">The New You</span>
                 </div>
 
                 {/* Body */}
-                <div className='flex flex-col border border-gray-200 rounded-xl w-full text-sm p-4 mt-2 shadow-xl bg-white'>
-                    <span className='flex text-2xl text-black font-bold mb-1'>Sign In</span>
+                <div className="flex flex-col border text-black border-gray-200 rounded-xl w-full text-sm p-4 mt-2 shadow-xl bg-white">
+                    <div className="flex flex-col w-full">
+                        <span className="flex text-2xl text-black font-bold mb-1">เข้าสู่ระบบ</span>
+                        <span className="flex text-xs text-gray-500">เข้าสู่ระบบโดยใช้ชื่อผู้ใช้และรหัสผ่าน หรือ ลงทะเบียน</span>
+                        <button 
+                            className="flex text-sm text-[#FFA500] font-bold mt-1 cursor-pointer"
+                            onClick={() => router.push("/register")}
+                        >
+                            สมัครสมาชิก
+                        </button>
+                    </div>
 
-                    <Divider 
-                        flexItem={true}
-                        sx={{
-                            width: '100%',
-                            marginBottom: 2,
-                            marginTop: 1
-                        }}
-                    />
+                    <Divider flexItem sx={{ width: "100%", marginBottom: 2, marginTop: 1 }} />
 
-                    <div className='flex flex-col w-full gap-2'>
-                        <div className='grid grid-cols-4 items-center gap-2 w-full mt-2'>
-                            <label htmlFor="username" className='font-bold col-span-1'>
-                                Username:
+                    <div className="flex flex-col w-full gap-2">
+                        <div className="flex flex-col items-start gap-1 w-full">
+                            <label htmlFor="username" className="font-bold col-span-1">
+                                ชื่อผู้ใช้:
                             </label>
-                            <input 
-                                type="text" 
-                                id="username" 
+                            <input
+                                type="text"
+                                id="username"
                                 name="username"
-                                placeholder='Username'
-                                className='col-span-3 border border-gray-200 rounded-xl w-full px-4 py-2'
+                                placeholder="กรอกชื่อผู้ใช้"
+                                className="col-span-3 border border-gray-200 rounded-xl w-full px-4 py-2"
+                                onChange={(e) => setEmail(e.target.value)}
+                                value={email}
                             />
                         </div>
 
-                        <div className='grid grid-cols-4 items-center gap-2 mt-2 w-full'>
-                            <label htmlFor="password" className='font-bold col-span-1'>
-                                Password:
+                        {/* ✅ Input Password พร้อมปุ่ม Eye */}
+                        <div className="flex flex-col items-start gap-1 mt-2 w-full relative">
+                            <label htmlFor="password" className="font-bold col-span-1">
+                                รหัสผ่าน:
                             </label>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                name="password" 
-                                placeholder='Password'
-                                className='col-span-3 border border-gray-200 rounded-xl w-full px-4 py-2'
-                            />
+                            <div className="relative w-full">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    id="password"
+                                    name="password"
+                                    placeholder="กรอกรหัสผ่าน"
+                                    className="border border-gray-200 rounded-xl w-full px-4 py-2 pr-10"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={password}
+                                />
+                                {/* ✅ ปุ่ม Toggle Eye */}
+                                <span
+                                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <div className='grid grid-cols-4 items-center gap-2 mt-3 w-full'>
-                        <div className='col-span-1'>
-
-                        </div>
-                        <div className='flex flex-row justify-between items-center text-sm col-span-3'>
-                            <div className='flex flex-row items-center gap-2'>
-                                <input 
-                                    type="checkbox" 
-                                    name="remember" 
-                                    id="remember" 
-                                />
-                                <label htmlFor="remember" className='text-xs text-gray-500'>
-                                    Remember Me
+                    <div className="flex items-center gap-2 mt-2 ml-2 w-full">
+                        <div className="flex flex-row justify-between items-center text-sm col-span-3">
+                            <div className="flex flex-row items-center gap-2">
+                                <input type="checkbox" name="remember" id="remember" />
+                                <label htmlFor="remember" className="text-xs text-gray-500">
+                                    จดจํา
                                 </label>
                             </div>
-                            
                         </div>
                     </div>
 
-                    <div className='flex flex-col justify-center w-full mt-6'>
+                    <div className="flex flex-col justify-center w-full mt-4">
                         <button 
-                            type="submit"
-                            className='bg-[#FFA500] text-white font-bold py-2 px-4 rounded-xl w-full'
+                            type="submit" 
+                            className="bg-[#FFA500] text-white font-bold py-2 px-4 rounded-xl w-full h-12"
+                            onClick={handleSignIn}
                         >
-                            Sign In
+                            เข้าสู่ระบบ
                         </button>
-                        <div className='flex justify-end mt-1 w-full'>
-                            <span className='text-[#FFA500] text-sm cursor-pointer'>Forget Password?</span>
+                        <div className="flex justify-end mt-1 w-full">
+                            <span className="text-[#FFA500] text-xs cursor-pointer">ลืม Password?</span>
                         </div>
                     </div>
 
-                    <Divider 
-                        variant="middle"
-                        flexItem
-                        orientation="horizontal"
-                        sx={{ my: 2 }}
-                        className='text-[#FFA500] font-bold jestify-center items-center'
-                    >
+                    <Divider variant="middle" flexItem sx={{ my: 2 }} className="text-[#FFA500] font-bold" >
                         OR
                     </Divider>
 
-                    <div className='flex flex-col justify-center w-full mt-4 mb-4 gap-2'>
-                        <button 
+                    <div className="flex flex-col justify-center w-full mt-4 mb-4 gap-2">
+                        <button
                             type="submit"
-                            className='bg-white text-black border border-gray-700 font-bold py-2 px-4 rounded-xl w-full'
-                            onClick={() => signIn('google')}
+                            className="bg-white text-black border border-gray-700 font-bold py-2 px-4 rounded-xl w-full"
+                            onClick={() => signIn("google")}
                         >
-                            <div className='flex flex-row justify-center items-center gap-2'>
-                                <Image
-                                    src="/images/logo/googlelightx4.png"
-                                    alt="Google Logo"
-                                    width={30}
-                                    height={30}
-                                />
+                            <div 
+                                className="flex flex-row justify-center items-center gap-2"
+                                onClick={handleGoogleSignIn}
+                            >
+                                <Image src="/images/logo/googlelightx4.png" alt="Google Logo" width={30} height={30} />
                                 <span>Sign In with Google</span>
                             </div>
                         </button>
 
-                        <button 
+                        <button
                             type="submit"
-                            className='bg-[#06C755] text-white font-bold py-2 px-4 rounded-xl w-full mt-2'
-                            onClick={() => signIn('line')}
+                            className="bg-[#06C755] text-white font-bold py-2 px-4 rounded-xl w-full mt-2"
+                            onClick={() => signIn("line")}
                         >
-                            <div className='flex flex-row justify-center items-center gap-2 '>
-                                <Image
-                                    src="/images/logo/line_88.png"
-                                    alt="Line Logo"
-                                    width={30}
-                                    height={30}
-                                />
+                            <div className="flex flex-row justify-center items-center gap-2">
+                                <Image src="/images/logo/line_88.png" alt="Line Logo" width={30} height={30} />
                                 <span>Sign In with LINE</span>
                             </div>
                         </button>
@@ -136,11 +151,9 @@ export default function SignIn() {
                 </div>
 
                 {/* Footer */}
-                <div className='flex flex-col justify-center items-center text-xs text-gray-500 w-full mt-5 gap-2'>
-                    <span>
-                        Copyright &copy; 2025 The New You. All rights reserved.
-                    </span>
-                    <span>Version: {process.env.NEXT_PUBLIC_VERSION}</span>
+                <div className="flex flex-col justify-center items-center text-xs text-gray-50 letter-spacing-1 w-full mt-5 gap-2">
+                    <span className="letter-spacing-1">Copyright &copy; 2025 <strong onClick={() => router.push("/")} className="cursor-pointer">The New You Academy.</strong> All rights reserved.</span>
+                    <span className="letter-spacing-1 mt-[-5px]">Version: {process.env.NEXT_PUBLIC_APP_VERSION}</span>
                 </div>
             </div>
         </div>
