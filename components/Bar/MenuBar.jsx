@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { useRouter } from "next/router";
-import { IoHome, IoPeople, IoHomeOutline, IoSunny, IoMoon, IoSettings, IoMenu } from "react-icons/io5";
+import { IoHome, IoPeople, IoHomeOutline, IoSunny, IoMoon, IoSettings, IoMenu, IoClose } from "react-icons/io5";
 import { useSession, signOut } from "next-auth/react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Tooltip, Menu, MenuItem, Dialog } from "@mui/material";
+import { Tooltip, Menu, MenuItem, Dialog, Slide } from "@mui/material";
 import UserAvatar from "../utils/UserAvatar";
 
 const menuItems = [
@@ -11,6 +11,10 @@ const menuItems = [
     { label: "About", href: "/about", icon: <IoPeople /> },
     { label: "Contact", href: "/contact", icon: <IoHomeOutline /> },
 ];
+
+const Transition = forwardRef(function Transition(props, ref) {
+    return <Slide direction="right" ref={ref} {...props} />;
+  });
 
 export default function MenuBar() {
     const { theme, toggleTheme } = useTheme();
@@ -81,20 +85,56 @@ export default function MenuBar() {
 
             
 
-            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-                <div className="p-4 flex flex-col gap-2">
-                    {menuItems.map((item, index) => (
-                        <div key={index} className="cursor-pointer" onClick={() => router.push(item.href)}>
-                            {item.icon} {item.label}
-                        </div>
-                    ))}
-                    <button onClick={toggleTheme}>{theme === "light" ? <IoMoon /> : <IoSunny />}</button>
-                    {session?.user && (
-                        <>
-                            <div className="cursor-pointer" onClick={() => router.push("/profile")}>Profile</div>
-                            <div className="cursor-pointer" onClick={handleLogout}>Sign Out</div>
-                        </>
-                    )}
+            <Dialog 
+                fullScreen
+                open={dialogOpen} 
+                onClose={() => setDialogOpen(false)}
+                TransitionComponent={Transition}
+                keepMounted
+                aria-describedby="alert-dialog-slide-description"
+                sx={{
+                    '& .MuiDialog-paper': {
+                        backgroundColor: theme === 'light' ? '#f5f5f5' : '#333',
+                        color: theme === 'light' ? '#333' : '#f5f5f5',
+                    },
+                }}
+            >
+                <div className="flex flex-col gap-1">
+                    <div className="flex flex-row items-center gap-2 w-full">
+                        <IoClose onClick={() => setDialogOpen(false)} size={30}/>
+                    </div>
+                    <div className="flex flex-col gap-1 text-md px-2">
+                        {menuItems.map((item, index) => (
+                            <div 
+                                key={index} 
+                                className="flex flex-row items-center gap-2 cursor-pointer" 
+                                onClick={() => router.push(item.href)}
+                            >
+                                {item.icon} {item.label}
+                            </div>
+                        ))}
+                        <button 
+                            onClick={toggleTheme}
+                        >
+                                {theme === "light" ? <IoMoon /> : <IoSunny />}
+                        </button>
+                        {session?.user && (
+                            <>
+                                <div 
+                                    className="cursor-pointer" 
+                                    onClick={() => router.push("/profile")}
+                                >
+                                    Profile
+                                </div>
+                                <div 
+                                    className="cursor-pointer" 
+                                    onClick={handleLogout}
+                                >
+                                    Sign Out
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </Dialog>
         </>
