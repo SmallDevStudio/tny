@@ -26,8 +26,6 @@
 
 /* ✅ ใช้ตัวแปรใน Layout */
 body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
   transition: background 0.3s, color 0.3s;
   font-family: "Prompt", sans-serif !important;
   overflow-x: hidden;
@@ -50,8 +48,6 @@ section {
 }
 
 .main-content {
-  background-color: var(--bg-color);
-  color: var(--text-color);
   transition: background 0.3s, color 0.3s;
   font-family: "Prompt", sans-serif !important;
   overflow-x: hidden;

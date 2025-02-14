@@ -7,17 +7,34 @@ export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState("light");
 
     useEffect(() => {
-        // ✅ โหลดค่าจาก Cookie หรือใช้ Light Mode เป็นค่าเริ่มต้น
         const savedTheme = Cookies.get("theme") || "light";
         setTheme(savedTheme);
-        document.documentElement.setAttribute("data-theme", savedTheme);
+        if (savedTheme === "dark") {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
     }, []);
+
+    useEffect(() => {
+        if (theme === "dark") {
+            document.body.classList.add("bg-gray-800", "text-white");
+            document.body.classList.remove("bg-gray-50", "text-black");
+        } else {
+            document.body.classList.add("bg-white", "text-black");
+            document.body.classList.remove("bg-gray-800", "text-white");
+        }
+    }, [theme]);
 
     const toggleTheme = () => {
         const newTheme = theme === "light" ? "dark" : "light";
         setTheme(newTheme);
-        document.documentElement.setAttribute("data-theme", newTheme);
-        Cookies.set("theme", newTheme, { expires: 30 }); // ✅ เก็บ Theme ไว้ใน Cookie 30 วัน
+        if (newTheme === "dark") {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
+        Cookies.set("theme", newTheme, { expires: 30 });
     };
 
     return (

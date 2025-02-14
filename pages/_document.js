@@ -11,7 +11,7 @@ export default function Document() {
         {/* ✅ Favicon */}
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <body>
+      <body className="font-prompt bg-gray-50 dark:bg-gray-800">
         <Main />
         <NextScript />
       </body>
