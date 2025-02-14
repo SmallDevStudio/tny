@@ -8,6 +8,8 @@ import Content from "@/components/Layouts/App/Content";
 import Feature from "@/components/Layouts/App/Feature";
 import Team from "@/components/Layouts/App/Team";
 import Price from "@/components/Layouts/App/Price";
+import NewsLetter from "@/components/Layouts/App/NewsLetter";
+import BlogSection from "@/components/Layouts/App/BlogSection";
 
 export default function HomeTemplate({ title, content }) {
     return (
@@ -18,8 +20,10 @@ export default function HomeTemplate({ title, content }) {
                     <Hero />
                     <Content />
                     <Feature />
+                    <BlogSection />
                     <Team />
                     <Price />
+                    <NewsLetter />
                 </div>
                 <Footer />
             </div>
