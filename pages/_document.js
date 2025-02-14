@@ -11,7 +11,7 @@ export default function Document() {
         {/* ✅ Favicon */}
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <body className="antialiased">
+      <body>
         <Main />
         <NextScript />
       </body>
