@@ -1,15 +1,16 @@
 import { useState, useEffect, forwardRef } from "react";
 import { useRouter } from "next/router";
-import { IoHome, IoPeople, IoHomeOutline, IoSunny, IoMoon, IoSettings, IoMenu, IoClose } from "react-icons/io5";
+import { IoHome, IoPeople, IoHomeOutline, IoSunny, IoMoon, IoSearch, IoMenu, IoClose } from "react-icons/io5";
 import { useSession, signOut } from "next-auth/react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Tooltip, Menu, MenuItem, Dialog, Slide } from "@mui/material";
 import UserAvatar from "../utils/UserAvatar";
+import { MdPermContactCalendar } from "react-icons/md";
 
 const menuItems = [
     { label: "Home", href: "/", icon: <IoHome /> },
     { label: "About", href: "/about", icon: <IoPeople /> },
-    { label: "Contact", href: "/contact", icon: <IoHomeOutline /> },
+    { label: "Contact", href: "/contact", icon: <MdPermContactCalendar /> },
 ];
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -36,44 +37,55 @@ export default function MenuBar() {
     return (
         <>
             <div className="flex flex-row items-center w-full">
-                <div className="hidden md:flex flex-row w-full items-center justify-end ">
-                    {menuItems.map((item, index) => (
-                        <div key={index} className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(item.href)}>
-                            {item.icon} {item.label}
-                        </div>
-                    ))}
-                    <button onClick={toggleTheme}>{theme === "light" ? <IoMoon /> : <IoSunny />}</button>
-
-                    <div className="flex">
-                        {session?.user ? (
-                            <>
-                            <div className="flex cursor-pointer" onClick={handleAvatarClick}>
-                                <UserAvatar size={24} />
+                <div className="hidden md:flex flex-row w-full items-center justify-between gap-4">
+                    <div className="flex flex-row items-center gap-6 w-full">
+                        {menuItems.map((item, index) => (
+                            <div key={index} className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(item.href)}>
+                                {item.icon} {item.label}
                             </div>
-                            
-                            <Menu
-                                id="basic-menu"
-                                anchorEl={anchorEl}  // ✅ กำหนด anchorEl
-                                keepMounted
-                                open={menuOpen}
-                                onClose={() => setMenuOpen(false)}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                            >
-                                <MenuItem onClick={() => router.push("/profile")}>Profile</MenuItem>
-                                <MenuItem onClick={handleLogout}>Sign Out</MenuItem>
-                            </Menu>
-                            </>
-                        ) : (
-                            <button onClick={() => router.push("/signin")}>เข้าสู่ระบบ</button>
-                        )}
+                        ))}
                     </div>
+
+                    <div className="flex flex-row items-center gap-4">
+                        <button>
+                            <IoSearch size={20}/>
+                        </button>
+                        <button 
+                            onClick={toggleTheme}>{theme === "light" ? <IoMoon size={20}/> : <IoSunny size={20}/>}
+                        </button>
+
+                        <div className="flex">
+                            {session?.user ? (
+                                <>
+                                <div className="flex cursor-pointer" onClick={handleAvatarClick}>
+                                    <UserAvatar size={22} />
+                                </div>
+                                
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}  // ✅ กำหนด anchorEl
+                                    keepMounted
+                                    open={menuOpen}
+                                    onClose={() => setMenuOpen(false)}
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                >
+                                    <MenuItem onClick={() => router.push("/profile")}>Profile</MenuItem>
+                                    <MenuItem onClick={handleLogout}>Sign Out</MenuItem>
+                                </Menu>
+                                </>
+                            ) : (
+                                <button onClick={() => router.push("/signin")}>เข้าสู่ระบบ</button>
+                            )}
+                        </div>
+                    </div>
+
                 </div>
 
                 <div className="flex justify-end md:hidden">

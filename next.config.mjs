@@ -19,7 +19,18 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cdn-icons-png.flaticon.com',
       },
-      
+      {
+        protocol: 'https',
+        hostname: 'flowbite.s3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn-icons-png.flaticon.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn-icons-png.flaticon.com',
+      },
     ],
   },
 };

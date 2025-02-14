@@ -11,25 +11,20 @@ export default function HomeHeader() {
     const router = useRouter();
 
     return (
-        <section className="flex flex-col w-full" style={{ height: '150px' }}>
-           <div className="flex flex-col justify-center h-full w-full" style={{ height: '100%' }}>
-            <div className="flex flex-col w-full p-2">
-                    {/* Header */}
-                    <div className="flex flex-row w-full">
-                        <span className="text-3xl font-bold">The New You</span>
-                    </div>
-
-                    {/* Menu Bar */}
-                    <div className="flex flex-row self-end w-full">
-                        <MenuBar 
-                            isCollapsed={isCollapsed} 
-                            setIsCollapsed={setIsCollapsed}
-                            className="w-full"
-                        />
-                    </div>
+        <section className="flex flex-row justify-between items-center p-2 w-full">
+            {/* Header */}
+            <div className="flex items-center header-logo" style={{ width: '60%'}}>
+                <span className="font-bold text-2xl">The New You</span>
             </div>
-           </div>
 
+            {/* Menu Bar */}
+            <div className="flex flex-row px-2 menu-bar w-full">
+                <MenuBar 
+                    isCollapsed={isCollapsed} 
+                    setIsCollapsed={setIsCollapsed}
+                    className="w-full"
+                />
+            </div>
         </section>
     );
 }
