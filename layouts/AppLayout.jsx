@@ -6,10 +6,13 @@ import getTemplate from "@/templates";
 import Header from "@/components/utils/Header";
 import Loading from "@/components/utils/Loading";
 
+const defaultLang = "th";
+
 export default function AppLayout({ children }) {
     const [pageData, setPageData] = useState(null);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    
 
     useEffect(() => {
         setLoading(true);
@@ -29,7 +32,15 @@ export default function AppLayout({ children }) {
         fetchPageData();
       }, [router.pathname, router.query.slug]);
 
-      const TemplateComponent = pageData ? getTemplate(pageData.template.base, pageData.template.page) : null;
+    useEffect(() => {
+        const lang = localStorage.getItem("language");
+        
+        if (!lang) {
+          localStorage.setItem("language", defaultLang);
+        }
+    }, []);
+
+    const TemplateComponent = pageData ? getTemplate(pageData.template.base, pageData.template.page) : null;
 
     if (loading) return <Loading />;
     

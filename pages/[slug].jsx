@@ -1,5 +1,8 @@
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { db } from "@/services/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import useLanguage from "@/hooks/useLanguage";
 
 export async function getServerSideProps(context) {
     const { slug } = context.params;
@@ -20,11 +23,12 @@ export async function getServerSideProps(context) {
 }
 
 export default function DynamicPage({ pageData }) {
-    console.log(pageData);
+    const { language } = useLanguage();
     return (
         <div>
             <h1>{pageData?.title}</h1>
             <p>{pageData?.content}</p>
+            {language}
         </div>
     );
 }
