@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export default function CompanyForm() {
-
+    const [company, setCompany] = useState({});
 
     return (
         <div className="flex flex-col gap-2 sm:grid-cols-2 sm:gap-4">

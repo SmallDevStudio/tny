@@ -61,15 +61,18 @@ export default function Sidebar({ isCollapsed }) {
     };
 
     return (
-        <nav className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+        <nav className={`sidebar ${isCollapsed ? "collapsed" : ""} dark:bg-gray-900 dark:text-white`}>
             <ul className="menu-list">
                 <div>
                     {isCollapsed ? (
-                        <div className="text-lg font-bold">
+                        <div className="text-lg font-bold ">
                             <span>TNY</span>
                         </div>
                     ) : (
-                        <span className="text-lg font-bold">The New You</span>
+                        <div>
+                            <span className="text-lg font-bold">The New You</span>
+                            <span className="text-sm font-light ml-2">Academy</span>
+                        </div>
                     )}
                 </div>
                 {menuItems.map((item, index) => (
@@ -78,8 +81,8 @@ export default function Sidebar({ isCollapsed }) {
                             onClick={(e) => item.subMenu ? handleOpenSubMenu(e, item) : handleMenuItemClick(item.href)}
                             className={`menu-item ${currentPath === item.href ? "active" : ""}`}
                         >
-                            {item.icon}
-                            {!isCollapsed && <span className="menu-text">{item.title}</span>}
+                            <span className="dark:text-white">{item.icon}</span>
+                            {!isCollapsed && <span className="menu-text dark:text-white">{item.title}</span>}
                             {item.subMenu && !isCollapsed && <IoChevronForward className="submenu-icon" />}
                         </li>
                     </Tooltip>
