@@ -38,6 +38,8 @@ export default function Hero() {
                         alt="mockup"
                         width={500}
                         height={500}
+                        priority
+                        className="w-full h-full object-cover"
                     />
 
                  <div className="flex flex-col items-start mt-4 lg:w-full lg:ml-12 lg:mt-0">   
