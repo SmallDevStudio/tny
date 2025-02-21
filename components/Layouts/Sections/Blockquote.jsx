@@ -13,7 +13,7 @@ export default function Blockquote() {
                 style={{
                     backgroundImage: "url('/images/bg-block.png')",
                     backgroundSize: 'cover',
-                    backgroundPosition: 'center',
+                    backgroundPosition: 'left',
                     backgroundRepeat: 'no-repeat',
                     height: '100%',
                 }}
@@ -24,7 +24,7 @@ export default function Blockquote() {
                             <path d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z" fill="currentColor"/>
                         </svg> 
                         <blockquote>
-                            <p class="text-xl font-medium text-gray-200 dark:text-white">
+                            <p class="text-sm font-medium text-gray-200 dark:text-white lg:text-2xl">
                             “THE NEW YOU สร้างขึ้นโดยมีเป้าหมายช่วยเปลี่ยนแปลงชีวิตผู้คนให้ดีขึ้นอย่างเต็มศักยภาพ
                             ผ่านการส่งมอบประสบการณ์และกระบวนการเรียนรู้ ที่มุ่งเน้นพัฒนาทัศนคติ ความรู้ และทักษะต่างๆ
                             ที่ครอบคลุมทั้งภายในจิตใจและภายนอกให้กับผู้เรียน”

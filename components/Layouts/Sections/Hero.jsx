@@ -41,7 +41,7 @@ export default function Hero() {
                         priority
                     />
 
-                 <div className="flex flex-col items-start mt-4 lg:w-full lg:ml-12 lg:mt-0">   
+                 <div className="flex flex-col items-start mt-4 lg:w-full lg:ml-12 lg:mt-5">   
                     <h1 className="max-w-2xl mb-4 text-lg font-extrabold tracking-tight leading-none md:text-lg xl:text-xl sm:text-md dark:text-white">{heroContent.contents.title}</h1>
                     <div className="max-w-2xl mb-6 font-light text-gray-700 lg:mb-8 md:text-md lg:text-md dark:text-gray-400">
                         <ul className="list-disc pl-5 text-sm lg:text-md xl:text-lg">
