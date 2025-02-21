@@ -13,10 +13,10 @@ export default function Footer() {
                 >
                     THE NEW YOU CO., LTD.   
                 </Link>
-                <p className="mb-4 font-light text-gray-500 dark:text-gray-400">
+                <p className="mb-4 font-light text-sm lg:text-lg text-gray-500 dark:text-gray-400">
                     เรียนรู้และพัฒนาตัวเองกับ The New You Academy
                 </p>
-                <div className="flex-row items-center self-center mb-6">
+                <div className="flex-row items-center self-center text-sm mb-6 lg:text-xl">
                     <span className="mr-2">โทร 098-914-5443</span>
                     |
                     <span className="ml-2">Email: info@thenewyou.co.th</span>

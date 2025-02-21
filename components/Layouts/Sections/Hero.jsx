@@ -46,14 +46,14 @@ export default function Hero() {
                     <div className="max-w-2xl mb-6 font-light text-gray-700 lg:mb-8 md:text-md lg:text-md dark:text-gray-400">
                         <ul className="list-disc pl-5 text-sm lg:text-md xl:text-lg">
                             {heroContent.contents.description.map((item, index) => (
-                                <>
+                                <div key={index}>
                                     <li key={index}>{item.title}</li>
                                     {item.options && item.options.map((option, optionIndex) => (
                                         <ul key={optionIndex} className="list-disc pl-5">
                                             <li>{option.text}</li>
                                         </ul>
                                     ))}
-                                </>
+                                </div>
                             ))}
                         </ul>
                     </div>
