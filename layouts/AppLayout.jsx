@@ -13,7 +13,6 @@ export default function AppLayout({ children }) {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     
-
     useEffect(() => {
         setLoading(true);
         const fetchPageData = async () => {

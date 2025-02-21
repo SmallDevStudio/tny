@@ -8,7 +8,6 @@ export default function ApphtmlForm() {
     const [descriptions, setDescriptions] = useState({});
     const [checkedInputs, setCheckedInputs] = useState({});
     const [social, setSocial] = useState({});
-    const [apiKey, setApiKey] = useState({});
 
     const { getById, update } = useDB("appdata");
 
@@ -55,11 +54,6 @@ export default function ApphtmlForm() {
                 lineUrl: social.lineUrl || null,
                 twitterUrl: social.twitterUrl || null
             },
-            api_key: {
-                facebook_api_key: apiKey.facebook_api_key || null,
-                google_api_key: apiKey.google_api_key || null,
-                line_api_key: apiKey.line_api_key || null,
-            }
         }
 
         console.log('submit data:', data);
@@ -106,12 +100,6 @@ export default function ApphtmlForm() {
             <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
         }
     ];
-
-    const apiKeyData = [
-        {label: "FacebookApiKey", name: "facebook_api_key"},
-        {label: "GoogleApiKey", name: "google_api_key"},
-        {label: "LineApiKey", name: "line_api_key"},
-    ]
 
     const handleCheckBox = (e, input) => {
         const isChecked = e.target.checked;
@@ -213,28 +201,8 @@ export default function ApphtmlForm() {
                 ))}
                 </div>
 
-                <div className='flex flex-row flex-wrap w-full gap-4 sm:gap-10'>
-                    {apiKeyData.map((api, apiIndex) => (
-                        <div key={apiIndex} className='flex flex-col items-start gap-2'>
-                            <div className="flex items-center gap-2">
-                                <label htmlFor={api.name} className="block mb-1 text-sm font-medium text-gray-900 dark:text-white">
-                                    {api.label}:
-                                </label>
-                                <input
-                                    type='text'
-                                    name={api.name}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    value={apiKey[api.name]}
-                                    placeholder={`Enter ${api?.label}`}
-                                    onChange={(e) => handleApiChange(e, api.name)}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
             </div>
-            <div className="flex flex-col gap-2 mt-2 sm:grid-cols-2 sm:gap-4">
+            <div className="flex flex-col gap-2 mt-4 sm:grid-cols-2 sm:gap-4">
                 <button
                     className='bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl w-20'
                     onClick={handleSubmit}

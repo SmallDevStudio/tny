@@ -26,9 +26,3 @@ export const Sections = [
     {name: "newsLetter", component: NewsLetter}
 ];
 
-const getSectionComponent = (sectionName) => {
-    return Sections.find((section) => section.name === sectionName) || [{name: sectionName}];
-};
-
-export default getSectionComponent;
-

@@ -2,7 +2,9 @@ import { IoMenu, IoSunny, IoMoon, IoSettings } from "react-icons/io5";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useSession } from "next-auth/react";
 import { Tooltip } from "@mui/material";
-import UserAvatar from "@/components/utils/UserAvatar";
+import UserButton from "@/components/btn/UserButton";
+import LangButton from "@/components/btn/LangButton";
+
 
 export default function HeaderBar({ isCollapsed, setIsCollapsed }) {
     const { theme, toggleTheme } = useTheme();
@@ -15,12 +17,14 @@ export default function HeaderBar({ isCollapsed, setIsCollapsed }) {
                 <h1 className="header-title">Admin Panel</h1>
             </div>
             <div className="flex flex-row items-center gap-2">
+                <LangButton isText={true}/>
+
                 <Tooltip title={theme === 'light' ? 'Light Mode' : 'Dark Mode'} placement="bottom">
                     <button className="theme-toggle dark:text-white" onClick={toggleTheme}>
                         {theme === "light" ? <IoMoon /> : <IoSunny />}
                     </button>
                 </Tooltip>
-                <UserAvatar user={session?.user} size={32} />
+                <UserButton user={session?.user} size={32} />
             </div>
         </header>
     );

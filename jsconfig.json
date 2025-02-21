@@ -10,6 +10,9 @@
       "@/hooks/*": ["./hooks/*"],
       "@/services/*": ["./services/*"],
       "@/layouts/*": ["./layouts/*"],
+      "@/templates/*": ["./templates/*"],
+      "@/contexts/*": ["./contexts/*"],
+      "@/lang/*": ["./lang/*"]
     }
   }
 }

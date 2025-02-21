@@ -16,17 +16,21 @@ export default function Company() {
         <section className="bg-white dark:bg-gray-800 p-4 rounded-xl">
             <h1 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">ข้อมูลบริษัท</h1>
             {/* Tab */}
-            <div className="flex items-center justify-center mb-2 w-full">
-                <ul className="flex flex-row gap-8 list-none">
+            <div className="flex items-center justify-start ml-4 w-full">
+                <ul className="flex flex-row list-none">
                     <li
-                        className={`cursor-pointer`}
+                        className={`cursor-pointer border-t border-l border-r rounded-t-xl px-6 pt-2
+                            ${activeTab === 'app' ? "bg-gray-400 text-white" : ""}
+                            `}
                         onClick={() => handleActive("app")}
                     >
                         App
                     </li>
 
                     <li
-                        className={`cursor-pointer`}
+                        className={`cursor-pointer border-t border-l border-r rounded-t-xl px-6 pt-2
+                            ${activeTab === 'company' ? "bg-gray-400 text-white" : ""}
+                            `}
                         onClick={() => handleActive("company")}
                     >
                         Company
@@ -35,7 +39,7 @@ export default function Company() {
                 </ul>
             </div>
 
-            <Divider className="my-2" flexItem/>
+            <Divider className="mb-2" flexItem/>
 
             {/* Tab Section */}
             {activeTab === "app" && <AppForm />}

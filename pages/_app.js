@@ -9,6 +9,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SessionProvider } from "next-auth/react";
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
 
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter();
@@ -16,14 +18,16 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
   const isErrorPage = router.pathname.startsWith("/error");
   const isSigninPage = router.pathname === "/signin";
   const isRegisterPage = router.pathname === "/register";
-  
+
   if (isErrorPage || isSigninPage || isRegisterPage) {
     return (
       <SessionProvider session={session}>
         <Header title={pageProps.title || "The New You Academy"} />
         <ThemeProvider>
-          <Component {...pageProps} />
-          <ToastContainer position="top-right" autoClose={3000} />
+          <Provider store={store}>
+            <Component {...pageProps} />
+            <ToastContainer position="top-right" autoClose={3000} />
+          </Provider>
         </ThemeProvider>
       </SessionProvider>
     );
@@ -35,10 +39,12 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
     <SessionProvider session={session}>
       <Header title={pageProps.title || ""} />
       <ThemeProvider>
-        <Layout>
-          <Component {...pageProps} />
-          <ToastContainer position="top-right" autoClose={3000} />
-        </Layout>
+        <Provider store={store}>
+          <Layout>
+            <Component {...pageProps} />
+            <ToastContainer position="top-right" autoClose={3000} />
+          </Layout>
+        </Provider>
       </ThemeProvider>
     </SessionProvider>
   );

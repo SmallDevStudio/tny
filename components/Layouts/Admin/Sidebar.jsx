@@ -12,7 +12,13 @@ import { RiSeoLine } from "react-icons/ri";
 const menuItems = [
     { title: "Dashboard", icon: <IoHome />, href: "/admin" },
     { title: "Company", icon: <CgWebsite />, href: "/admin/company" },
-    { title: "HomePage", icon: <IoHomeOutline />, href: "/admin/homepage" },
+    { 
+        title: "Home", 
+        icon: <IoHomeOutline />, 
+        subMenu: [
+            { title: "Carousel", href: "/admin/home/carousel" },
+        ] 
+    },
     { title: "Courses", icon: <RiArticleLine />, href: "/admin/courses" },
     { title: "Pages", icon: <RiPagesLine />, href: "/admin/pages" },
     { title: "Menu", icon: <BsFillMenuButtonFill />, href: "/admin/menu" },

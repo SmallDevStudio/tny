@@ -1,11 +1,11 @@
 import HomeTemplate from "./Home";
 import PageTemplate from "./Page";
-import ContactTemplate from "./Contact";
+import AboutTemplate from "./About";
 import ContentTemplate from "./Content";
 
 export default {
     home: HomeTemplate,
     page: PageTemplate,
-    contact: ContactTemplate,
+    about: AboutTemplate,
     content: ContentTemplate
 };

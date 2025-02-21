@@ -1,6 +1,7 @@
 import Image from "next/image";
-import AppLayout from "@/layouts/AppLayout";
+import { useRouter } from "next/router";
 
 export default function Home() {
-  return ;
+  const router = useRouter();
+  return router.push("/about");
 }

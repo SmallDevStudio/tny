@@ -1,31 +1,63 @@
 import Image from "next/image";
 import Link from "next/link";
+
+const heroContent = {
+    title: "Payments tool for software companies",
+    description: "From checkout to global sales tax compliance, companies around the world use Flowbite to simplify their payment stack.",
+    image: "/images/apailuicktan.png",
+    contents: {
+        title: "ผู้ก่อตั้งสถาบันพัฒนาภาพลักษณ์ THE NEW YOU Academy และที่ปรึกษาภาพลักษณ์ (Image Consultant) ระดับสากล",
+        description: [
+            { title: "Image Consultant ไทยที่ทำคะแนนได้สูงที่สุดจาก 3 สถาบันชั้นนำของโลกทางด้านภาพลักษณ์ (อเมริกา อังกฤษ และ สิงคโปร์) ผู้ได้รับรางวัล Image consultant Global Rising Star Award 2017 ณ ประเทศ Mexico"},
+            { title: "ตัวแทนคนแรกและคนเดียวของเอเชีย ที่ได้รับเชิญเป็นผู้ดำเนินรายการ และผู้บรรยายพิเศษ ให้แก่สมาชิกที่ปรึกษาภาพลักษณ์ทั่วโลก ในสมาพันธ์ที่ปรึกษา ภาพลักษณ์นานาชาติ (AICI)"},
+            { title: "ผู้ก่อตั้งและผู้อำนวยการหลักสูตร “The Story” มหาวิทยาลัยศรีปทุม และหลักสูตร “The ConneXt” มหาวิทยาลัยหอการค้าไทย"},
+            { title: "ประสบการณ์การสอนและการเป็นผู้บริหาร ให้กับบริษัทเอกชนชั้นหลายแห่ง มามากกว่า 20 ปี และเปลี่ยนแปลงชีวิตผู้คนมากมาย    ผ่านการอบรมให้กับองค์กรชั้นนำทั้งในและต่างประเทศรวมทั้งโค้ชชิ่งตัวต่อตัวให้กับนักธุรกิจแถวหน้าทั่วเอเชีย"},
+            { title: "ผู้สร้าง Image Consultant ชั้นนำในประเทศไทยกว่า 70%" },
+            { title: "เจ้าของหนังสือขายดี 2 เล่ม", options: [
+                { text: "Look Good ดูดี ชนะใจ ทำอะไรก็ชนะ" },
+                { text: "The New You ปรับลุค เปลี่ยนลักษณ์"}
+            ]},
+            { title: "KOL ด้านการพัฒนาตนเองที่มีผู้ติดตามกว่า 1.6 ล้านคน"}
+        ]
+    }
+
+};
 export default function Hero() {
     return (
-        <section className="bg-white dark:bg-gray-900">
-            <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
-                <div className="mr-auto place-self-center lg:col-span-7">
-                    <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">Payments tool for software companies</h1>
-                    <p className="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">From checkout to global sales tax compliance, companies around the world use Flowbite to simplify their payment stack.</p>
-                    <Link
-                        href="#" 
-                        className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900">
-                        Get started
-                        <svg className="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </Link>
-                    <Link 
-                        href="#" 
-                        className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-                        Speak to Sales
-                    </Link> 
-                </div>
-                <div className="hidden lg:mt-0 lg:col-span-5 lg:flex">
+        <section className="bg-white dark:bg-gray-800">
+             <div className="py-4 px-4 w-full lg:py-6 lg:px-6">
+                <div className="mx-auto max-w-screen-sm text-center lg:mb-1 mb-4">
+                    <h2 className="text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-orange-500">รู้จัก อ. เอ๋ อภัยลักษ์ ตันตระบัณฑิตย์</h2>
+                        {/*<p className="font-light text-gray-500 sm:text-xl dark:text-gray-400">We use an agile approach to test assumptions and connect with the needs of your audience early and often.</p>*/}
+                </div> 
+            </div>
+            <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-2">
+                <div className="mr-aut lg:mt-0 lg:col-span-5 lg:flex ">  
                     <Image 
-                        src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/hero/phone-mockup.png" 
+                        src={heroContent.image} 
                         alt="mockup"
                         width={500}
                         height={500}
                     />
+
+                 <div className="flex flex-col items-start mt-4 lg:w-full lg:ml-12 lg:mt-0">   
+                    <h1 className="max-w-2xl mb-4 text-lg font-extrabold tracking-tight leading-none md:text-lg xl:text-xl sm:text-md dark:text-white">{heroContent.contents.title}</h1>
+                    <div className="max-w-2xl mb-6 font-light text-gray-700 lg:mb-8 md:text-md lg:text-md dark:text-gray-400">
+                        <ul className="list-disc pl-5 text-sm lg:text-md xl:text-lg">
+                            {heroContent.contents.description.map((item, index) => (
+                                <>
+                                    <li key={index}>{item.title}</li>
+                                    {item.options && item.options.map((option, optionIndex) => (
+                                        <ul key={optionIndex} className="list-disc pl-5">
+                                            <li>{option.text}</li>
+                                        </ul>
+                                    ))}
+                                </>
+                            ))}
+                        </ul>
+                    </div>
+                        
+                    </div>
                 </div>                
             </div>
         </section>

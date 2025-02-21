@@ -1,20 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
+import LogoComponents from "@/components/LogoComponents";
 
 export default function Footer() {
     return (
         <footer className="p-4 bg-white md:p-8 lg:p-10 dark:bg-gray-800">
             <div className="mx-auto max-w-screen-xl text-center">
+                <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">ติดต่อเรา</span>
                 <Link 
                     href="#" 
-                    className="flex justify-center items-center text-2xl font-semibold text-orange-500 dark:text-white"
+                    className="flex justify-center items-center text-2xl mt-2 font-semibold text-orange-500 dark:text-white"
                 >
-                    The New You   
+                    THE NEW YOU CO., LTD.   
                 </Link>
-                <p className="my-6 text-gray-500 dark:text-gray-400">
+                <p className="mb-4 font-light text-gray-500 dark:text-gray-400">
                     เรียนรู้และพัฒนาตัวเองกับ The New You Academy
                 </p>
-                <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-500 dark:text-white gap-8">
+                <div className="flex-row items-center self-center mb-6">
+                    <span className="mr-2">โทร 098-914-5443</span>
+                    |
+                    <span className="ml-2">Email: info@thenewyou.co.th</span>
+                </div>
+               
+                <ul className="flex flex-wrap justify-center items-center text-gray-500 dark:text-white gap-8">
                     <li>
                         <Link href="#" className="mr-4 hover:underline md:mr-6">
                             <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg>
@@ -47,7 +55,7 @@ export default function Footer() {
                             xmlns="http://www.w3.org/2000/svg"
                             xmlSpace="preserve"
                             id="Capa_1"
-                            className="w-8 h-8"
+                            className="w-7 h-7"
                             fill="currentColor"
                             version="1.1"
                             viewBox="0 0 296.528 296.528"
