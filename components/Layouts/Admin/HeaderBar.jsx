@@ -11,7 +11,11 @@ export default function HeaderBar({ isCollapsed, setIsCollapsed }) {
     const { data: session } = useSession();
 
     return (
-        <header className="header-bar dark:bg-gray-900">
+        <header className="header-bar dark:bg-gray-900" 
+            style={{
+                zIndex: 1000
+            }}
+        >
             <div className="flex flex-row items-center">
                 <IoMenu className="menu-icon" onClick={() => setIsCollapsed(!isCollapsed)} />
                 <h1 className="header-title">Admin Panel</h1>

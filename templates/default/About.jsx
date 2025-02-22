@@ -26,7 +26,6 @@ export default function AboutTemplate({ title, content }) {
                     <Courses />
                     <Trainings />
                     <Partner />
-                    <PublicCoures />
                     <Fixed />
                 </div>
                 <Footer />

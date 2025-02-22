@@ -1,0 +1,140 @@
+.editor-wrapper {
+  width: 100%;
+  max-width: 100%;
+  margin: auto;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toolbar {
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+  height: 40px;
+  background: #f1f1f1;
+  border-bottom: 1px solid #ddd;
+  border-radius: 8px 8px 0 0;
+}
+
+.toolbar button {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  transition: 0.2s;
+}
+
+.toolbar button:hover {
+  background: #ddd;
+  border-radius: 5px;
+}
+
+.toolbar button.active {
+  background: #0078d4;
+  color: white;
+  border-radius: 5px;
+}
+
+
+/* ปรับ Editor ให้เหมือน textarea */
+.editor-container {
+  padding: 10px !important;
+  min-height: 300px;
+  border-radius: 0 0 8px 8px;
+  background: white;
+  background-color: transparent !important; /* ให้พื้นหลังโปร่งใส */
+}
+
+.editor-container:focus-within {
+  outline: none !important; /* ปิดเส้นโฟกัส */
+}
+
+.ProseMirror {
+  border: none !important; /* ลบเส้นขอบของ Editor */
+  outline: none !important; /* ปิดเส้นโฟกัส */
+  min-height: 200px;
+  padding: 0 !important;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  background: transparent !important;
+}
+
+/* ป้องกันการมีเส้นขอบขณะพิมพ์ */
+.ProseMirror:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 5px;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  cursor: move;
+}
+
+/* HTML Code Editor */
+.html-editor {
+  width: 100%;
+  font-family: monospace;
+  font-size: 14px;
+  background: #f9f9f9;
+  color: #333;
+  border-radius: 5px;
+  resize: none;
+  outline: none;
+}
+
+/* ตั้งค่าพื้นฐาน */
+.tiptap h1, 
+.tiptap h2, 
+.tiptap h3, 
+.tiptap h4, 
+.tiptap h5, 
+.tiptap h6 {
+  font-family: "Arial", sans-serif;
+  font-weight: bold;
+  margin: 10px 0;
+  line-height: 1.4;
+}
+
+/* ตั้งค่าขนาดของ H1-H6 */
+.tiptap h1 {
+  font-size: 32px;
+}
+
+.tiptap h2 {
+  font-size: 28px;
+}
+
+.tiptap h3 {
+  font-size: 24px;
+}
+
+.tiptap h4 {
+  font-size: 20px;
+}
+
+.tiptap h5 {
+  font-size: 18px;
+}
+
+.tiptap h6 {
+  font-size: 16px;
+}
+
+
+
+
+
+

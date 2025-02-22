@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import "@/styles/admin.css";
+import "@/styles/tiptap.css";
 import { useEffect } from "react";
 import Header from "@/components/utils/Header";
 import AdminLayout from "@/layouts/AdminLayout";
@@ -18,8 +19,9 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
   const isErrorPage = router.pathname.startsWith("/error");
   const isSigninPage = router.pathname === "/signin";
   const isRegisterPage = router.pathname === "/register";
+  const isLoading = router.pathname === "/loading";
 
-  if (isErrorPage || isSigninPage || isRegisterPage) {
+  if (isErrorPage || isSigninPage || isRegisterPage || isLoading) {
     return (
       <SessionProvider session={session}>
         <Header title={pageProps.title || "The New You Academy"} />

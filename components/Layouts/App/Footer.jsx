@@ -1,12 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import LogoComponents from "@/components/LogoComponents";
+import useLanguage from "@/hooks/useLanguage";
 
 export default function Footer() {
+    const { lang } = useLanguage();
     return (
         <footer className="p-4 bg-white md:p-8 lg:p-10 dark:bg-gray-800">
             <div className="mx-auto max-w-screen-xl text-center">
-                <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">ติดต่อเรา</span>
+                <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+                    {lang["conact_us"]}
+                </span>
                 <Link 
                     href="#" 
                     className="flex justify-center items-center text-2xl mt-2 font-semibold text-orange-500 dark:text-white"
@@ -14,14 +18,15 @@ export default function Footer() {
                     THE NEW YOU CO., LTD.   
                 </Link>
                 <p className="mb-4 font-light text-sm lg:text-lg text-gray-500 dark:text-gray-400">
-                    เรียนรู้และพัฒนาตัวเองกับ The New You Academy
+                    {lang["contact_desc"]}
                 </p>
                 <div className="flex-row items-center self-center text-sm mb-6 lg:text-xl">
                     <span className="mr-2">โทร 098-914-5443</span>
                     |
                     <span className="ml-2">Email: info@thenewyou.co.th</span>
                 </div>
-               
+                
+               {/* Social media */}
                 <ul className="flex flex-wrap justify-center items-center text-gray-500 dark:text-white gap-8">
                     <li>
                         <Link href="#" className="mr-4 hover:underline md:mr-6">
