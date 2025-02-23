@@ -1,19 +1,25 @@
 import { useState, useEffect } from "react";
 import { db } from "@/services/firebase";
-import { collection, getDocs, setDoc, doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { useRouter } from "next/router";
+import useLanguage from "@/hooks/useLanguage";
 
 export default function AdminPages() {
     const [pages, setPages] = useState([]);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const { lang, t } = useLanguage();
 
     useEffect(() => {
         const fetchPages = async () => {
             try {
                 const pagesRef = collection(db, "pages");
                 const snapshot = await getDocs(pagesRef);
-                const pagesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                const pagesData = snapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() })) // ดึงข้อมูลทั้งหมด
+                    .filter(page => page.template?.page === "page"); // ✅ กรองเฉพาะที่ template.page === "page"
+
                 setPages(pagesData);
             } catch (error) {
                 console.error("Error fetching pages:", error);
@@ -25,23 +31,10 @@ export default function AdminPages() {
         fetchPages();
     }, []);
 
-    const handleAddPage = async () => {
-        const slug = prompt("Enter Page Slug (e.g., about, courses)");
-        if (!slug) return;
+    console.log(pages);
 
-        try {
-            await setDoc(doc(db, "pages", slug), {
-                title: slug.charAt(0).toUpperCase() + slug.slice(1),
-                slug: slug,
-                description: `This is the ${slug} page.`,
-                template: { base: "default", page: "page" },
-                content: "Welcome to the new page.",
-            });
-
-            setPages([...pages, { id: slug, title: slug.charAt(0).toUpperCase() + slug.slice(1), slug }]);
-        } catch (error) {
-            console.error("Error adding page:", error);
-        }
+    const handleClickAdd = () => {
+        router.push("/admin/pages/pageform");
     };
 
     const handleDeletePage = async (id) => {
@@ -61,20 +54,20 @@ export default function AdminPages() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Manage Pages</h1>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4" onClick={handleAddPage}>
-                Add Page
+            <h1 className="text-2xl font-bold mb-4">{lang["management_pages"]}</h1>
+            <button className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4" onClick={handleClickAdd}>
+                {lang["create_page"]}
             </button>
             <ul>
-                {pages.map(page => (
-                    <li key={page.id} className="flex justify-between bg-gray-100 p-2 mb-2 rounded-md">
-                        <span>{page.title} ({page.slug})</span>
-                        <div>
-                            <button className="bg-green-500 text-white px-3 py-1 rounded-md mx-2" onClick={() => router.push(`/${page.slug}`)}>View</button>
-                            <button className="bg-red-500 text-white px-3 py-1 rounded-md" onClick={() => handleDeletePage(page.id)}>Delete</button>
-                        </div>
-                    </li>
-                ))}
+            {pages.map(page => (
+                <li key={page.id} className="flex justify-between bg-gray-100 p-2 mb-2 rounded-md">
+                    <span>{t(page.title)} ({page.slug})</span>
+                    <div>
+                        <button className="bg-green-500 text-white px-3 py-1 rounded-md mx-2" onClick={() => router.push(`/${page.slug}`)}>View</button>
+                        <button className="bg-red-500 text-white px-3 py-1 rounded-md" onClick={() => handleDeletePage(page.id)}>Delete</button>
+                    </div>
+                </li>
+            ))}
             </ul>
         </div>
     );

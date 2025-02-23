@@ -32,9 +32,9 @@ export default function useLanguage() {
     };
 
     // ดึงค่าจาก database ที่มี { en: "Welcome", th: "ยินดีต้อนรับ" }
-    const getText = (data) => {
+    const t = (data) => {
         return data?.[language] || data?.[defaultLang] || "";
     };
 
-    return { language, lang: langData || {}, changeLanguage, getText };
+    return { language, lang: langData || {}, changeLanguage, t };
 }

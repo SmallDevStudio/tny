@@ -7,7 +7,9 @@ import { Tooltip, Popover, List, ListItem, ListItemText } from "@mui/material";
 import { useTheme } from "@/contexts/ThemeContext";
 import { BsFillMenuButtonFill } from "react-icons/bs";
 import { MdOutlinePermContactCalendar } from "react-icons/md";
-import { RiSeoLine } from "react-icons/ri";
+import { TbSection } from "react-icons/tb";
+import { RiTeamLine } from "react-icons/ri";
+import { LuPaintbrush } from "react-icons/lu";
 
 const menuItems = [
     { title: "Dashboard", icon: <IoHome />, href: "/admin" },
@@ -16,20 +18,30 @@ const menuItems = [
         title: "Home", 
         icon: <IoHomeOutline />, 
         subMenu: [
-            { title: "Carousel", href: "/admin/home/carousel" },
+            { title: "Sections", href: "/admin/home/sections" },
+            { title: "Contents", href: "/admin/home/contents" },
         ] 
     },
     { title: "Courses", icon: <RiArticleLine />, href: "/admin/courses" },
     { title: "Pages", icon: <RiPagesLine />, href: "/admin/pages" },
     { title: "Menu", icon: <BsFillMenuButtonFill />, href: "/admin/menu" },
-    { title: "Contact", icon: <MdOutlinePermContactCalendar />, href: "/admin/contact" },
-    { title: "SEO", icon: <RiSeoLine />, href: "/admin/seo" },
+    { 
+        title: "About", 
+        icon: <MdOutlinePermContactCalendar />, 
+        subMenu: [
+            { title: "Sections", href: "/admin/about/sections" },
+            { title: "Contents", href: "/admin/about/contents" },
+        ]
+    },
+    { title: "Sections", icon: <TbSection />, href: "/admin/sections" },
+    { title: "Teams", icon: <RiTeamLine />, href: "/admin/teams" },
+    { title: "Themes", icon: <LuPaintbrush />, href: "/admin/themes" },
     { 
         title: "Users", 
         icon: <IoPeople />, 
         subMenu: [
-            { title: "All Users", href: "/admin/users/all" },
-            { title: "Add User", href: "/admin/users/add" },
+            { title: "Users", href: "/admin/users" },
+            { title: "User Groups", href: "/admin/users/groups" },
         ]
     },
     { 
@@ -54,6 +66,7 @@ export default function Sidebar({ isCollapsed }) {
         if (currentPath !== href) {
             router.push(href);
         }
+        handleCloseSubMenu();
     };
 
     const handleOpenSubMenu = (event, item) => {
@@ -114,7 +127,7 @@ export default function Sidebar({ isCollapsed }) {
             >
                 <List>
                     {selectedSubMenu?.map((sub, index) => (
-                        <ListItem button key={index} onClick={() => handleMenuItemClick(sub.href)}>
+                        <ListItem button key={index} onClick={() => handleMenuItemClick(sub.href)} className="cursor-pointer">
                             <ListItemText primary={sub.title} />
                         </ListItem>
                     ))}

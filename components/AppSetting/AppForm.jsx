@@ -31,6 +31,10 @@ export default function ApphtmlForm() {
                     lineUrl: appData?.social?.lineUrl ? true : false,
                     twitterUrl: appData?.social?.twitterUrl ? true : false,
                 });
+                setDescriptions({
+                    th: appData?.descriptions?.th,
+                    en: appData?.descriptions?.en,
+                });
             }
         };
 
@@ -117,14 +121,6 @@ export default function ApphtmlForm() {
         }));
     };
 
-    const handleApiChange = (e, name) => {
-        const value = e.target.value;
-        setApiKey(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
     return (
         <div className="flex flex-col gap-2 mt-4 sm:grid-cols-2 sm:gap-2">
             <div className='flex flex-col'>
@@ -159,7 +155,7 @@ export default function ApphtmlForm() {
                             placeholder="รายละเอียด (ภาษาไทย)"
                             rows={2}
                             onChange={(e) => setDescriptions({ ...descriptions, th: e.target.value })}
-                            value={app?.descriptions?.th}
+                            value={descriptions?.th}
                         />
                         </Tooltip>
 
@@ -172,7 +168,7 @@ export default function ApphtmlForm() {
                             placeholder="รายละเอียด (ภาษาอังกฤษ)"
                             rows={2}
                             onChange={(e) => setDescriptions({ ...descriptions, en: e.target.value })}
-                            value={app?.descriptions?.en}
+                            value={descriptions?.en}
                         />
                         </Tooltip>
                     </div>

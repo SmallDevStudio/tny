@@ -72,9 +72,7 @@
     "upload": "Upload",
     "youtube": "Youtube",
     "write_text": "Write Text",
-    "edit_page": "Edit Page",
-    "delete_page": "Delete Page",
-    "add_page": "Add Page",
+    
     "add_article": "Add Article",
     "edit_article": "Edit Article",
     "delete_article": "Delete Article",
@@ -92,7 +90,7 @@
     "exam_name": "Used for displaying web pages. For example: home will display www.thenewyou.co.th/home",
     "name_write": "Please type name",
     "title": "Title",
-    "exam_title": "Used for SEO to display pages and search",
+    "exam_title": "Used for display menu",
     "title_write": "Please type title",
     "slug": "Slug",
     "exam_slug": "Auto display",
@@ -101,6 +99,7 @@
     "phone": "phone",
     "address": "Address",
     "description": "Description",
+    "exam_description": "Used for SEO to display pages and search",
     "description_write": "Please type details",
     "category": "Category",
     "status": "Status",
@@ -115,6 +114,45 @@
     "newsletter_error": "An error occurred in Subscribe",
     "newsletter_read": "We care about the protection of your data.",
     "read_privacy": "Read our Privacy Policy.",
-    "read_more": "Read More"
+    "read_more": "Read More",
+    "remove-image": "Remove Image",
+    "open_library": "Open Library",
+    "library": "Library",
+    "library_desc": "Management Library",
+    "slug_required": "Please type slug",
+    "slug_already_exists": "Slug already exists",
+    "page_added_successfully": "Page added successfully",
+    "page_updated_successfully": "Page updated successfully",
+    "page_deleted_successfully": "Page deleted successfully",
+    "something_went_wrong": "Something went wrong",
+
+    "management_pages": "Management Pages",
+    "create_page": "Create Page",
+    "edit_page": "Edit Page",
+    "delete_page": "Delete Page",
+    "add_page": "Add Page",
+
+    "management_categories": "Management Categories",
+    "add_team": "Add Team",
+    "edit_team": "Edit Team",
+    "delete_team": "Delete Team",
+    "position": "Position",
+    "bio": "Bio",
+    "team_added_successfully": "Team added successfully",
+    "team_updated_successfully": "Team updated successfully",
+    "team_deleted_successfully": "Team deleted successfully",
+    "active": "Active",
+    "inactive": "Inactive",
+
+    "are_you_sure": "Are you sure?",
+    "you_wont_be_able_to_revert_this": "You won't be able to revert this!",
+    "yes_delete_it": "Yes, delete it!",
+
+    "tools": "Tools",
+    "admin_console": "Admin Console",
+
+    "sections-management": "Sections Management",
+
+    "menu-management": "Menu Management"
 
 }

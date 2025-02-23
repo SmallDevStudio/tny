@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import useDB from "@/hooks/useDB";
@@ -9,10 +10,13 @@ import { Sections } from "../Layouts/Sections";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Menu, MenuItem } from "@mui/material";
+import { Menu, MenuItem, Tooltip } from "@mui/material";
 import { toast } from "react-toastify";
-import AddImage from "../btn/AddImage";
+import UploadImage from "../btn/UploadImage";
+import OpenLibrary from "../btn/OpenLibrary";
 import useLanguage from "@/hooks/useLanguage";
+import { db } from "@/services/firebase";
+import { collection, getDoc, getDocs, setDoc, doc, deleteDoc } from "firebase/firestore";
 
 const SortableItem = ({ id, children }) => {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
@@ -38,12 +42,14 @@ export default function PageForm({ page }) {
     const [contextMenu, setContextMenu] = useState(null);
     const [useSection, setUseSection] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [files, setFiles] = useState(null);
+    const [error, setError] = useState(null);
 
     const { lang } = useLanguage();
 
     // เมื่อ `name.en` เปลี่ยนแปลง ให้สร้าง `slug` อัตโนมัติ เว้นแต่เคยแก้ไขแล้ว
     useEffect(() => {
-        if (!isSlugEdited && form.name) {
+        if (form.name) {
             const newSlug = generateSlug(form.name);
             setForm((prev) => ({ ...prev, slug: newSlug }));
         }
@@ -52,8 +58,8 @@ export default function PageForm({ page }) {
      // ฟังก์ชันสร้าง `slug`
      const generateSlug = (text) => {
         return text
-            .toLowerCase()
             .trim()
+            .toLowerCase()
             .replace(/[^\w\s-]/g, "") // ลบอักขระพิเศษ
             .replace(/\s+/g, "-"); // แปลงช่องว่างเป็น `-`
     };
@@ -101,16 +107,41 @@ export default function PageForm({ page }) {
     };
 
     const handleSubmitPage = async () => {
+        if (!form.slug) {
+            setError(lang["slug_required"]);
+            toast.error(lang["slug_required"]);
+            return;
+        }
+    
+        const pageRef = doc(db, "pages", form.slug);
+        const pageSnap = await getDoc(pageRef);
+    
+        if (pageSnap.exists()) {
+            setError(lang["slug_already_exists"]);
+            toast.error(lang["slug_already_exists"]); // แจ้งเตือนว่ามี slug นี้แล้ว
+            return; // ❌ หยุดการทำงาน
+        }
+    
         const data = { 
             ...form, 
             sections: selectedSections, 
             content: "",
+            template: { base: "default", page: "page" },
             creator: session.user.id
         };
-
+    
         console.log(data);
-
-    }
+    
+        try {
+            await setDoc(pageRef, data);
+            toast.success(lang["page_added_successfully"]);
+            handleClearForm();
+            router.push("/admin/pages");
+        } catch (error) {
+            console.error("Error adding page:", error);
+            toast.error(lang["something_went_wrong"]);
+        }
+    };
 
     const handleClearForm = () => {
         setForm({ 
@@ -120,9 +151,13 @@ export default function PageForm({ page }) {
             slug: "" 
         });
         setSelectedSections([]);
+        setFiles(null);
     }
 
-    
+    const handleRemoveCover = () => {
+       setFiles(null);
+    }
+
     return (
         <div className="bg-white dark:bg-gray-900 rounded-xl">
             <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16">
@@ -188,7 +223,7 @@ export default function PageForm({ page }) {
                                 className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
                             >
                                 {lang["description"]}
-                                <span className="text-gray-400 ml-2 text-xs">({lang["exam_title"]})</span>
+                                <span className="text-gray-400 ml-2 text-xs">({lang["exam_description"]})</span>
                             </label>
                             <textarea
                                 type="text"
@@ -226,10 +261,14 @@ export default function PageForm({ page }) {
                                 id="slug"
                                 value={form.slug}
                                 onChange={(e) => handleSlugChange(e.target.value)}
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500
+                                    ${error ? "border-red-500" : ""}`}
                                 placeholder={lang["slug_write"]}
                                 required
                             />
+                            {error && (
+                                <p className="mt-2 text-sm text-red-600 dark:text-red-500">{error}</p>
+                            )}
                         </div>
                         <div className="sm:col-span-2">
                             <label 
@@ -239,7 +278,37 @@ export default function PageForm({ page }) {
                                 {lang["cover"]} <span className="text-red-500">*</span>
                                 <span className="text-gray-400 ml-2 text-xs">({lang["exam_cover"]})</span>
                             </label>
-                            <AddImage size={24}/>
+                            {files && (
+                                <div className="flex flex-col w-full mb-2">
+                                    <div className="relative">
+                                    <Image 
+                                        src={files.url}
+                                        width={1000}
+                                        height={1000}
+                                        alt="Cover"
+                                        className="w-full h-auto rounded-lg"
+                                        priority
+                                    />
+                                    <Tooltip title={lang["remove-image"]} placement="bottom" arrow>
+                                    <button 
+                                        type="button" 
+                                        className="absolute top-0 right-0 m-2 p-1 text-white bg-red-500 rounded-full hover:bg-red-600"
+                                        onClick={() => handleRemoveCover()}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                    </Tooltip>
+                                    </div>
+                                    <span className="text-sm mt-2"><strong className="mr-2 text-orange-500">File Name:</strong> {files.file_name}</span>
+                                </div>
+                            )}
+                            <OpenLibrary
+                                onUpload={setFiles} 
+                                folder="cover" 
+                                size={24}
+                            />
                         </div>
                     </div>
 

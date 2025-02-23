@@ -72,9 +72,7 @@
     "upload": "อัปโหลด",
     "youtube": "Youtube",
     "write_text": "เขียนข้อความ",
-    "edit_page": "แก้ไขหน้า",
-    "delete_page": "ลบหน้า",
-    "add_page": "สร้างหน้า",
+    
     "add_article": "เพิ่มบทความ",
     "edit_article": "แก้ไขบทความ",
     "delete_article": "ลบบทความ",
@@ -93,7 +91,7 @@
     "name_write": "กรอกชื่อหน้าใช้ภาษาอังกฤษเท่านั้น",
 
     "title": "หัวข้อ",
-    "exam_title": "ใช้สำหรับ SEO เพื่อแสดงหน้าเว็บ และค้นหา",
+    "exam_title": "ใช้สำหรับชื่อเมนู",
     "title_write": "กรอกหัวข้อ",
     "slug": "Slug",
     "slug_write": "กรอก Slug",
@@ -102,6 +100,7 @@
     "phone": "โทรศัพท์",
     "address": "ที่อยู่",
     "description": "รายละเอียด",
+    "exam_description": "ใช้สำหรับ SEO เพื่อแสดงหน้าเว็บ และค้นหา",
     "description_write": "กรอกรายละเอียด",
     "category": "หมวดหมู่",
     "status": "สถานะ",
@@ -118,5 +117,45 @@
     "read_privacy": "อ่านนโยบายความเป็นส่วนตัว",
     "read_more": "อ่านเพิ่มเติม",
     "newsletter_success": "ขอบคุณสําหรับการลงทะเบียน",
-    "newsletter_error": "เกิดข้อผิดพลาดในการลงทะเบียน"
+    "newsletter_error": "เกิดข้อผิดพลาดในการลงทะเบียน",
+    "remove-image": "ลบรูปภาพ",
+    "open_library": "เปิดคลังรูปภาพ",
+    "library": "คลังรูปภาพ",
+    "library_desc": "จัดการรูปภาพในคลัง",
+
+    "slug_required": "กรุณากรอก Slug",
+    "slug_already_exists": "Slug นี้มีอยู่ในระบบแล้ว",
+    "page_added_successfully": "เพิ่มหน้าเว็บเรียบร้อย",
+    "page_updated_successfully": "แก้ไขหน้าเว็บเรียบร้อย",
+    "page_deleted_successfully": "ลบหน้าเว็บเรียบร้อย",
+    "something_went_wrong": "มีอะไรผิดพลาดในการบันทึกข้อมูล",
+
+    "management_pages": "จัดการหน้าเว็บ",
+    "create_page": "สร้างหน้าเว็บ",
+    "edit_page": "แก้ไขหน้าเว็บ",
+    "delete_page": "ลบหน้าเว็บ",
+    "add_page": "สร้างหน้าเว็บ",
+
+    "teams-management": "จัดการทีม",
+    "add_team": "เพิ่มทีม",
+    "edit_team": "แก้ไขทีม",
+    "delete_team": "ลบทีม",
+    "position": "ตําแหน่ง",
+    "bio": "ประวัติ",
+    "team_added_successfully": "เพิ่มทีมเรียบร้อย",
+    "team_updated_successfully": "แก้ไขทีมเรียบร้อย",
+    "team_deleted_successfully": "ลบทีมเรียบร้อย",
+    "active": "เปิดใช้งาน",
+    "inactive": "ปิดใช้งาน",
+
+    "are_you_sure": "คุณแน่ใจหรือไม่",
+    "you_wont_be_able_to_revert_this": "คุณไม่สามารถย้อนกลับได้",
+    "yes_delete_it": "ใช่ ลบเลย",
+
+    "tools": "เครื่องมือ",
+    "admin_console": "แอดมินคอนซอล",
+
+    "sections-management": "จัดการส่วนประกอบ",
+
+    "menu-management": "จัดการเมนู"
 }

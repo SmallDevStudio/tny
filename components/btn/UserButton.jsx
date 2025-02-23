@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { Tooltip, Menu, MenuItem } from "@mui/material";
+import { useSession } from "next-auth/react";
+import { Tooltip, Menu, MenuItem, Divider } from "@mui/material";
 import { signOut } from "next-auth/react";
 import UserAvatar from "../utils/UserAvatar";
 import useLanguage from "@/hooks/useLanguage";
@@ -10,6 +11,7 @@ export default function UserButton({ user, size }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const router = useRouter();
     const { lang } = useLanguage();
+    const { data: session } = useSession();
 
     const handleAvatarClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -38,7 +40,11 @@ export default function UserButton({ user, size }) {
                     onClose={() => setMenuOpen(false)}
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right', }}
                     transformOrigin={{ vertical: 'top', horizontal: 'right', }}
-                >
+                >   
+                    {session?.user?.role === "admin" && 
+                    <MenuItem onClick={() => router.push("/admin")}>{lang["admin_console"]}</MenuItem>
+                    }
+                    <Divider />
                     <MenuItem onClick={() => router.push("/profile")}>{lang["profile"]}</MenuItem>
                     <MenuItem onClick={handleLogout}>{lang["signout"]}</MenuItem>
                 </Menu>

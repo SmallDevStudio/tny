@@ -1,17 +1,16 @@
-import { useState, useEffect, forwardRef } from "react";
+import React,{ useState, useEffect, forwardRef } from "react";
 import { IoImage } from "react-icons/io5";
 import { Tooltip } from "@mui/material";
 import useLanguage from "@/hooks/useLanguage";
 import { Dialog, Slide } from "@mui/material";
 import Upload from "../utils/Upload";
 
-const Transition = forwardRef(function Transition(props, ref) {
+const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
-  });
+});
 
-export default function AddImage({ onImageUpload, size }) {
+export default function UploadImage({ onUpload, folder, size }) {
     const [open, setOpen] = useState(false);
-    const [files, setFiles] = useState([]);
     const { lang } = useLanguage();
 
     const handleClickOpen = () => {
@@ -42,7 +41,11 @@ export default function AddImage({ onImageUpload, size }) {
                 onClose={handleClose}
                 TransitionComponent={Transition}
             >
-                <Upload handleCloseForm={handleClose} setFiles={setFiles} folder="cover" />
+                <Upload 
+                    handleCloseForm={handleClose} 
+                    setFiles={onUpload} 
+                    folder={folder} 
+                />
             </Dialog>
         </>
     );
