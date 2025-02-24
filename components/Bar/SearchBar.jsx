@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import useLanguage from "@/hooks/useLanguage";
 
 export default function SearchBar({ search, setSearch }) {
     const { lang } = useLanguage();
+
     return (
         <div className="relative">
             <input

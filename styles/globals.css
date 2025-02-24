@@ -183,6 +183,15 @@ body {
   overflow-x: hidden;
 }
 
+.team {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.team::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
+}
+
 /* ✅ Responsive: เมื่อหน้าจอเล็ก (Tablet, Mobile) */
 @media screen and (max-width: 768px) {
   .sidebar {

@@ -1,4 +1,4 @@
-import Hero from "./Hero";
+import Hero from "./HeroSection";
 import Content from "./Content";
 import Blockquote from "./Blockquote";
 import BlogSection from "./BlogSection";

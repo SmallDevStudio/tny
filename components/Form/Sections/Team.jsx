@@ -61,10 +61,7 @@ export default function Team() {
                 </div>
 
                 {/* Mobile: Horizontal Scroll with Touch Support */}
-                <div 
-                    className="lg:hidden team flex overflow-x-auto gap-6 pb-4 snap-x snap-mandatory touch-pan-x scrollbar-hide"
-                    
-                >
+                <div className="lg:hidden flex overflow-x-auto gap-6 pb-4 snap-x snap-mandatory touch-pan-x scrollbar-hide">
                     {teams.map((item, index) => (
                         <div 
                             key={index}
@@ -73,7 +70,7 @@ export default function Team() {
                             <Link href="#">
                                 <Image
                                     className="w-32 h-32 rounded-full" 
-                                    src={item.image.url}
+                                    src={item.image.utl}
                                     alt={t(item.name)}
                                     width={200}
                                     height={200}

@@ -156,6 +156,14 @@
     "admin_console": "แอดมินคอนซอล",
 
     "sections-management": "จัดการส่วนประกอบ",
+    "sections": "ส่วนประกอบ",
+    "available_sections": "ส่วนประกอบที่พร้อมใช้งาน",
+    "available_sections_desc": "คลิกเพื่อเลือกส่วนประกอบ",
+    "select_section": "เลือกส่วนประกอบ",
+    "select_section_desc": "คลิกขวาเพื่อลบส่วนประกอบ ลากเพื่อเลื่อนตำแหน่ง",
+    "please_select_a_section": "กรุณาเลือกส่วนประกอบก่อนใช้งาน",
+
+    "size_image": "ขนาดรูปภาพ",
 
     "menu-management": "จัดการเมนู"
 }

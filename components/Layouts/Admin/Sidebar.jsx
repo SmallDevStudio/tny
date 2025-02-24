@@ -29,7 +29,7 @@ const menuItems = [
         title: "About", 
         icon: <MdOutlinePermContactCalendar />, 
         subMenu: [
-            { title: "Sections", href: "/admin/about/sections" },
+            { title: "Sections", href: "/admin/about" },
             { title: "Contents", href: "/admin/about/contents" },
         ]
     },

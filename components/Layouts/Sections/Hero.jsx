@@ -31,18 +31,19 @@ export default function Hero() {
                         {/*<p className="font-light text-gray-500 sm:text-xl dark:text-gray-400">We use an agile approach to test assumptions and connect with the needs of your audience early and often.</p>*/}
                 </div> 
             </div>
-            <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-2">
-                <div className="mr-auto lg:mt-0 lg:col-span-5 lg:flex ">  
+            <div className="grid max-w-screen-xl mx-auto px-4 py-8  lg:gap-12 xl:gap-4 lg:py-12 lg:grid-cols-2">
+                <div className="mr-auto lg:mt-0 lg:col-span-4 lg:flex ">  
                     <Image 
                         src={heroContent.image} 
                         alt="mockup"
                         width={500}
                         height={500}
+                        className="w-full lg:max-w-[400px] h-auto object-contain"
                         priority
                     />
 
-                 <div className="flex flex-col items-start mt-4 lg:w-full lg:ml-12 lg:mt-5">   
-                    <h1 className="max-w-2xl mb-4 text-lg font-extrabold tracking-tight leading-none md:text-lg xl:text-xl sm:text-md dark:text-white">{heroContent.contents.title}</h1>
+                 <div className="flex flex-col items-start mt-8 lg:w-full lg:ml-12 lg:mt-6">   
+                    <h1 className="max-w-2xl mb-4 text-lg font-extrabold tracking-tight leading-5 md:text-lg xl:text-xl sm:text-md dark:text-white">{heroContent.contents.title}</h1>
                     <div className="max-w-2xl mb-6 font-light text-gray-700 lg:mb-8 md:text-md lg:text-md dark:text-gray-400">
                         <ul className="list-disc pl-5 text-sm lg:text-md xl:text-lg">
                             {heroContent.contents.description.map((item, index) => (

@@ -152,6 +152,14 @@
     "admin_console": "Admin Console",
 
     "sections-management": "Sections Management",
+    "sections": "Sections",
+    "available_sections": "Available Sections",
+    "available_sections_desc": "Select a section to manage",
+    "select_section": "Select Section",
+    "select_section_desc": "Right click to delete a component. Drag to move position",
+    "please_select_a_section": "Please select a section first",
+
+    "size_image": "Size Image",
 
     "menu-management": "Menu Management"
 

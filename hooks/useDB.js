@@ -44,24 +44,26 @@ export default function useDB(collectionName) {
         return unsubscribe; // ✅ ต้อง return unsubscribe เพื่อหยุดการฟัง
     };
 
-    // ✅ ฟังก์ชันดึงข้อมูลเอกสารตาม ID
-    const getById = async (id) => {
+    // ✅ ฟังก์ชันดึงข้อมูลเอกสารตาม ID แบบ Realtime
+    const getById = (id, callback) => {
         setLoading(true);
         setError(null);
-        try {
-            const docRef = doc(db, collectionName, id);
-            const docSnap = await getDoc(docRef);
+        const docRef = doc(db, collectionName, id);
+
+        const unsubscribe = onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
-                return { id: docSnap.id, ...docSnap.data() };
+                const docData = { id: docSnap.id, ...docSnap.data() };
+                callback(docData); // ✅ ส่งข้อมูลไปยัง callback เพื่ออัปเดต UI
             } else {
-                throw new Error("Document not found");
+                callback(null); // ✅ คืนค่า null ถ้าไม่มีเอกสาร
             }
-        } catch (err) {
-            setError(err.message);
-            return null;
-        } finally {
             setLoading(false);
-        }
+        }, (err) => {
+            setError(err.message);
+            setLoading(false);
+        });
+
+        return unsubscribe; // ✅ ต้อง return unsubscribe เพื่อหยุดการฟัง
     };
 
     // ✅ ฟังก์ชันเพิ่มเอกสารใหม่
