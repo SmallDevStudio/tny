@@ -9,13 +9,10 @@ export default function ApphtmlForm() {
     const [checkedInputs, setCheckedInputs] = useState({});
     const [social, setSocial] = useState({});
 
-    const { getById, update } = useDB("appdata");
+    const { subscribe, getById, update } = useDB("appdata");
 
     useEffect(() => {
-        const fetchData = async () => {
-            const appData = await getById("app"); // ✅ ใช้ await เพื่อดึงข้อมูลให้เสร็จ
-            setApp(appData);
-
+        const unsubscribe = getById("app", (appData) => {
             if (appData) {
                 setSocial({
                     facebookUrl: appData?.social?.facebookUrl,
@@ -35,14 +32,15 @@ export default function ApphtmlForm() {
                     th: appData?.descriptions?.th,
                     en: appData?.descriptions?.en,
                 });
+                setApp(appData);
             }
-        };
+        });
 
-        if (!app) {
-            fetchData();
-        }
+        return () => unsubscribe(); // ✅ หยุดฟังเมื่อ component unmount
 
-    }, [app, getById]);
+    }, []);
+
+    console.log('app data:', app);
 
     const handleSubmit = async () => {
         const data = {

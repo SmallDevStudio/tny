@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<url><loc>http://localhost:3000</loc><lastmod>2025-02-25T17:29:50.935Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/about</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/company</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/courses</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/edit-content</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/home</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/home/carousel</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/menu</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/pages</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/pages/pageform</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/sections</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/settings</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/settings/appearance</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/teams</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/test-form</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/test-section</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/admin/users</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/error/403</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/error/404</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/error/500</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/error/maintenance</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/loading</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/profile</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/register</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/signin</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/signout</loc><lastmod>2025-02-25T17:29:50.936Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+</urlset>

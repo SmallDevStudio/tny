@@ -158,6 +158,10 @@
     "select_section": "Select Section",
     "select_section_desc": "Right click to delete a component. Drag to move position",
     "please_select_a_section": "Please select a section first",
+    "update_section_success": "Update Section Success",
+    "add_section_success": "Add Section Success",
+    "error_occured": "Error Occured",
+    "section_not_found": "Section Not Found",
 
     "size_image": "Size Image",
 

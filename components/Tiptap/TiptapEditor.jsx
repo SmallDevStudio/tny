@@ -33,6 +33,7 @@ import { Divider, Tooltip, MenuItem, Select, TextareaAutosize } from '@mui/mater
 import useLanguage from '@/hooks/useLanguage';
 
 const TiptapEditor = ({ content, onChange }) => {
+  const [editorContent, setEditorContent] = useState(content);
   const [fontSize, setFontSize] = useState('16px');
   const [fontColor, setFontColor] = useState('#000000');
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -66,7 +67,7 @@ const TiptapEditor = ({ content, onChange }) => {
       TableHeader,
       Image.configure({ allowBase64: true, inline: false }),
     ],
-    content: content || '<p>Start typing here...</p>',
+    content: editorContent || '<p>Start typing here...</p>',
     onUpdate: ({ editor }) => {
       if (!isHtmlMode) {
         onChange(editor.getHTML());
@@ -74,6 +75,13 @@ const TiptapEditor = ({ content, onChange }) => {
       }
     },
   });
+
+  useEffect(() => {
+    setEditorContent(content); // ✅ อัปเดตค่าทุกครั้งที่เปลี่ยนภาษา
+    if (editor) {
+        editor.commands.setContent(content, false); // ✅ รีเซ็ตค่าตามภาษาใหม่
+    }
+  }, [content]);
 
   // ตรวจสอบ Heading ปัจจุบันเมื่อมีการเปลี่ยนแปลง selection
   useEffect(() => {
@@ -102,8 +110,6 @@ const TiptapEditor = ({ content, onChange }) => {
 
 
   if (!editor) return null;
-
-  
 
   // อัปโหลดรูปภาพไปที่ Firebase Storage
   const handleImageUpload = async (event) => {

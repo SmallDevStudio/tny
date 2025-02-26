@@ -24,6 +24,39 @@
   --hover-bg: rgba(255, 255, 255, 0.2);
 }
 
+.preview-box h1 {
+  font-size: 32px;
+}
+
+.preview-box h2 {
+  font-size: 28px;
+}
+
+.preview-box h3 {
+  font-size: 24px;
+}
+
+.preview-box h4 {
+  font-size: 20px;
+}
+
+.preview-box h5 {
+  font-size: 18px;
+}
+
+.preview-box h6 {
+  font-size: 16px;
+}
+
+.preview-box p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.image-section {
+  max-width: 400px;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 5px;
@@ -192,6 +225,17 @@ body {
   display: none;  /* Safari and Chrome */
 }
 
+.mode-mobile {
+  width: 375px;
+  max-width: 375px;
+  height: 667px;
+  background: linear-gradient(135deg, #FFA500 0%, #996300 100%);
+  color: #ffffff;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+
 /* ✅ Responsive: เมื่อหน้าจอเล็ก (Tablet, Mobile) */
 @media screen and (max-width: 768px) {
   .sidebar {
@@ -213,6 +257,45 @@ body {
   .content {
     padding-top: 50px;
     transition: all 0.3s ease-in-out;
+  }
+
+  .preview-box h1 {
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .preview-box h2 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .preview-box h3 {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .preview-box h4 {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .preview-box h5 {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .preview-box h6 {
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .preview-box p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .image-section {
+    max-width: 300px;
   }
 }
 

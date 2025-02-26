@@ -1,7 +1,7 @@
-import HeroForm from "@/components/Form/HeroForm";
+import SectionForm from "@/components/Form/SectionForm";
 
 export default function TestForm() {
     return(
-        <HeroForm />
+        <SectionForm component={"TextImageSection"}/>
     );
 }

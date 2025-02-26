@@ -162,6 +162,10 @@
     "select_section": "เลือกส่วนประกอบ",
     "select_section_desc": "คลิกขวาเพื่อลบส่วนประกอบ ลากเพื่อเลื่อนตำแหน่ง",
     "please_select_a_section": "กรุณาเลือกส่วนประกอบก่อนใช้งาน",
+    "update_section_success": "อัพเดตส่วนประกอบสําเร็จ",
+    "add_section_success": "เพิ่มส่วนประกอบสําเร็จ",
+    "error_occured": "เกิดข้อผิดพลาดในการบันทึกข้อมูล",
+    "section_not_found": "ไม่พบส่วนประกอบ",
 
     "size_image": "ขนาดรูปภาพ",
 

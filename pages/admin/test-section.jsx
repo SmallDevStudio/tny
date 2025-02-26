@@ -1,31 +1,29 @@
-import Hero from "@/components/Layouts/Sections/Hero";
-import Content from "@/components/Layouts/Sections/Content";
-import Blockquote from "@/components/Layouts/Sections/Blockquote";
-import BlogSection from "@/components/Layouts/Sections/BlogSection";
-import Carousel from "@/components/Layouts/Sections/Carousel";
-import ContectForm from "@/components/Layouts/Sections/ContectForm";
-import CustomerLogos from "@/components/Layouts/Sections/CustomerLogos";
-import FAQ from "@/components/Layouts/Sections/FAQ";
-import Feature from "@/components/Layouts/Sections/Feature";
-import Team from "@/components/Layouts/Sections/Team";
-import Price from "@/components/Layouts/Sections/Price";
-import NewsLetter from "@/components/Layouts/Sections/NewsLetter";
+import ImageTextSection from "@/components/Form/Sections/ImageTextSection";
+import useLanguage from "@/hooks/useLanguage";
+const heroSampleData = {
+    title: {
+        "th": "ทดสอบการทำงาน", 
+        "en": "Lorem ipsum dolor sit amet"
+    },
+    description: {
+        "th": "Lorem ipsum dolor sit amet consectetur. Viverra mus eget sit dignissim lacus ornare tristique. Scelerisque euismod amet nulla aliquam nec lectus feugiat quis sed. Egestas magna ultricies enim.",
+        "en": "Lorem ipsum dolor sit amet consectetur. Viverra mus eget sit dignissim lacus ornare tristique. Scelerisque euismod amet nulla aliquam nec lectus feugiat quis sed. Egestas magna ultricies enim."
+    },
+    image: { 
+        url: "/images/sample/hero-sample.png"
+    },
+    content: {
+        "th": "Lorem ipsum dolor sit amet consectetur. Viverra mus eget sit dignissim lacus ornare tristique. Scelerisque euismod amet nulla aliquam nec lectus feugiat quis sed. Egestas magna ultricies enim tristique pellentesque est tincidunt leo. In ornare eu turpis tincidunt lacinia dui eu dapibus arcu. Sagittis turpis curabitur non risus arcu metus dui tristique malesuada. Sem est molestie etiam netus viverra.",
+        "en": "Lorem ipsum dolor sit amet consectetur. Viverra mus eget sit dignissim lacus ornare tristique. Scelerisque euismod amet nulla aliquam nec lectus feugiat quis sed. Egestas magna ultricies enim tristique pellentesque est tincidunt leo. In ornare eu turpis tincidunt lacinia dui eu dapibus arcu. Sagittis turpis curabitur non risus arcu metus dui tristique malesuada. Sem est molestie etiam netus viverra."
+    }
+};
+
 
 export default function TestSection() {
+    const { language } = useLanguage();
     return (
         <div>
-            <Hero />
-            <Content />
-            <Blockquote />
-            <BlogSection />
-            <Carousel />
-            <ContectForm />
-            <CustomerLogos />
-            <FAQ />
-            <Feature />
-            <Team />
-            <Price />
-            <NewsLetter />
+            <ImageTextSection data={heroSampleData} lang={language} />
         </div>
     );
 }

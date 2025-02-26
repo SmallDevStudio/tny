@@ -38,7 +38,7 @@ export default function Hero() {
                         alt="mockup"
                         width={500}
                         height={500}
-                        className="w-full lg:max-w-[400px] h-auto object-contain"
+                        className="w-full max-w-[300px] h-auto object-contain"
                         priority
                     />
 

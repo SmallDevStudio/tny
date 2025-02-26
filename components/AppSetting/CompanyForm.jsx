@@ -26,19 +26,16 @@ export default function CompanyForm() {
     const { lang } = useLanguage();
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const companyData = await getById("company");
-                if (companyData) setCompany(companyData);
-            } catch (error) {
-                console.error("Error fetching company data:", error);
+        const unsubscribe = getById("company", (companyData) => {
+            if (companyData) {
+                setCompany(companyData);
             }
-        };
+        });
 
-        fetchData();
+        return () => unsubscribe(); // ✅ หยุดฟังเมื่อ component unmount
     }, []); // ✅ ทำให้ useEffect รันแค่ครั้งเดียว
 
-    console.log("logo", logo);
+    console.log('company:', company);
 
     const handleSubmit = async () => {
         try {
@@ -107,7 +104,7 @@ export default function CompanyForm() {
                         onChange={(e) =>
                             setCompany(prev => ({ ...prev, name: { ...prev.name, th: e.target.value } }))
                         }
-                        value={company.name.th}
+                        value={company?.name?.th}
                         required
                     />
                     <input
@@ -117,7 +114,7 @@ export default function CompanyForm() {
                         onChange={(e) =>
                             setCompany(prev => ({ ...prev, name: { ...prev.name, en: e.target.value } }))
                         }
-                        value={company.name.en}
+                        value={company?.name?.en}
                         required
                     />
                 </div>
@@ -136,7 +133,7 @@ export default function CompanyForm() {
                         onChange={(e) =>
                             setCompany(prev => ({ ...prev, address: { ...prev.address, th: e.target.value } }))
                         }
-                        value={company.address.th}
+                        value={company?.address?.th}
                     />
                     <textarea
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
@@ -145,7 +142,7 @@ export default function CompanyForm() {
                         onChange={(e) =>
                             setCompany(prev => ({ ...prev, address: { ...prev.address, en: e.target.value } }))
                         }
-                        value={company.address.en}
+                        value={company?.address?.en}
                     />
                 </div>
             </div>
@@ -159,7 +156,7 @@ export default function CompanyForm() {
                     type="text"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     placeholder="เบอร์โทร"
-                    value={company.phone}
+                    value={company?.phone}
                     onChange={(e) =>
                         setCompany(prev => ({ ...prev, phone: e.target.value }))
                     }
@@ -175,7 +172,7 @@ export default function CompanyForm() {
                     type="email"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     placeholder="อีเมล"
-                    value={company.email}
+                    value={company?.email}
                     onChange={(e) =>
                         setCompany(prev => ({ ...prev, email: e.target.value }))
                     }

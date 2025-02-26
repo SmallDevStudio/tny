@@ -24,26 +24,20 @@ export default function HeroSection({ title, description, image, content }) {
                 </div>
             </div>
 
-            {/* ✅ ใช้ flex-col ใน mobile (lg:grid-cols-2 ใน Desktop) */}
-            <div className="grid max-w-screen-xl px-4 py-8  lg:gap-12 xl:gap-4 lg:py-12 lg:grid-cols-2">
-                
-                {/* ✅ รูปภาพ */}
+            <div className="grid max-w-screen-xl mx-auto px-4 py-8  lg:gap-12 xl:gap-4 lg:py-12 lg:grid-cols-2">
                 <div className="mr-auto lg:mt-0 lg:col-span-4 lg:flex ">  
                     <Image 
-                        src={image.url || heroContent.image} 
-                        alt="hero image"
+                        src={heroContent.image} 
+                        alt="mockup"
                         width={500}
                         height={500}
+                        className="w-full max-w-[300px] h-auto object-contain"
                         priority
-                        className="max-w-[400px] h-auto object-contain"
                     />
                 </div>
-
-                {/* ✅ Content (อยู่ใต้รูปภาพใน Mobile) */}
-                <div className="flex flex-col items-start mt-4 lg:w-full lg:ml-12 lg:mt-5">
-                    <div className="max-w-xl font-light text-gray-700 md:text-md lg:text-md dark:text-gray-400">
-                        <div dangerouslySetInnerHTML={{ __html: content }} className="preview-box text-center lg:text-left" />
-                    </div>
+            
+                <div className="flex flex-col items-start mt-8 lg:w-full lg:ml-12 lg:mt-6">   
+                    <div dangerouslySetInnerHTML={{ __html: content }} />
                 </div>
                 
             </div>
