@@ -169,5 +169,12 @@
 
     "size_image": "ขนาดรูปภาพ",
 
+    "create_course": "สร้างคอร์ส",
+    "edit_course": "แก้ไขคอร์ส",
+    "delete_course": "ลบคอร์ส",
+
+    "name_placeholder": "กรอกชื่อ",
+
+
     "menu-management": "จัดการเมนู"
 }

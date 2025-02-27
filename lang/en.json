@@ -165,6 +165,12 @@
 
     "size_image": "Size Image",
 
+    "create_course": "Create Course",
+    "edit_course": "Edit Course",
+    "delete_course": "Delete Course",
+
+    "name_placeholder": "Please type name",
+
     "menu-management": "Menu Management"
 
 }
