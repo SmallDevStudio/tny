@@ -131,7 +131,6 @@ export default function SignIn() {
                         >
                             <div 
                                 className="flex flex-row justify-center items-center gap-2"
-                                onClick={handleGoogleSignIn}
                             >
                                 <Image src="/images/logo/googlelightx4.png" alt="Google Logo" width={30} height={30} />
                                 <span>Sign In with Google</span>
