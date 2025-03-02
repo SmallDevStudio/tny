@@ -9,20 +9,47 @@ import { Tooltip } from "@mui/material";
 import useLanguage from "@/hooks/useLanguage";
 import UploadImage from "../btn/UploadImage";
 import { nanoid } from "nanoid";
+import { db } from "@/services/firebase";
+import { updateDoc, doc, setDoc } from "firebase/firestore";
+import { deleteFile } from "@/hooks/useStorage";
 
-export default function CoursesForm({ onClose, course }) {
+export default function CoursesForm({ onClose, course, isNewCourse }) {
     const { lang, t } = useLanguage();
     const { data: session } = useSession();
+    const userId = session?.user?.userId;
     const router = useRouter();
     const { add, update } = useDB("courses");
     const [open, setOpen] = useState(false);
-    const [form, setForm] = useState({});
+    const [form, setForm] = useState({
+        code: "",
+        name: { th: "", en: "" },
+        description: { th: "", en: "" },
+        cover: "",
+        thumbnail: "",
+        group: "",
+        subgroup: "",
+        price: "",
+    });
+    const [loading, setLoading] = useState(false);
+    const [cover, setCover] = useState(null);
+    const [thumbnail, setThumbnail] = useState(null);
 
     useEffect(() => {
-        if (form.code === undefined) {
-            generateCode();
-        };
-    }, []);
+        if (course) {
+            setForm({
+                code: course.id || "",
+                name: course.name || { th: "", en: "" },
+                description: course.description || { th: "", en: "" },
+                cover: course.cover || {},
+                thumbnail: course.thumbnail || {},
+                group: course.group || "",
+                subgroup: course.subgroup || "",
+                price: course.price || "",
+            });
+        } else if (isNewCourse) {
+            generateCode(); // ✅ Generate รหัสใหม่เมื่อเป็น Course ใหม่
+        }
+    }, [course]);
 
     const generateCode = () => {
         const codeNumber = nanoid(10);
@@ -36,8 +63,69 @@ export default function CoursesForm({ onClose, course }) {
     };
 
     const handleClear = () => {
-        setForm({});
+        setForm({
+            code: "",
+            name: { th: "", en: "" },
+            description: { th: "", en: "" },
+            image: "",
+            group: "",
+            subgroup: "",
+            price: "",
+        });
         onClose();
+    };
+
+    const handleCover = (file) => {
+        setCover(file[0]);
+    };
+
+    const handleThumbnail = (file) => {
+        setThumbnail(file[0]);
+    };
+
+    const handleRemoveCover = () => {
+        deleteFile(cover.file_id);
+        setCover(null);
+    };
+
+    const handleRemoveThumbnail = () => {
+        deleteFile(thumbnail.file_id);
+        setThumbnail(null);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        const data = {
+            id: form.code,
+            name: { th: form.name.th, en: form.name.en },
+            description: { th: form.description.th, en: form.description.en },
+            cover: cover ? cover : null,
+            thumbnail: thumbnail? thumbnail : null,
+            group: form.group,
+            subgroup: form.subgroup,
+            price: form.price,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            created_by: session?.user?.userId,
+        };
+    
+        try {
+            if (course) {
+                const courseRef = doc(db, "courses", course.id);
+                await updateDoc(courseRef, data);
+                toast.success(lang["course_updated_successfully"]);
+            } else {
+                const courseRef = doc(db, "courses", data.id);
+                await setDoc(courseRef, data);
+                toast.success(lang["course_added_successfully"]);
+            }
+    
+            handleClear();
+        } catch (error) {
+            console.error(error);
+            toast.error(lang["error_occurred"]);
+        }
     };
 
     return (
@@ -70,6 +158,7 @@ export default function CoursesForm({ onClose, course }) {
                             onChange={(e) => setForm({ ...form, code: e.target.value })}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                             placeholder={lang["code_placeholder"]}
+                            disabled={!isNewCourse}
                             required
                         />
                     </div>
@@ -79,19 +168,71 @@ export default function CoursesForm({ onClose, course }) {
                                 {lang["image"]}
                             </label>
                             {/* Image */}
-                            {form?.image && (
-                                <div className="relative w-full h-40 rounded-lg overflow-hidden">
+                            {cover && (
+                                <div className="relative w-full h-[200px] rounded-lg">
                                     <Image
-                                        src={form?.image?.url}
+                                        src={cover?.url}
                                         alt="mockup"
                                         width={500}
                                         height={500}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover rounded-lg"
                                         priority
                                     />
+                                    <div className="absolute top-0 right-1">
+                                        <Tooltip title={lang["remove"]} arrow>
+                                            <button
+                                                type="button"
+                                                className="bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                                onClick={() => handleRemoveCover()}
+                                            >
+                                                <IoClose size={10} />
+                                            </button>
+                                        </Tooltip>
+                                    </div>
                                 </div>
                             )}
-                            <UploadImage onUpload={(url) => setForm({ ...form, image: url })} size={20} />
+                            <UploadImage 
+                                onUpload={(file) => handleCover(file)} 
+                                folder="courses" 
+                                size={20} 
+                                userId={userId}
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
+                                {lang["thumbnail"]}
+                            </label>
+                            {/* Image */}
+                            {thumbnail && (
+                                <div className="relative w-full h-[200px] rounded-lg overflow-hidden">
+                                    <Image
+                                        src={thumbnail?.url}
+                                        alt="mockup"
+                                        width={500}
+                                        height={500}
+                                        className="w-full h-full object-cover rounded-lg"
+                                        priority
+                                    />
+                                    <div className="absolute top-0 right-1">
+                                        <Tooltip title={lang["remove"]} arrow>
+                                            <button
+                                                type="button"
+                                                className="bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                                onClick={() => handleRemoveThumbnail()}
+                                            >
+                                                <IoClose size={10} />
+                                            </button>
+                                        </Tooltip>
+                                    </div>
+                                </div>
+                            )}
+                            <UploadImage 
+                                onUpload={(file) => handleThumbnail(file)} 
+                                folder="courses" 
+                                size={20} 
+                                userId={userId}
+                            />
                         </div>
                     </div>
                     <div className="">
@@ -103,7 +244,7 @@ export default function CoursesForm({ onClose, course }) {
                             id="name.th"
                             name="name.th"
                             value={form?.name?.th}
-                            onChange={(e) => setForm({ ...form, form:{...form.name, th: e.target.value }})}
+                            onChange={(e) => setForm({ ...form, name: { ...form.name, th: e.target.value } })}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                             placeholder={lang["name_placeholder"] + " (th)"}
                             required
@@ -114,7 +255,7 @@ export default function CoursesForm({ onClose, course }) {
                             id="name.en"
                             name="name.en"
                             value={form?.name?.en}
-                            onChange={(e) => setForm({ ...form, form:{...form.name, en: e.target.value }})}
+                            onChange={(e) => setForm({ ...form, name: { ...form.name, en: e.target.value } })}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                             placeholder={lang["name_placeholder"] + " (en)"}
                             required
@@ -131,7 +272,7 @@ export default function CoursesForm({ onClose, course }) {
                                 id="description.th"
                                 name="description.th"
                                 value={form?.description?.th}
-                                onChange={(e) => setForm({ ...form, form:{...form.description, th: e.target.value }})}
+                                onChange={(e) => setForm({ ...form, description: { ...form.description, th: e.target.value } })}
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                 placeholder={lang["description_placeholder"] + " (th)"}
                                 rows={4}
@@ -142,7 +283,7 @@ export default function CoursesForm({ onClose, course }) {
                                 id="description.en"
                                 name="description.en"
                                 value={form?.description?.en}
-                                onChange={(e) => setForm({ ...form, form:{...form.description, en: e.target.value }})}
+                                onChange={(e) => setForm({ ...form, description: { ...form.description, en: e.target.value } })}
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                 placeholder={lang["description_placeholder"] + " (en)"}
                                 rows={4}
@@ -194,7 +335,7 @@ export default function CoursesForm({ onClose, course }) {
                             id="price"
                             name="price"
                             value={form.price}
-                            onChange={(e) => setForm({ ...form, price: e.target.value })}
+                            onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                             placeholder={lang["price_placeholder"]}
                         />
@@ -204,6 +345,7 @@ export default function CoursesForm({ onClose, course }) {
                     <button
                         type="submit"
                         className="w-full py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg"
+                        onClick={handleSubmit}
                     >
                         {lang["save"]}
                     </button>

@@ -9,7 +9,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function UploadImage({ onUpload, folder, size }) {
+export default function UploadImage({ onUpload, folder, size, userId }) {
     const [open, setOpen] = useState(false);
     const { lang } = useLanguage();
 
@@ -45,6 +45,7 @@ export default function UploadImage({ onUpload, folder, size }) {
                     handleCloseForm={handleClose} 
                     setFiles={onUpload} 
                     folder={folder} 
+                    userId={userId}
                 />
             </Dialog>
         </>

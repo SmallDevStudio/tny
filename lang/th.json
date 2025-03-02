@@ -182,6 +182,11 @@
     "select_subgroup": "เลือกกลุ่มย่อย",
     "add_group": "เพิ่มกลุ่ม",
     "add_subgroup": "เพิ่มกลุ่มย่อย",
+    "course_updated_successfully": "อัพเดตคอร์สสําเร็จ",
+    "course_added_successfully": "เพิ่มคอร์สสําเร็จ",
+    "course_deleted_successfully": "ลบคอร์สสําเร็จ",
+    "thumbnail": "รูปภาพตัวอย่าง",
+    "thumbnail_desc": "รูปภาพที่ใช้สําหรับแสดงหน้าเว็บ",
 
 
     "menu-management": "จัดการเมนู"

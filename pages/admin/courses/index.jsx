@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import CoursesForm from "@/components/Courses/CoursesForm";
 import moment from "moment";
 import 'moment/locale/th';
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
 moment.locale('th');
 
@@ -24,9 +25,35 @@ export default function AdminCourses() {
     const [search, setSearch] = useState("");
     const [openForm, setOpenForm] = useState(false);
     const { lang, t } = useLanguage();
-    const { subscribe, remove } = useDB("courses");
+    const { subscribe, getAll, add, update, remove } = useDB("courses");
+
+    useEffect(() => {
+            const unsubscribe = subscribe((coursesData) => {
+                if (coursesData) {
+                    setCourses(coursesData);
+                    setFilterCourses(coursesData);
+                }
+            });
+    
+            return () => unsubscribe(); // ✅ หยุดฟังเมื่อ component unmount
+    }, []); // ✅ ทำให้ useEffect รันแค่ครั้งเดียว
+
+    useEffect(() => {
+        if (search) {
+            const filtered = courses.filter((course) => 
+                course.name.en.toLowerCase().includes(search.toLowerCase()) ||
+                course.name.th.toLowerCase().includes(search.toLowerCase()) ||
+                course.description.en.toLowerCase().includes(search.toLowerCase()) ||
+                course.description.th.toLowerCase().includes(search.toLowerCase())
+            );
+            setFilterCourses(filtered);
+        } else {
+            setFilterCourses(courses);
+        }
+    }, [search, courses]);
 
     const handleOpenForm = () => {
+        setSelectedCourses(null);
         setOpenForm(true);
     };
 
@@ -34,6 +61,86 @@ export default function AdminCourses() {
         setSelectedCourses(null);
         setOpenForm(false);
     };
+
+    const handleEdit = (course) => {
+        setSelectedCourses(course);
+        setOpenForm(true);
+    };
+
+    const handleDelete = (course) => {
+        Swal.fire({
+            title: lang["are_you_sure"],
+            text: lang["you_wont_be_able_to_revert_this"],
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: lang["yes_delete_it"],
+            cancelButtonText: lang["cancel"],
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await remove(course.id);
+                    toast.success(lang["deleted_successfully"]);
+                } catch (error) {
+                    console.error(error);
+                    toast.error(lang["delete_failed"]);
+                }
+            }
+        })
+    };
+
+    const columes = [
+        { field: "id", headerName: "code", width: 150 },
+        { field: "name", headerName: "Name", width: 200,
+            renderCell: (params) => {
+                return (
+                    t(params.row.name)
+                );
+            }
+         },
+        { field: "description", headerName: "Description", width: 200,
+            renderCell: (params) => {
+                return (
+                    t(params.row.description)
+                );
+            }
+         },
+        { field: "group", headerName: "Group", width: 150 },
+        { field: "subgroup", headerName: "SubGroup", width: 150 },
+        { field: "created_at", headerName: "Created At", width: 200,
+            renderCell: (params) => {
+                return moment(params.row.created_at).format('lll');
+            }
+         },
+        { field: "updated_at", headerName: "Updated At", width: 200,
+            renderCell: (params) => {
+                return moment(params.row.updated_at).format('lll');
+            }
+         },
+        { field: "tools", headerName: "tools", width: 200,
+            renderCell: (params) => {
+                return (
+                    <div className="flex flex-row items-center gap-2 h-12 w-full">
+                        <button
+                            type="button"
+                            className="text-blue-500 hover:tex-blue-600"
+                            onClick={() => handleEdit(params.row)}
+                        >
+                            <FaEdit size={25}/>
+                        </button>
+                        <button
+                            type="button"
+                            className="text-red-500 hover:text-red-600"
+                            onClick={() => handleDelete(params.row)}
+                        >
+                            <FaTrashAlt size={25}/>
+                        </button>
+                    </div>
+                );
+            }
+        },
+    ];
 
     return (
         <div className="bg-white dark:bg-gray-800">
@@ -62,7 +169,17 @@ export default function AdminCourses() {
                 </div>
 
                 {/* Table */}
-                <div></div>
+                <div>
+                    <DataGrid
+                        rows={filterCourses}
+                        columns={columes}
+                        pageSize={10}
+                        rowsPerPageOptions={[10]}
+                        checkboxSelection
+                        disableSelectionOnClick
+                        autoHeight
+                    />
+                </div>
             </div>
 
             <Dialog
@@ -75,6 +192,7 @@ export default function AdminCourses() {
                 <CoursesForm
                     onClose={handleCloseForm}
                     course={selectedCourses}
+                    isNewCourse={!selectedCourses}
                 />
             </Dialog>
         </div>

@@ -178,6 +178,13 @@
     "select_subgroup": " Please Select SubGroup",
     "add_group": "Add Group",
     "add_subgroup": "Add SubGroup",
+    "course_updated_successfully": "Course updated successfully",
+    "course_added_successfully": "Course added successfully",
+    "course_deleted_successfully": "Course deleted successfully",
+
+    "thumbnail": "Thumbnail",
+    "thumbnail_desc": "Used for displaying web pages.",
+
 
     "menu-management": "Menu Management"
 

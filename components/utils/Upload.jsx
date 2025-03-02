@@ -15,9 +15,7 @@ export default function Upload({ handleCloseForm, setFiles, folder }) {
     const { add } = useDB("files");
 
     const { data: session } = useSession();
-    const userId = session?.user?.id;
-
-    const fileInputRef = useRef(null);
+    const userId = session?.user?.userId;
 
     const onDrop = async (acceptedFiles) => {
         console.log("Dropped Files:", acceptedFiles);
@@ -28,10 +26,6 @@ export default function Upload({ handleCloseForm, setFiles, folder }) {
         onDrop,
         multiple: true,
     });
-
-    const handleUploadClick = () => {
-        fileInputRef.current.click();
-    };
 
     const handleFileUpload = async (fileList) => {
         const files = Array.from(fileList);
