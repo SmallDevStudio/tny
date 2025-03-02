@@ -1,6 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
+// ✅ สร้าง Middleware สำหรับตรวจสอบการ Login
 export async function middleware(req) {
     const token = await getToken({ req });
 
@@ -20,16 +21,13 @@ export async function middleware(req) {
     }
 
     // ✅ ถ้าเป็นเส้นทางของ `/admin`
-    if (isAdminPath) {
-        // ❌ ถ้าไม่มี Token -> ให้ไปหน้า Sign In
-        if (!token) {
-            return NextResponse.redirect(new URL("/signin", req.url));
-        }
+    if (isProtectedPath && !token) {
+        return NextResponse.redirect(new URL("/signin", req.url));
+    }
 
-        // ❌ ถ้า Token มีแต่ Role ไม่ใช่ `admin` -> ไปหน้า Error 403
-        if (token.user?.role !== "admin") {
-            return NextResponse.redirect(new URL("/error/403", req.url));
-        }
+        // 🔹 ถ้าเป็นเส้นทางของ `/admin`
+    if (isAdminPath && token?.user.role !== "admin") {
+        return NextResponse.redirect(new URL("/error/403", req.url));
     }
 
     // ✅ อนุญาตให้เข้าถึงหน้าปกติได้

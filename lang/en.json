@@ -170,6 +170,14 @@
     "delete_course": "Delete Course",
 
     "name_placeholder": "Please type name",
+    "description_placeholder": "Please type description",
+    "price_placeholder": "Please type price",
+    "group": "Group",
+    "subgroup": "Sub Group",
+    "select_group": "Please Select Group",
+    "select_subgroup": " Please Select SubGroup",
+    "add_group": "Add Group",
+    "add_subgroup": "Add SubGroup",
 
     "menu-management": "Menu Management"
 

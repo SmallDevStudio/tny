@@ -35,9 +35,6 @@ export default function Header() {
     const router = useRouter();
     const { lang } = useLanguage();
 
-    console.log(router.pathname);
-    console.log(router.query.slug);
-
     useEffect(() => {
         if (router.pathname === "/") {
             setActiveMenuItem("home");
@@ -70,7 +67,23 @@ export default function Header() {
 
                     {/* Desktop Buttons (User, Search, Theme, Lang) */}
                     <div className="hidden lg:flex items-center gap-3">
-                        <UserButton user={session?.user} size={30} />
+                        {!session &&(
+                            <div className="flex gap-2">
+                                <button 
+                                    className="text-black dark:text-white hover:text-orange-500"
+                                    onClick={() => router.push("/signin")}
+                                >
+                                    {lang["signin"]}
+                                </button>
+                                <span>/</span>
+                                <button 
+                                    className="text-black dark:text-white hover:text-orange-500"
+                                    onClick={() => router.push("/register")}
+                                >
+                                    {lang["register"]}
+                                </button>
+                            </div>
+                        )}
                         <SearchButton size={24} />
                         <LangButton />
                        <CartButton size={24} />
@@ -79,6 +92,7 @@ export default function Header() {
                                 {theme === "light" ? <IoMoon size={22} /> : <IoSunny size={22} />}
                             </button>
                        </Tooltip>
+                       <UserButton user={session?.user} size={30} />
                     </div>
 
                     {/* Mobile Menu Button */}

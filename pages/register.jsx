@@ -1,8 +1,14 @@
+"use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Swal from "sweetalert2";
+import { toast } from "react-toastify";
+import { signUpWithEmail } from "@/services/signUpWithEmail";
+import { db } from "@/services/firebase";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import useNewLetter from "@/hooks/useNewLetter";
 
 export default function registerPage() {
     const [forms, setForms] = useState({
@@ -20,11 +26,9 @@ export default function registerPage() {
     });
     const [errors, setErrors] = useState({});
 
-    const router = useRouter();
+    const { createUserNewsletterSubscription } = useNewLetter();
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    const router = useRouter();
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -90,7 +94,31 @@ export default function registerPage() {
             return;
         }
 
-        console.log(forms);
+        const { name, email, password, phone, address } = forms;
+        const userRegister = await signUpWithEmail(email, password);
+
+        if (userRegister) {
+            const userId = userRegister.userId;
+            const newUser = {
+                userId,
+                name,
+                email,
+                phone,
+                address,
+                googleId: null,
+                lineId: null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            }
+            const userRef = doc(db, "users", userId);
+            await setDoc(userRef, newUser);
+            await createUserNewsletterSubscription(email, userId);
+            
+            toast.success("สมัครสมาชิกสําเร็จ");
+            router.push("/login");
+        } else {
+            toast.error("สมัครสมาชิกไม่สําเร็จ");
+        }
     };
 
     return (
@@ -167,7 +195,7 @@ export default function registerPage() {
                                 className={`w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300
                                 ${errors && errors.password ? "border-red-500" : errors.confirmPassword ? "border-red-500" : "border-gray-300"}}`}
                             />
-                            <ul>
+                            <ul className="text-xs">
                                 <li style={{ color: passwordStrength.length ? "green" : "red" }}>ความยาว ≥ 8 ตัว</li>
                                 <li style={{ color: passwordStrength.uppercase ? "green" : "red" }}>มีตัวอักษรพิมพ์ใหญ่</li>
                                 <li style={{ color: passwordStrength.lowercase ? "green" : "red" }}>มีตัวอักษรพิมพ์เล็ก</li>

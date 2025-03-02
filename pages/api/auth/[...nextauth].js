@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { signInWithEmail } from "@/services/firebase";
 import { db } from "@/services/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import generateId from "@/services/generateId";
 
 export default NextAuth({
     providers: [
@@ -38,43 +39,27 @@ export default NextAuth({
     },
     callbacks: {
         async signIn({ user, account }) {
-            const userId = user.id || user.uid;
-            if (!userId) {
-                throw new Error("User ID is missing");
-            }
+            const userRef = doc(db, "users", account.providerAccountId); // googleId เป็น providerAccountId
+            const userSnap = await getDoc(userRef);
 
-            const userRef = doc(db, "users", userId);
-            const userProviderRef = doc(db, "userProviders", userId);
-            const userDoc = await getDoc(userRef);
+            const newUserId = await generateId(); // ✅ สร้าง userId ใหม่
 
-            const lastSignIn = {
-                provider: account.provider,
-                signInAt: new Date().toISOString()
-            };
-
-            if (userDoc.exists()) {
-                await updateDoc(userRef, { lastSignin: lastSignIn });
-                await updateDoc(userProviderRef, { provider: account.provider, lastSignin: lastSignIn.signInAt });
-            } else {
+            if (!userSnap.exists()) {
                 await setDoc(userRef, {
-                    name: user.name || "",
+                    uid: account.providerAccountId,
+                    userId: newUserId,
+                    googleId: account.providerAccountId, // ✅ บันทึก googleId
                     email: user.email,
-                    googleId: account.provider === "google" ? userId : null,
-                    lineId: null,
-                    address: "",
-                    phone: "",
+                    name: user.name,
+                    image: user.image,
                     role: "user",
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    lastSignin: lastSignIn
+                    authProvider: "google",
+                    last_login: Date.now(),
+                    createdAt: Date.now(),
                 });
-
-                await setDoc(userProviderRef, {
-                    userId: userId,
-                    provider: account.provider,
-                    createdAt: new Date().toISOString()
-                });
-            }
+            } else {
+                await updateDoc(userRef, { last_login: Date.now() });
+            };
 
             return true;
         },
@@ -112,8 +97,12 @@ export default NextAuth({
             return token;
         },
         async session({ session, token }) {
-            session.user = token.user;
-            session.account = token.account;
+            const userRef = doc(db, "users", token.sub);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+                session.user = userSnap.data(); // ✅ ดึงข้อมูลจาก Firestore
+            }
 
             return session;
         },

@@ -106,6 +106,7 @@ export default function useDB(collectionName) {
 
     useEffect(() => {
         getAll(); // โหลดข้อมูลเมื่อเริ่มต้น
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collectionName]);
 
     return { data, loading, error, getAll, getById, add, update, remove, subscribe };

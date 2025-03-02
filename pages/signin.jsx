@@ -4,6 +4,7 @@ import { Divider } from "@mui/material";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useAuth } from "@/hooks/useAuth";
 
 export async function getStaticProps() {
     return {
@@ -19,19 +20,19 @@ export default function SignIn() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+    const { loginWithGoogle, loginWithEmail } = useAuth();
 
-    const handleSignIn = async (e) => {
-        e.preventDefault();
-        await signIn("credentials", { email, password, redirect: false });
+    const handleSignIn = async () => {
+        await loginWithEmail(email, password);
     };
 
     const handleGoogleSignIn = async () => {
-        await signIn("google", { callbackUrl: "/" });
+        await loginWithGoogle();
     };
 
     return (
         <div className="signin-container max-h-screen">
-            <div className="flex flex-col justify-center lg:w-2/6 md:w-2/5 sm:w-1/2">
+            <div className="flex flex-col justify-center xl:w-1/4 lg:w-1/4 md:w-1/3 sm:w-1/2">
                 {/* Header */}
                 <div className="flex flex-col w-full mb-2">
                     <span className="text-3xl text-white font-bold">The New You</span>
@@ -137,16 +138,7 @@ export default function SignIn() {
                             </div>
                         </button>
 
-                        <button
-                            type="submit"
-                            className="bg-[#06C755] text-white font-bold py-2 px-4 rounded-xl w-full mt-2"
-                            onClick={() => signIn("line")}
-                        >
-                            <div className="flex flex-row justify-center items-center gap-2">
-                                <Image src="/images/logo/line_88.png" alt="Line Logo" width={30} height={30} />
-                                <span>Sign In with LINE</span>
-                            </div>
-                        </button>
+                        
                     </div>
                 </div>
 

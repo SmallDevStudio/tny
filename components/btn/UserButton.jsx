@@ -49,23 +49,7 @@ export default function UserButton({ user, size }) {
                     <MenuItem onClick={handleLogout}>{lang["signout"]}</MenuItem>
                 </Menu>
                 </>
-            ) : (
-                <div className="flex gap-2">
-                <button 
-                    className="text-black dark:text-white hover:text-orange-500"
-                    onClick={() => router.push("/signin")}
-                >
-                    {lang["signin"]}
-                </button>
-                <span>/</span>
-                <button 
-                    className="text-black dark:text-white hover:text-orange-500"
-                    onClick={() => router.push("/register")}
-                >
-                    {lang["register"]}
-                </button>
-                </div>
-            )}
+            ) : null}
         </div>
     )
 }
