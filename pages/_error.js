@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 export default function Error({ statusCode }) {
     const router = useRouter();
 
+    const isAdmin = router.pathname.includes("/admin");
+
     useEffect(() => {
         if (statusCode === 404) {
             router.replace("/error/404");
@@ -11,6 +13,14 @@ export default function Error({ statusCode }) {
             router.replace("/error/500");
         }
     }, [statusCode, router]);
+
+    useEffect(() => {
+        if (isAdmin && statusCode === 404) {
+            router.replace("/error/404");
+        } else if (isAdmin && statusCode === 500) {
+            router.replace("/error/500");
+        }
+    }, [isAdmin, router, statusCode]);
 
     return <></>;
 }
