@@ -67,6 +67,16 @@ export default function AdminCourses() {
         setOpenForm(true);
     };
 
+    const handleUpdateActive = async (active, id) => {
+        try {
+            await update(id, { active: !active }); // Toggle active status
+            toast.success(lang["course_updated_successfully"]); // Show success toast message
+        } catch (error) {
+            console.error(error);
+            toast.error(lang["update_failed"]); // Show error toast message
+        }
+    };
+
     const handleDelete = (course) => {
         Swal.fire({
             title: lang["are_you_sure"],
@@ -108,6 +118,30 @@ export default function AdminCourses() {
          },
         { field: "group", headerName: "Group", width: 150 },
         { field: "subgroup", headerName: "SubGroup", width: 150 },
+        { field: "active", headerName: "Active", width: 80,
+            renderCell: (params) => {
+                return (
+                    <div 
+                        className="flex flex-row items-center justify-center align-middle gap-2 h-[20px] w-full cursor-pointer"
+                        onClick={() => handleUpdateActive(params.row.active, params.row.id)}
+                    >
+                        {params.row.active ? (
+                            <span 
+                                className="bg-green-500 text-white h-12 px-4 py-1 rounded-md"
+                            >
+                                    Active
+                            </span>
+                        ) : (
+                            <span 
+                                className="bg-red-500 text-white h-12 px-4 py-1 rounded-md"
+                            >
+                                Inactive
+                            </span>
+                        )}
+                    </div>
+                );
+            }
+         },
         { field: "created_at", headerName: "Created At", width: 200,
             renderCell: (params) => {
                 return moment(params.row.created_at).format('lll');
@@ -169,7 +203,7 @@ export default function AdminCourses() {
                 </div>
 
                 {/* Table */}
-                <div>
+                <div className="mt-4">
                     <DataGrid
                         rows={filterCourses}
                         columns={columes}

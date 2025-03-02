@@ -105,6 +105,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
             group: form.group,
             subgroup: form.subgroup,
             price: form.price,
+            active: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             created_by: session?.user?.userId,
