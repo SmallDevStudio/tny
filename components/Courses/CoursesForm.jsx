@@ -12,6 +12,7 @@ import { updateDoc, doc, setDoc } from "firebase/firestore";
 import { deleteFile } from "@/hooks/useStorage";
 import SelectForm from "@/components/Selected/SelectForm";
 import Loading from "../utils/Loading";
+import Tags from "../Input/Tags";
 
 export default function CoursesForm({ onClose, course, isNewCourse }) {
     const { lang } = useLanguage();
@@ -30,6 +31,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     const [loading, setLoading] = useState(false);
     const [cover, setCover] = useState(null);
     const [thumbnail, setThumbnail] = useState(null);
+    const [tags, setTags] = useState([]);
 
     useEffect(() => {
         if (course) {
@@ -45,6 +47,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
             });
         } else if (isNewCourse) {
             generateCode(); // ✅ Generate รหัสใหม่เมื่อเป็น Course ใหม่
+            setTags([]);
         }
     }, [course]);
 
@@ -69,6 +72,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
             subgroup: "",
             price: "",
         });
+        setTags([]);
         onClose();
     };
 
@@ -103,6 +107,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
             group: form.group,
             subgroup: form.subgroup,
             price: form.price,
+            tags: tags,
             active: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -330,6 +335,16 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                             placeholder={lang["price_placeholder"]}
                         />
+                    </div>
+
+                    <div>
+                        <label htmlFor="Tages"
+                            className="block text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >
+                            {lang["tags"]}
+                        </label>
+                        <Tags tags={tags} setTags={setTags} />
+                        
                     </div>
                 </div>
                 <div className="flex flex-row gap-2 p-4">

@@ -210,5 +210,8 @@
     "numbering_updated_successfully": "อัพเดตเลขที่เอกสารสําเร็จ",
     "numbering_created_successfully": "สร้างเลขที่เอกสารสําเร็จ",
 
+    "tags": "แท็ก",
+    "tags_placeholder": "กรอกแท็ก",
+
     "menu-management": "จัดการเมนู"
 }
