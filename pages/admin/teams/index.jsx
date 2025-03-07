@@ -121,7 +121,7 @@ export default function Teams() {
             align: "center", // ✅ จัดเนื้อหาไปตรงกลาง
             renderCell: (params) => (
                 <span
-                    className={`px-2 py-1 rounded-lg ${
+                    className={`px-2 py-1 rounded-lg cursor-pointer ${
                         params.value ? "bg-green-500 text-white" : "bg-red-500 text-white"
                     }`}
                     onClick={() => handleUpdateActive(params.row.id)}

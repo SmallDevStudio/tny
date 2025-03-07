@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import useDB from "@/hooks/useDB";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Image from "next/image";
@@ -12,14 +10,13 @@ import { nanoid } from "nanoid";
 import { db } from "@/services/firebase";
 import { updateDoc, doc, setDoc } from "firebase/firestore";
 import { deleteFile } from "@/hooks/useStorage";
+import SelectForm from "@/components/Selected/SelectForm";
+import Loading from "../utils/Loading";
 
 export default function CoursesForm({ onClose, course, isNewCourse }) {
-    const { lang, t } = useLanguage();
+    const { lang } = useLanguage();
     const { data: session } = useSession();
     const userId = session?.user?.userId;
-    const router = useRouter();
-    const { add, update } = useDB("courses");
-    const [open, setOpen] = useState(false);
     const [form, setForm] = useState({
         code: "",
         name: { th: "", en: "" },
@@ -94,6 +91,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     };
 
     const handleSubmit = async (e) => {
+        setLoading(true);
         e.preventDefault();
     
         const data = {
@@ -126,8 +124,12 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         } catch (error) {
             console.error(error);
             toast.error(lang["error_occurred"]);
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loading) return <Loading />;
 
     return (
         <div className="bg-white dark:bg-gray-800 max-w-[750px] w-full h-full rounded-lg shadow-lg">
@@ -296,34 +298,22 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                             <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
                                 {lang["group"]}
                             </label>
-                            <select
-                                name="group"
-                                id="group"
+                            <SelectForm 
+                                collection={"groups"}
                                 value={form.group}
-                                onChange={(e) => setForm({ ...form, group: e.target.value })}
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                            >
-                                <option value="">{lang["select_group"]}</option>
-                                <option value=""></option>
-                                <option value="1">{lang["add_group"]}</option>
-                            </select>
+                                setValue={(value) => setForm({ ...form, group: value })}
+                            />
                         </div>
 
                         <div className="w-1/2">
                             <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
                                 {lang["subgroup"]}
                             </label>
-                            <select
-                                name="subgroup"
-                                id="subgroup"
-                                value={form.subgroup}
-                                onChange={(e) => setForm({ ...form, subgroup: e.target.value })}
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                            >
-                                <option value="">{lang["select_subgroup"]}</option>
-                                <option value=""></option>
-                                <option value="1">{lang["add_subgroup"]}</option>
-                            </select>
+                            <SelectForm 
+                                collection={"subgroups"}
+                                value={form.group}
+                                setValue={(value) => setForm({ ...form, group: value })}
+                            />
                         </div>
                     </div>
 

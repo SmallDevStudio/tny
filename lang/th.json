@@ -188,6 +188,27 @@
     "thumbnail": "รูปภาพตัวอย่าง",
     "thumbnail_desc": "รูปภาพที่ใช้สําหรับแสดงหน้าเว็บ",
 
+    "select_option": "กรุณาเลือก",
+    "create_select_option": "เพิ่มตัวเลือกใหม่",
+    "null_select_option": "ไม่มีตัวเลือก",
+
+    "document_number_management": "จัดการเลขที่เอกสาร",
+    "documents": "เอกสาร",
+    "document_number": "เลขที่เอกสาร",
+    "document_number_use": "เลขที่เอกสารที่ใช้",
+    "created_at": "สร้างเมื่อ",
+    "updated_at": "อัพเดตเมื่อ",
+    "record_length": "จำนวนเรคคอร์ด",
+    "number_digits": "จำนวนหลังตัวเลข",
+    "number_digits_placeholder": "กรอกจำนวนหลักตัวเลข เช่น 5 ตัวอย่าง: 00001",
+    "start_number": "เลขตัวเลขที่เริ่มต้น",
+    "start_number_placeholder": "ตัวเลขเริ่มต้นของเอกสาร เช่น 2 จะเริ่มจาก 00002",
+    "document_select_error": "คุณยังไม่ได้เลือก document",
+    "documnet_preview": "ตัวอย่างเลขเอกสาร",
+    "group_value_required": "กรุณากรอกค่ากลุ่ม",
+    "subgroup_value_required": "กรุณากรอกค่ากลุ่มย่อย",
+    "numbering_updated_successfully": "อัพเดตเลขที่เอกสารสําเร็จ",
+    "numbering_created_successfully": "สร้างเลขที่เอกสารสําเร็จ",
 
     "menu-management": "จัดการเมนู"
 }

@@ -12,6 +12,7 @@ import moment from "moment";
 import 'moment/locale/th';
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
+
 moment.locale('th');
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -119,28 +120,19 @@ export default function AdminCourses() {
         { field: "group", headerName: "Group", width: 150 },
         { field: "subgroup", headerName: "SubGroup", width: 150 },
         { field: "active", headerName: "Active", width: 80,
-            renderCell: (params) => {
-                return (
-                    <div 
-                        className="flex flex-row items-center justify-center align-middle gap-2 h-[20px] w-full cursor-pointer"
-                        onClick={() => handleUpdateActive(params.row.active, params.row.id)}
-                    >
-                        {params.row.active ? (
-                            <span 
-                                className="bg-green-500 text-white h-12 px-4 py-1 rounded-md"
-                            >
-                                    Active
-                            </span>
-                        ) : (
-                            <span 
-                                className="bg-red-500 text-white h-12 px-4 py-1 rounded-md"
-                            >
-                                Inactive
-                            </span>
-                        )}
-                    </div>
-                );
-            }
+            flex: 0.5,
+            headerAlign: "center", // ✅ จัดหัวข้อไปตรงกลาง
+            align: "center", // ✅ จัดเนื้อหาไปตรงกลาง
+            renderCell: (params) => (
+                <span
+                    className={`px-2 py-1 rounded-lg cursor-pointer ${
+                        params.value ? "bg-green-500 text-white" : "bg-red-500 text-white"
+                    }`}
+                    onClick={() => handleUpdateActive(params.row.id)}
+                >
+                    {params.value ? lang["active"] : lang["inactive"]}
+                </span>
+            ),
          },
         { field: "created_at", headerName: "Created At", width: 200,
             renderCell: (params) => {
@@ -152,7 +144,13 @@ export default function AdminCourses() {
                 return moment(params.row.updated_at).format('lll');
             }
          },
-        { field: "tools", headerName: "tools", width: 200,
+        { 
+            field: "tools", 
+            headerName: "tools", 
+            width: 200,
+            flex: 0.5,
+            headerAlign: "center", // ✅ จัดหัวข้อไปตรงกลาง
+            align: "center", // ✅ จัดเนื้อหาไปตรงกลาง
             renderCell: (params) => {
                 return (
                     <div className="flex flex-row items-center gap-2 h-12 w-full">

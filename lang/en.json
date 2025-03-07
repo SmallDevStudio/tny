@@ -184,7 +184,27 @@
 
     "thumbnail": "Thumbnail",
     "thumbnail_desc": "Used for displaying web pages.",
+    "select_option": "Please Select",
+    "create_select_option": "Add New Option",
+    "null_select_option": "No Option",
 
+    "document_number_management": "Document Number Management",
+    "documents": "Documents",
+    "document_number": "Document Number",
+    "document_number_use": "Document Number Use",
+    "created_at": "Created At",
+    "updated_at": "Updated At",
+    "record_length": "Record Length",
+    "number_digits": "Numbeer Length",
+    "number_digits_placeholder": "Enter the number of digits, such as 5. Example: 00001",
+    "start_number": "Number Start",
+    "start_number_placeholder": "The document's starting number, for example 2, starts with 00002.",
+    "document_select_error": "You have not selected a document yet.",
+    "documnet_preview": "Example document number",
+    "group_value_required": "Please enter group value",
+    "subgroup_value_required": "Please enter subgroup value",
+    "numbering_updated_successfully": "Document Number Updated Successfully",
+    "numbering_created_successfully": "Document Number Created Successfully",
 
     "menu-management": "Menu Management"
 

@@ -50,6 +50,7 @@ const menuItems = [
         subMenu: [
             { title: "General Settings", href: "/admin/settings" },
             { title: "Appearance", href: "/admin/settings/appearance" },
+            { title: "Document Numbering", href: "/admin/settings/document-numbering" },
         ]
     },
 ];

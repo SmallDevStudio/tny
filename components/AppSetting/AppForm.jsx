@@ -20,6 +20,7 @@ export default function ApphtmlForm() {
                     youtubeUrl: appData?.social?.youtubeUrl,
                     lineUrl: appData?.social?.lineUrl,
                     twitterUrl: appData?.social?.twitterUrl,
+                    tiktokUrl: appData?.social?.tiktokUrl,
                 });
                 setCheckedInputs({
                     facebookUrl: appData?.social?.facebookUrl ? true : false,
@@ -27,6 +28,7 @@ export default function ApphtmlForm() {
                     youtubeUrl: appData?.social?.youtubeUrl ? true : false,
                     lineUrl: appData?.social?.lineUrl ? true : false,
                     twitterUrl: appData?.social?.twitterUrl ? true : false,
+                    tiktokUrl: appData?.social?.tiktokUrl ? true : false,
                 });
                 setDescriptions({
                     th: appData?.descriptions?.th,
@@ -39,8 +41,6 @@ export default function ApphtmlForm() {
         return () => unsubscribe(); // ✅ หยุดฟังเมื่อ component unmount
 
     }, []);
-
-    console.log('app data:', app);
 
     const handleSubmit = async () => {
         const data = {
@@ -100,6 +100,17 @@ export default function ApphtmlForm() {
         },
         {label: "twitter", input: "twitterUrl", icon:
             <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
+        },
+        {label: "tiktok", input: "tiktokUrl", icon:
+            <svg 
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-8 h-8" 
+                fill="currentColor" 
+                viewBox="0 0 24 24" 
+                xmlSpace="preserve"
+            >
+                <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 10.692 6.33 6.33 0 0 0 10.857-4.424V8.687a8.182 8.182 0 0 0 4.773 1.526V6.79a4.831 4.831 0 0 1-1.003-.104z"/>
+            </svg>
         }
     ];
 
