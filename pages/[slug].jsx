@@ -2,7 +2,6 @@ import { db } from "@/services/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import useLanguage from "@/hooks/useLanguage";
 import { useRouter } from "next/router";
-import { MaintenancePage, NotFoundPage } from "./error";
 
 export async function getServerSideProps(context) {
   const { slug } = context.params;

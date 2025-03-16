@@ -39,6 +39,7 @@ export default function App({
       }
     };
     fetchSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isErrorPage || isSigninPage || isRegisterPage || isLoading) {
