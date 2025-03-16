@@ -1,7 +1,7 @@
 import { db } from "@/services/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 
-export async function getFormattedCode(documentId, increment = 1){
+export async function getFormattedCode(documentId, increment = 1, inputGroup, inputSubgroup) {
     try {
         const docRef = doc(db, "numbering", documentId);
         const docSnap = await getDoc(docRef);
@@ -30,8 +30,8 @@ export async function getFormattedCode(documentId, increment = 1){
         const dayValue = day ? new Date().getDate().toString().padStart(2, "0") : "";
         
         // ค้นหาค่า group และ subgroup ตามที่ระบุใน courses
-        const groupData = group.find(g => g.name === data.group) || {};
-        const subgroupData = subgroup.find(sg => sg.name === data.subgroup) || {};
+        const groupData = group.find(g => g.name === inputGroup || g.name === data.group) || {};
+        const subgroupData = subgroup.find(sg => sg.name === inputSubgroup || sg.name === data.subgroup) || {};
         const groupValue = groupData.value || "";
         const subgroupValue = subgroupData.value || "";
         
@@ -59,4 +59,22 @@ export async function getFormattedCode(documentId, increment = 1){
         return null;
     }
 };
+
+export async function updateLastNumber(documentId, number) {
+    try {
+        const docRef = doc(db, "numbering", documentId);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+            console.error(`Document ${documentId} not found, creating new one.`);
+            await setDoc(docRef, { last_number: number + 1 });
+        } else {
+            await updateDoc(docRef, { last_number: number + 1 });
+        }
+
+        console.log(`Updated last_number for ${documentId} to ${number}`);
+    } catch (error) {
+        console.error("Error updating last number:", error);
+    }
+}
 

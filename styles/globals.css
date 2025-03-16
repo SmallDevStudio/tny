@@ -17,10 +17,10 @@
 [data-theme="dark"] {
   --bg-color: #021526;
   --text-color: #ffffff;
-  --sidebar-bg: #09122C;
+  --sidebar-bg: #09122c;
   --sidebar-text: #ddd;
   --sidebar-active: #444; /* 🎨 สีเมนูที่ Active (Dark Mode) */
-  --header-bg: #09122C;
+  --header-bg: #09122c;
   --hover-bg: rgba(255, 255, 255, 0.2);
 }
 
@@ -112,7 +112,8 @@ body {
 .sidebar {
   background-color: var(--sidebar-bg);
   color: var(--sidebar-text);
-  transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out,
+    color 0.3s ease-in-out;
   width: 250px; /* ค่าเริ่มต้น */
 }
 
@@ -202,7 +203,7 @@ body {
   align-items: center;
   height: 100vh;
   text-align: center;
-  background: linear-gradient(135deg, #FFA500 0%, #996300 100%);
+  background: linear-gradient(135deg, #ffa500 0%, #996300 100%);
   color: #ffffff;
   overflow-y: hidden;
   overflow-x: hidden;
@@ -210,31 +211,30 @@ body {
 
 .register-container {
   height: 100vh;
-  background: linear-gradient(135deg, #FFA500 0%, #996300 100%);
+  background: linear-gradient(135deg, #ffa500 0%, #996300 100%);
   color: #ffffff;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .team {
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
 }
 
-.team::-webkit-scrollbar { 
-  display: none;  /* Safari and Chrome */
+.team::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
 
 .mode-mobile {
   width: 375px;
   max-width: 375px;
   height: 667px;
-  background: linear-gradient(135deg, #FFA500 0%, #996300 100%);
+  background: linear-gradient(135deg, #ffa500 0%, #996300 100%);
   color: #ffffff;
   overflow-y: auto;
   overflow-x: hidden;
 }
-
 
 /* ✅ Responsive: เมื่อหน้าจอเล็ก (Tablet, Mobile) */
 @media screen and (max-width: 768px) {
@@ -263,27 +263,27 @@ body {
     font-size: 28px;
     font-weight: bold;
   }
-  
+
   .preview-box h2 {
     font-size: 24px;
     font-weight: bold;
   }
-  
+
   .preview-box h3 {
     font-size: 20px;
     font-weight: bold;
   }
-  
+
   .preview-box h4 {
     font-size: 16px;
     font-weight: bold;
   }
-  
+
   .preview-box h5 {
     font-size: 14px;
     font-weight: bold;
   }
-  
+
   .preview-box h6 {
     font-size: 12px;
     font-weight: bold;
@@ -296,6 +296,10 @@ body {
 
   .image-section {
     max-width: 300px;
+  }
+
+  .sm-hidden {
+    display: none;
   }
 }
 
@@ -323,4 +327,3 @@ body {
     left: 250px;
   }
 }
-

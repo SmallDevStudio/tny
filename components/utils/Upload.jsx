@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import useDB from "@/hooks/useDB";
 import { useDropzone } from "react-dropzone";
 import { useSession } from "next-auth/react";
@@ -8,7 +8,7 @@ import { IoClose } from "react-icons/io5";
 import { Divider, LinearProgress } from "@mui/material";
 import { uploadFile } from "@/hooks/useStorage";
 
-export default function Upload({ handleCloseForm, setFiles, folder }) {
+export default function Upload({ handleCloseForm, setFiles, folder, newUpload }) {
     const [uploadProgress, setUploadProgress] = useState(false);
     const [totalProgress, setTotalProgress] = useState(0);
     const [uploadingFiles, setUploadingFiles] = useState([]);
@@ -16,6 +16,14 @@ export default function Upload({ handleCloseForm, setFiles, folder }) {
 
     const { data: session } = useSession();
     const userId = session?.user?.userId;
+
+    useEffect(() => {
+        if (newUpload) {
+            setUploadProgress(false);
+            setUploadingFiles([]);
+            setTotalProgress(0);
+        }
+    }, [newUpload]);
 
     const onDrop = async (acceptedFiles) => {
         console.log("Dropped Files:", acceptedFiles);

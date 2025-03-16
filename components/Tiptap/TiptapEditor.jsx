@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Heading from '@tiptap/extension-heading';
@@ -18,9 +18,8 @@ import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
-import History from '@tiptap/extension-history'; // ใช้สำหรับ Undo / Redo
+import ImageResize from 'tiptap-extension-resize-image';
 import Image from '@tiptap/extension-image';
-import { uploadFile } from '@/hooks/useStorage';
 import { MdFormatBold, MdFormatItalic, MdFormatUnderlined, 
   MdFormatListBulleted, MdFormatListNumbered, MdFormatAlignLeft, 
   MdFormatAlignCenter, MdFormatAlignRight, 
@@ -31,6 +30,12 @@ import { BiCodeBlock } from "react-icons/bi";
 import { FaYoutube } from "react-icons/fa6"
 import { Divider, Tooltip, MenuItem, Select, TextareaAutosize } from '@mui/material';
 import useLanguage from '@/hooks/useLanguage';
+import Upload from '../utils/Upload';
+import { Dialog, Slide } from '@mui/material';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const TiptapEditor = ({ content, onChange }) => {
   const [editorContent, setEditorContent] = useState(content);
@@ -40,6 +45,8 @@ const TiptapEditor = ({ content, onChange }) => {
   const [heading, setHeading] = useState('paragraph');
   const [isHtmlMode, setIsHtmlMode] = useState(false);
   const [htmlContent, setHtmlContent] = useState(content || '<p>Start typing here...</p>');
+  const [openImageDialog, setOpenImageDialog] = useState(false);
+  const [files, setFiles] = useState(null);
 
   const { lang } = useLanguage();
 
@@ -65,7 +72,8 @@ const TiptapEditor = ({ content, onChange }) => {
       TableRow,
       TableCell,
       TableHeader,
-      Image.configure({ allowBase64: true, inline: false }),
+      Image,
+      ImageResize,
     ],
     content: editorContent || '<p>Start typing here...</p>',
     onUpdate: ({ editor }) => {
@@ -107,20 +115,31 @@ const TiptapEditor = ({ content, onChange }) => {
     };
   }, [editor]);
 
-
+  useEffect(() => {
+    if (files && files.url) {
+      editor.chain().focus().setImage({ src: files.url }).run();
+    }
+  }, [files, editor]);
 
   if (!editor) return null;
 
   // อัปโหลดรูปภาพไปที่ Firebase Storage
-  const handleImageUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const uploadedFile = await uploadFile(file, 'images', setUploadProgress);
-
-    if (uploadedFile?.url) {
-      editor.chain().focus().setImage({ src: uploadedFile.url }).run();
+  const handleImageUpload = (image) => {
+    console.log('image', image);
+    if (image && image.length > 0) {
+      setFiles(image[0]); // เก็บค่าภาพที่อัปโหลด
     }
+  };
+
+  console.log('files', files);
+
+  const handleImageDialogOpen = () => {
+    setFiles(null);
+    setOpenImageDialog(true);
+  };
+
+  const handleImageDialogClose = () => {
+    setOpenImageDialog(false);
   };
 
   // เปลี่ยน Heading
@@ -147,7 +166,7 @@ const TiptapEditor = ({ content, onChange }) => {
   return (
     <div className="editor-wrapper">
       {/* Toolbar */}
-      <div className="toolbar flex flex-row items-center">
+      <div className="toolbar items-center bg-gray-100 w-full dark:bg-gray-700 dark:text-white">
         <Tooltip title={lang["undo"]} placement="bottom" arrow>
           <button onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
             <MdUndo />
@@ -220,7 +239,7 @@ const TiptapEditor = ({ content, onChange }) => {
         {/* Font Size Dropdown */}
         <Tooltip title={lang["fontsize"]} placement="bottom" arrow>
           <select
-            className="text-sm rounded-xl bg-white px-2 py-1"
+            className="text-sm rounded-xl bg-white px-2 py-0.5 text-black dark:bg-gray-900 dark:text-white"
             onChange={(e) => {
               setFontSize(e.target.value);
               editor.chain().focus().setFontSize(e.target.value).run();
@@ -294,15 +313,16 @@ const TiptapEditor = ({ content, onChange }) => {
         </Tooltip>
         {/* Upload Image */}
         <Tooltip title={lang["upload"]} placement="bottom" arrow>
-          <input type="file" id="upload-image" style={{ display: 'none' }} onChange={handleImageUpload} />
           <label htmlFor="upload-image">
-            <button>
+            <button
+              onClick={handleImageDialogOpen}
+            >
               <MdAddPhotoAlternate />
             </button>
           </label>
         </Tooltip>
         <Tooltip title={lang["blockquote"]} placement="bottom" arrow>
-        <button onClick={() => editor.chain().focus().toggleBlockquote().run()}><GrBlockQuote /></button>
+          <button onClick={() => editor.chain().focus().toggleBlockquote().run()}><GrBlockQuote /></button>
         </Tooltip>
         <Tooltip title={lang["codeblock"]} placement="bottom" arrow>
           <button onClick={() => editor.chain().focus().toggleCodeBlock().run()}><BiCodeBlock /></button>
@@ -316,7 +336,7 @@ const TiptapEditor = ({ content, onChange }) => {
       </div>
 
       {/* Toggle ระหว่าง WYSIWYG และ HTML Mode */}
-      <div className="editor-container w-full">
+      <div className="editor-container bg-white text-black">
         {isHtmlMode ? (
           <TextareaAutosize
             className="html-editor w-full p-2 border border-gray-300 rounded"
@@ -328,6 +348,19 @@ const TiptapEditor = ({ content, onChange }) => {
           <EditorContent editor={editor} className="tiptap w-full" />
         )}
       </div>
+      <Dialog
+        open={openImageDialog}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleImageDialogClose}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <Upload 
+          handleCloseForm={handleImageDialogClose}
+          setFiles={(image) => handleImageUpload(image)}
+          newUpload={!files}
+        />
+      </Dialog>
     </div>
   );
 };

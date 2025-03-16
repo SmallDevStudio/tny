@@ -18,7 +18,7 @@ import dynamic from "next/dynamic";
 
 const TiptapEditor = dynamic(() => import("@/components/Tiptap/TiptapEditor"), { ssr: false });
 
-export default function CoursesForm({ onClose, course, isNewCourse }) {
+export default function BlogForm({ onClose, blog, isNewblog }) {
     const { lang } = useLanguage();
     const { data: session } = useSession();
     const userId = session?.user?.userId;
@@ -29,7 +29,6 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         thumbnail: "",
         group: "",
         subgroup: "",
-        price: "",
     });
     const [loading, setLoading] = useState(false);
     const [cover, setCover] = useState(null);
@@ -39,35 +38,34 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     const [content, setContent] = useState(null);
 
     useEffect(() => {
-        if (course) {
+        if (blog) {
             setForm({
-                name: course.name || { th: "", en: "" },
-                description: course.description || { th: "", en: "" },
-                cover: course.cover || {},
-                thumbnail: course.thumbnail || {},
-                group: course.group || "",
-                subgroup: course.subgroup || "",
-                price: course.price || "",
+                name: blog.name || { th: "", en: "" },
+                description: blog.description || { th: "", en: "" },
+                cover: blog.cover || {},
+                thumbnail: blog.thumbnail || {},
+                group: blog.group || "",
+                subgroup: blog.subgroup || "",
             });
-            setTags(course.tags || []);
+            setTags(blog.tags || []);
             setCode({
-                docEntry: course.docEntry,
-                code: course.code
+                docEntry: blog.docEntry,
+                code: blog.code
             });
-            setContent(course.content);
-        } else if (isNewCourse) {
+            setContent(blog.content);
+        } else if (isNewblog) {
             setTags([]);
         }
-    }, [course]);
+    }, [blog]);
 
     const generateUniqueDocEntry = async (baseId) => {
         let newId = baseId;
-        let docRef = doc(db, "courses", newId.toString());
+        let docRef = doc(db, "blogs", newId.toString());
         let docSnap = await getDoc(docRef);
         
         while (docSnap.exists()) {
             newId += 1;
-            docRef = doc(db, "courses", newId.toString());
+            docRef = doc(db, "blogs", newId.toString());
             docSnap = await getDoc(docRef);
         }
         
@@ -134,28 +132,28 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                 updated_by: '',
             };
 
-            const docRef = doc(db, "courses", newId.toString());
+            const docRef = doc(db, "blogs", newId.toString());
             const docSnap = await getDoc(docRef);
 
-            if (isNewCourse) {
+            if (isNewblog) {
                 if (docSnap.exists()) {
                     newId = await generateUniqueDocEntry(newId);
                     data.id = newId;
                     data.docEntry = newId;
                 }
                 data.created_by = userId;
-                await setDoc(doc(db, "courses", newId.toString()), data);
-                await updateLastNumber("courses", newId);
-                toast.success(lang["add_course_success"]);
+                await setDoc(doc(db, "blogs", newId.toString()), data);
+                await updateLastNumber("blogs", newId);
+                toast.success(lang["add_blog_success"]);
             } else {
                 data.updated_at = new Date().toISOString();
                 data.updated_by = userId;
                 await updateDoc(docRef, data);
-                toast.success(lang["update_course_success"]);
+                toast.success(lang["update_blog_success"]);
             }
             handleClear();
         } catch (error) {
-            console.error("Error saving course:", error);
+            console.error("Error saving blog:", error);
             toast.error(lang["error_occured"]);
         } finally {
             setLoading(false);
@@ -169,7 +167,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
             <div className="flex flex-col w-full h-full">
                 <div className="flex flex-row px-4 py-2 items-center justify-between bg-orange-500 w-full">
                     <h1 className="text-2xl font-semibold text-white">
-                        {course ? lang["edit_course"] : lang["create_course"]}
+                        {blog ? lang["edit_blog"] : lang["create_blog"]}
                     </h1>
                     <Tooltip title={lang["close"]} placement="bottom">
                     <button
@@ -188,11 +186,11 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                         </label>
                         <FormatCode
                             setCode={setCode}
-                            documentId="courses"
+                            documentId="blog"
                             group={form?.group}
                             subgroup={form?.subgroup}
-                            isNewCode={isNewCourse}
-                            data={course}
+                            isNewCode={isNewblog}
+                            data={blog}
                         />
                     </div>
                     <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
@@ -226,7 +224,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                             )}
                             <UploadImage 
                                 onUpload={(file) => handleCover(file)} 
-                                folder="courses" 
+                                folder="blogs" 
                                 size={20} 
                                 userId={userId}
                             />
@@ -262,7 +260,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                             )}
                             <UploadImage 
                                 onUpload={(file) => handleThumbnail(file)} 
-                                folder="courses" 
+                                folder="blogs" 
                                 size={20} 
                                 userId={userId}
                             />
@@ -347,21 +345,6 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                                 setValue={(value) => setForm({ ...form, group: value })}
                             />
                         </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                            {lang["price"]}
-                        </label>
-                        <input
-                            type="number"
-                            id="price"
-                            name="price"
-                            value={form.price}
-                            onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                            placeholder={lang["price_placeholder"]}
-                        />
                     </div>
 
                     <div>

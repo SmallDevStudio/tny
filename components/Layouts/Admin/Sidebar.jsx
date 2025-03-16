@@ -10,10 +10,18 @@ import { MdOutlinePermContactCalendar } from "react-icons/md";
 import { TbSection } from "react-icons/tb";
 import { RiTeamLine } from "react-icons/ri";
 import { LuPaintbrush } from "react-icons/lu";
+import { MdOutlineArticle } from "react-icons/md";
 
 const menuItems = [
     { title: "Dashboard", icon: <IoHome />, href: "/admin" },
-    { title: "Company", icon: <CgWebsite />, href: "/admin/company" },
+    { 
+        title: "Administrative", 
+        icon: <CgWebsite />, 
+        subMenu: [
+            { title: "Company", href: "/admin/company" },
+            { title: "Document Numbering", href: "/admin/settings/document-numbering" },
+        ]
+    },
     { 
         title: "Home", 
         icon: <IoHomeOutline />, 
@@ -23,6 +31,7 @@ const menuItems = [
         ] 
     },
     { title: "Courses", icon: <RiArticleLine />, href: "/admin/courses" },
+    { title: "Blog", icon: <MdOutlineArticle />, href: "/admin/blog" },
     { title: "Pages", icon: <RiPagesLine />, href: "/admin/pages" },
     { title: "Menu", icon: <BsFillMenuButtonFill />, href: "/admin/menu" },
     { 
@@ -50,7 +59,6 @@ const menuItems = [
         subMenu: [
             { title: "General Settings", href: "/admin/settings" },
             { title: "Appearance", href: "/admin/settings/appearance" },
-            { title: "Document Numbering", href: "/admin/settings/document-numbering" },
         ]
     },
 ];

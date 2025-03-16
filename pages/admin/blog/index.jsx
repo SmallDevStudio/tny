@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import useDB from "@/hooks/useDB";
 import useLanguage from "@/hooks/useLanguage";
-import { useRouter } from "next/router";
 import { DataGrid } from "@mui/x-data-grid";
 import { Dialog, Slide, Tooltip } from "@mui/material";
 import { toast } from "react-toastify";
 import SearchBar from "@/components/Bar/SearchBar";
 import Swal from "sweetalert2";
-import CoursesForm from "@/components/Courses/CoursesForm";
+import BlogForm from "@/components/Blog/BlogForm";
 import moment from "moment";
 import 'moment/locale/th';
-import { FaEdit, FaTrashAlt, FaEye } from "react-icons/fa";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
 moment.locale('th');
 
@@ -18,22 +17,20 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AdminCourses() {
-    const [courses, setCourses] = useState([]);
-    const [selectedCourses, setSelectedCourses] = useState(null);
-    const [filterCourses, setFilterCourses] = useState([]);
+export default function AdminBlog() {
+    const [blog, setBlog] = useState([]);
+    const [selectedBlog, setSelectedBlog] = useState(null);
+    const [filterBlog, setFilterBlog] = useState([]);
     const [search, setSearch] = useState("");
     const [openForm, setOpenForm] = useState(false);
     const { lang, t } = useLanguage();
-    const { subscribe, getAll, add, update, remove } = useDB("courses");
-
-    const router = useRouter();
+    const { subscribe, getAll, add, update, remove } = useDB("blog");
 
     useEffect(() => {
-            const unsubscribe = subscribe((coursesData) => {
-                if (coursesData) {
-                    setCourses(coursesData);
-                    setFilterCourses(coursesData);
+            const unsubscribe = subscribe((blogData) => {
+                if (blogData) {
+                    setBlog(blogData);
+                    setFilterBlog(blogData);
                 }
             });
     
@@ -42,44 +39,44 @@ export default function AdminCourses() {
 
     useEffect(() => {
         if (search) {
-            const filtered = courses.filter((course) => 
-                course.name.en.toLowerCase().includes(search.toLowerCase()) ||
-                course.name.th.toLowerCase().includes(search.toLowerCase()) ||
-                course.description.en.toLowerCase().includes(search.toLowerCase()) ||
-                course.description.th.toLowerCase().includes(search.toLowerCase())
+            const filtered = blog.filter((blog) => 
+                blog.name.en.toLowerCase().includes(search.toLowerCase()) ||
+                blog.name.th.toLowerCase().includes(search.toLowerCase()) ||
+                blog.description.en.toLowerCase().includes(search.toLowerCase()) ||
+                blog.description.th.toLowerCase().includes(search.toLowerCase())
             );
-            setFilterCourses(filtered);
+            setFilterBlog(filtered);
         } else {
-            setFilterCourses(courses);
+            setFilterBlog(blog);
         }
-    }, [search, courses]);
+    }, [search, blog]);
 
     const handleOpenForm = () => {
-        setSelectedCourses(null);
+        setSelectedBlog(null);
         setOpenForm(true);
     };
 
     const handleCloseForm = () => {
-        setSelectedCourses(null);
+        setSelectedBlog(null);
         setOpenForm(false);
     };
 
-    const handleEdit = (course) => {
-        setSelectedCourses(course);
+    const handleEdit = (blog) => {
+        setSelectedBlog(blog);
         setOpenForm(true);
     };
 
     const handleUpdateActive = async (active, id) => {
         try {
             await update(id, { active: !active }); // Toggle active status
-            toast.success(lang["course_updated_successfully"]); // Show success toast message
+            toast.success(lang["blog_updated_successfully"]); // Show success toast message
         } catch (error) {
             console.error(error);
             toast.error(lang["update_failed"]); // Show error toast message
         }
     };
 
-    const handleDelete = (course) => {
+    const handleDelete = (blog) => {
         Swal.fire({
             title: lang["are_you_sure"],
             text: lang["you_wont_be_able_to_revert_this"],
@@ -92,7 +89,7 @@ export default function AdminCourses() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    await remove(course.id.toString());
+                    await remove(blog.id.toString());
                     toast.success(lang["deleted_successfully"]);
                 } catch (error) {
                     console.error(error);
@@ -157,14 +154,6 @@ export default function AdminCourses() {
                     <div className="flex flex-row items-center gap-2 h-12 w-full">
                         <button
                             type="button"
-                            className="text-green-500 hover:text-green-600"
-                            onClick={() => router.push(`/courses/${params.row.id}`)}
-                        >
-                            <FaEye size={25}/>
-                        </button>
-                        
-                        <button
-                            type="button"
                             className="text-blue-500 hover:tex-blue-600"
                             onClick={() => handleEdit(params.row)}
                         >
@@ -186,7 +175,7 @@ export default function AdminCourses() {
     return (
         <div className="bg-white dark:bg-gray-800">
             <div className="max-w-screen-xl px-2 py-4">
-                <span>Courses</span>
+                <span className="text-2xl font-semibold text-gray-900 dark:text-white">{lang["blog"]}</span>
             </div>
 
             <div>
@@ -198,7 +187,7 @@ export default function AdminCourses() {
                             className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600"
                             onClick={handleOpenForm}
                         >
-                            <span>{lang["create_course"]}</span>
+                            <span>{lang["create_blog"]}</span>
                         </button>
                     </div>
                     <div>
@@ -212,7 +201,7 @@ export default function AdminCourses() {
                 {/* Table */}
                 <div className="mt-4">
                     <DataGrid
-                        rows={filterCourses}
+                        rows={filterBlog}
                         columns={columes}
                         pageSize={10}
                         rowsPerPageOptions={[10]}
@@ -231,10 +220,10 @@ export default function AdminCourses() {
                 onClose={handleCloseForm}
                 aria-describedby="alert-dialog-slide-description"
             >
-                <CoursesForm
+                <BlogForm
                     onClose={handleCloseForm}
-                    course={selectedCourses}
-                    isNewCourse={!selectedCourses}
+                    blog={selectedBlog}
+                    isNewblog={!selectedBlog}
                 />
             </Dialog>
         </div>

@@ -18,6 +18,7 @@ export default function DocumentNumbering() {
     const [data, setData] = useState([]);
     const [generatedCodes, setGeneratedCodes] = useState({}); // ✅ เก็บผลลัพธ์ของ getFormattedCode
     const [openForm, setOpenForm] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
     const { subscribe } = useDB("numbering");
     const { lang } = useLanguage();
 
@@ -44,11 +45,18 @@ export default function DocumentNumbering() {
     };
 
     const handleOpenForm = () => {
+        setSelectedItem(null);
         setOpenForm(true);
     };
 
     const handleCloseForm = () => {
+        setSelectedItem(null);
         setOpenForm(false);
+    };
+
+    const handleEdit = (item) => {
+        setSelectedItem(item);
+        setOpenForm(true);
     };
 
     return (
@@ -66,17 +74,27 @@ export default function DocumentNumbering() {
                         <th className="px-4 py-1 w-56">{lang["document_number_use"]}</th>
                         <th className="px-4 py-1 w-56">{lang["created_at"]}</th>
                         <th className="px-4 py-1 w-56">{lang["updated_at"]}</th>
+                        <th className="px-4 py-1 ">{lang["tools"]}</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {data.map((item, index) => (
-                        <tr key={item.id}>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 ">
+                    {data && data.map((item, index) => (
+                        <tr key={item.id} className="hover:bg-gray-100 dark:hover:bg-gray-700">
                             <td>{index + 1}</td>
                             <td>{item.document}</td>
                             <td>{item.previewCode}</td>
-                            <td>{generatedCodes[item.id] || "กำลังโหลด..."}</td> {/* ✅ ใช้ค่าจาก state */}
+                            <td>{generatedCodes? generatedCodes[item.id] : lang["loading"]}</td> {/* ✅ ใช้ค่าจาก state */}
                             <td>{moment(item.created_at).format("ll")}</td>
                             <td>{moment(item.updated_at).format("ll")}</td>
+                            <td>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => handleEdit(item)}
+                                    >
+                                        {lang["edit"]}
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -94,7 +112,11 @@ export default function DocumentNumbering() {
                 onClose={handleCloseForm}
                 aria-labelledby="alert-dialog-slide-title"
             >
-                <NumberingForm document={null} onClose={handleCloseForm} />
+                <NumberingForm 
+                    document={selectedItem} 
+                    onClose={handleCloseForm}
+                    newNumbering={!selectedItem}
+                />
             </Dialog>
         </div>
     );

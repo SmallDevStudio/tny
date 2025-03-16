@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 
 const optionItems = [
     { value: "courses", name: "Courses" },
-    { value: "article", name: "Article" },
+    { value: "blog", name: "blog" },
     { value: "order", name: "Order" },
     { value: "invoice", name: "Invoice" },
     { value: "payment", name: "Payment" },
@@ -40,7 +40,7 @@ const SortableItem = ({ id, onContextMenu }) => {
     );
 };
 
-export default function NumberingForm({ document, onClose }) {
+export default function NumberingForm({ document, onClose, newNumbering }) {
     const [form, setForm] = useState({
         document: "",
         prefix: "",
@@ -73,6 +73,23 @@ export default function NumberingForm({ document, onClose }) {
     const { data: session } = useSession();
 
     const contextMenuRef = useRef(null); // ✅ ป้องกันปัญหา null
+
+    useEffect(() => {
+        if(newNumbering) {
+            setForm({
+                document: "",
+                prefix: "",
+                suffix: "",
+                number_digits: 5,
+                start_number: 1,
+                year: false,
+                month: false,
+                day: false,
+                group: [],
+                subgroup: [],
+            });
+        }
+    }, [newNumbering]);
 
     // ดึงข้อมูล groups
     useEffect(() => {
@@ -109,6 +126,23 @@ export default function NumberingForm({ document, onClose }) {
     useEffect(() => {
         generatePreviewCode();
     }, [form, formatCode]);
+
+    useEffect(() => {
+        if (document) {
+            setForm({
+                document: document.document,
+                prefix: document.prefix,
+                suffix: document.suffix,
+                number_digits: document.number_digits,
+                start_number: document.start_number,
+                year: document.year,
+                month: document.month,
+                day: document.day,
+                group: document.group? document.group : groups,
+                subgroup: document.subgroup? document.subgroup : subGroups,
+            });
+        }
+    }, [document]);
 
     const generatePreviewCode = () => {
         const {
@@ -221,12 +255,14 @@ export default function NumberingForm({ document, onClose }) {
             if (existingDoc.exists()) {
                 await updateDoc(docRef, dataToSave);
                 toast.success(lang["numbering_updated_successfully"]);
+                handleClear();
                 onClose();
             } else {
                 dataToSave.created_by = session?.user?.userId;
                 dataToSave.created_at = new Date().toISOString();
                 await setDoc(docRef, dataToSave);
                 toast.success(lang["numbering_created_successfully"]);
+                handleClear();
                 onClose();
             }
         } catch (error) {
