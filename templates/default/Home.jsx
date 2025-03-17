@@ -19,8 +19,6 @@ export default function HomeTemplate({ title, content }) {
         <div className="flex flex-col bg-white dark:bg-gray-800 text-black dark:text-gray-50 gap-2 w-full">
           <Header />
           {/* Sections */}
-          <Header />
-          {/* Sections */}
           <Carousel />
           <Hero />
           <Blockquote />
