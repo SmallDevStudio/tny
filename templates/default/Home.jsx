@@ -11,6 +11,7 @@ import Trainings from "@/components/Layouts/Sections/Trainings";
 import Partner from "@/components/Layouts/Sections/Partner";
 import Courses from "@/components/Layouts/Sections/Courses";
 import NewsLetter from "@/components/Layouts/Sections/NewsLetter";
+import Exclusive from "@/components/Layouts/Sections/Exclusive";
 
 export default function HomeTemplate({ title, content }) {
   return (
@@ -26,6 +27,7 @@ export default function HomeTemplate({ title, content }) {
           <Courses />
           <Trainings />
           <Partner />
+          <Exclusive />
         </div>
         <Footer />
       </div>
