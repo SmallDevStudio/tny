@@ -27,7 +27,10 @@ export default function Exclusive() {
       </div>
       <div className="grid max-w-screen-xl px-4 py-4 mx-auto gap-4 lg:gap-2 xl:gap-4 lg:py-2 lg:grid-cols-2">
         {courses.map((course, index) => (
-          <div key={index} className="relative">
+          <div
+            key={index}
+            className="relative hover:scale-105 transition-all duration-500 ease-in-out hover:z-50 active:z-50"
+          >
             <Image
               src={course.image}
               alt={course.tilte}
