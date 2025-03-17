@@ -1,15 +1,12 @@
-import { useRouter } from "next/router";
 import Footer from "@/components/Layouts/App/Footer";
 import Header from "@/components/Layouts/App/Header";
 import Carousel from "@/components/Layouts/Sections/Carousel";
 import Hero from "@/components/Layouts/Sections/Hero";
 import Blockquote from "@/components/Layouts/Sections/Blockquote";
 import Team from "@/components/Layouts/Sections/Team";
-import PublicCoures from "@/components/Layouts/Sections/PublicCoures";
 import Trainings from "@/components/Layouts/Sections/Trainings";
 import Partner from "@/components/Layouts/Sections/Partner";
 import Courses from "@/components/Layouts/Sections/Courses";
-import NewsLetter from "@/components/Layouts/Sections/NewsLetter";
 import Fixed from "@/components/Layouts/Sections/Fixed";
 import Exclusive from "@/components/Layouts/Sections/Exclusive";
 
