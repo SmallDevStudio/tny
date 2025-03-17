@@ -14,7 +14,7 @@ const courses = [
     image: "/images/training/2.png",
   },
 ];
-export default function Exclusive() {
+export default function ExCourses() {
   return (
     <section className="bg-white dark:bg-gray-800">
       <div className="py-4 px-4 mx-auto max-w-screen-xl lg:py-2 lg:px-6">
