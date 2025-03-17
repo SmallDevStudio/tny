@@ -27,8 +27,8 @@ export default NextAuth({
             }
         }),
         GoogleProvider({
-            clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-            clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         })
     ],
     pages: {
@@ -116,5 +116,15 @@ export default NextAuth({
     jwt: {
         secret: process.env.NEXTAUTH_SECRET
     },
-    secret: process.env.NEXTAUTH_SECRET
+    secret: process.env.NEXTAUTH_SECRET,
+    cookies: {
+        sessionToken: {
+          name: `__Secure-next-auth.session-token`,
+          options: {
+            httpOnly: true,
+            sameSite: "lax", // ลองเปลี่ยนเป็น "none" ถ้ายังมีปัญหา
+            secure: true,
+          },
+        },
+      },
 });
