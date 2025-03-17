@@ -23,6 +23,7 @@ export default NextAuth({
           if (!userCredential) throw new Error("Invalid credentials");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
                     const user = userCredential.user;
                     return { id: user.uid, email: user.email, name: user.displayName || "" };
                 } catch (error) {
@@ -113,6 +114,8 @@ export default NextAuth({
         async redirect({ url, baseUrl }) {
             return baseUrl;
 =======
+=======
+>>>>>>> 1b433da16cf99102efe3f7a91df1fe5eddf28c8f
           const user = userCredential.user;
           return {
             id: user.uid,
@@ -121,6 +124,9 @@ export default NextAuth({
           };
         } catch (error) {
           throw new Error(error.message || "Invalid credentials");
+<<<<<<< HEAD
+>>>>>>> 1b433da16cf99102efe3f7a91df1fe5eddf28c8f
+=======
 >>>>>>> 1b433da16cf99102efe3f7a91df1fe5eddf28c8f
         }
       },
@@ -214,6 +220,7 @@ export default NextAuth({
       return session;
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     secret: process.env.NEXTAUTH_SECRET,
     cookies: {
         sessionToken: {
@@ -226,6 +233,8 @@ export default NextAuth({
         },
       },
 =======
+=======
+>>>>>>> 1b433da16cf99102efe3f7a91df1fe5eddf28c8f
     async redirect({ url, baseUrl }) {
       return baseUrl;
     },
@@ -237,5 +246,8 @@ export default NextAuth({
     secret: process.env.NEXTAUTH_SECRET,
   },
   secret: process.env.NEXTAUTH_SECRET,
+<<<<<<< HEAD
+>>>>>>> 1b433da16cf99102efe3f7a91df1fe5eddf28c8f
+=======
 >>>>>>> 1b433da16cf99102efe3f7a91df1fe5eddf28c8f
 });
