@@ -11,14 +11,13 @@ import Trainings from "@/components/Layouts/Sections/Trainings";
 import Partner from "@/components/Layouts/Sections/Partner";
 import Courses from "@/components/Layouts/Sections/Courses";
 import NewsLetter from "@/components/Layouts/Sections/NewsLetter";
+import Exclusive from "@/components/Layouts/Sections/Exclusive";
 
 export default function HomeTemplate({ title, content }) {
   return (
     <main className="flex-1 bg-white dark:bg-gray-800 text-black dark:text-gray-50 flex-col min-h-screen">
       <div className="flex flex-col justify-between h-screen">
         <div className="flex flex-col bg-white dark:bg-gray-800 text-black dark:text-gray-50 gap-2 w-full">
-          <Header />
-          {/* Sections */}
           <Header />
           {/* Sections */}
           <Carousel />
@@ -28,6 +27,7 @@ export default function HomeTemplate({ title, content }) {
           <Courses />
           <Trainings />
           <Partner />
+          <Exclusive />
         </div>
         <Footer />
       </div>
