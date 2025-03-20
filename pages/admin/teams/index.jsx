@@ -26,6 +26,7 @@ export default function Teams() {
   const [toggleLang, setToggleLang] = useState({}); // ✅ เก็บสถานะภาษาแต่ละแถว
   const { lang, language } = useLanguage();
   const { subscribe, update, remove } = useDB("teams"); // ✅ ใช้ onSnapshot เพื่อติดตามการเปลี่ยนแปลงแบบ real-time
+  const [slug, setSlug] = useState("");
 
   useEffect(() => {
     const unsubscribe = subscribe((teamData) => {

@@ -46,7 +46,7 @@ export default function Team() {
               key={index}
               className="flex flex-col items-center justify-center w-full max-w-[300px] p-4 transition-transform transform hover:scale-105"
             >
-              <Link href="#">
+              <Link href={`/team/${item.slug}`}>
                 <Image
                   className="w-32 h-32 rounded-full"
                   src={item.image.url}
@@ -58,7 +58,7 @@ export default function Team() {
               </Link>
               <div className="p-5 text-center">
                 <h3 className="text-md font-bold tracking-tight text-gray-900 dark:text-white">
-                  <Link href="#">{t(item.name)}</Link>
+                  <Link href={`/team/${item.slug}`}>{t(item.name)}</Link>
                 </h3>
                 <span className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
                   {t(item.bio)}
@@ -86,7 +86,7 @@ export default function Team() {
               key={index}
               className="flex flex-col items-center justify-center min-w-[250px] sm:min-w-[300px] snap-start p-2 transition-transform transform hover:scale-105"
             >
-              <Link href="#">
+              <Link href={`/team/${item.slug}`}>
                 <Image
                   className="w-32 h-32 rounded-full"
                   src={item.image.url}
@@ -98,7 +98,7 @@ export default function Team() {
               </Link>
               <div className="p-2 text-center">
                 <h3 className="text-md font-bold tracking-tight text-gray-900 dark:text-white line-clamp-1">
-                  <Link href="#">{t(item.name)}</Link>
+                  <Link href={`/team/${item.slug}`}>{t(item.name)}</Link>
                 </h3>
                 <span className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
                   {t(item.bio)}
