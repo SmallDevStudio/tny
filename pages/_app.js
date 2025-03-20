@@ -20,6 +20,7 @@ export default function App({
   pageProps: { session, ...pageProps },
 }) {
   const [startPage, setStartPage] = useState(null);
+  const [seoData, setSeoData] = useState({ title: "", description: "" });
   const router = useRouter();
   const isAdminRoute = router.pathname.startsWith("/admin");
   const isErrorPage = router.pathname.startsWith("/error");
@@ -45,7 +46,7 @@ export default function App({
   if (isErrorPage || isSigninPage || isRegisterPage || isLoading) {
     return (
       <SessionProvider session={session}>
-        <Header title={pageProps.title || "The New You Academy"} />
+        <Header />
         <ThemeProvider>
           <Provider store={store}>
             <Component {...pageProps} />
@@ -60,7 +61,7 @@ export default function App({
 
   return (
     <SessionProvider session={session}>
-      <Header title={pageProps.title || ""} />
+      <Header />
       <ThemeProvider>
         <Provider store={store}>
           <Layout>

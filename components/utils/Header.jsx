@@ -2,49 +2,72 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 
 export default function Header({ title, description }) {
-    const router = useRouter();
-    
-    // ✅ กำหนดค่า Default SEO
-    const defaultTitle = "The New You Academy";
-    const fullTitle = title ? `${defaultTitle} - ${title}` : defaultTitle;
-    const metaDescription = description || "เรียนรู้และพัฒนาตัวเองกับ The New You Academy";
+  const router = useRouter();
 
-    return (
-        <Head>
-            {/* ✅ Dynamic Title */}
-            <title>{fullTitle}</title>
-            <meta name="description" content={metaDescription} />
+  // ✅ กำหนดค่า Default SEO
+  const defaultTitle = "The New You Academy";
+  const fullTitle = title ? `${defaultTitle} | ${title}` : defaultTitle;
+  const metaDescription =
+    description || "เรียนรู้และพัฒนาตัวเองกับ The New You Academy";
 
-            {/* ✅ Favicon & Theme */}
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <meta name="theme-color" content="#000000" />
-            <link rel="icon" href="/favicon.ico" />
-            <link rel="manifest" href="/site.webmanifest" />
-            <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png"/>
-            <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png"/>
-            <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png"/>
+  const ogImageUrl = `${process.env.NEXT_PUBLIC_API_URL}/opengraph-image?pathname=${router.asPath}`;
 
-            {/* ✅ SEO */}
+  return (
+    <Head>
+      {/* ✅ Dynamic Title */}
+      <title>{fullTitle}</title>
+      <meta name="description" content={metaDescription} />
 
+      {/* ✅ Favicon & Theme */}
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta name="theme-color" content="#000000" />
+      <link rel="icon" href="/favicon.ico" />
+      <link rel="manifest" href="/site.webmanifest" />
+      <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/favicon/apple-touch-icon.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/favicon/favicon-32x32.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/favicon/favicon-16x16.png"
+      />
 
-            {/* ✅ Open Graph / Facebook */}
-            <meta property="og:title" content={fullTitle} />
-            <meta property="og:description" content={metaDescription} />
-            <meta property="og:type" content="website" />
-            <meta property="og:url" content={`https://www.thenewyouacademy.com${router.pathname}`} />
-            <meta property="og:image" content="/default-og-image.jpg" />
+      {/* ✅ SEO */}
 
-            {/* ✅ Twitter Meta */}
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content={fullTitle} />
-            <meta name="twitter:description" content={metaDescription} />
-            <meta name="twitter:image" content="/default-og-image.jpg" />
+      {/* ✅ Open Graph / Facebook */}
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={metaDescription} />
+      <meta property="og:type" content="website" />
+      <meta
+        property="og:url"
+        content={`https://www.thenewyouacademy.com${router.asPath}`}
+      />
+      <meta property="og:image" content="{ogImageUrl}" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
 
-            {/* ✅ Google Site Verification */}
-            <meta name="google-site-verification" content="google-site-verification=google-site-verification=google-site-verification" />
+      {/* ✅ Twitter Meta */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={metaDescription} />
+      <meta name="twitter:image" content="{ogImageUrl}" />
 
-            {/* ✅ Google Analytics */}
-            
-        </Head>
-    );
+      {/* ✅ Google Site Verification */}
+      <meta
+        name="google-site-verification"
+        content="google-site-verification=google-site-verification=google-site-verification"
+      />
+
+      {/* ✅ Google Analytics */}
+    </Head>
+  );
 }

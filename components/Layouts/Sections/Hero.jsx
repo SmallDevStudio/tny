@@ -55,7 +55,7 @@ export default function Hero() {
             alt="mockup"
             width={500}
             height={500}
-            className="w-full h-auto object-contain"
+            className="object-contain"
             priority
           />
         </div>

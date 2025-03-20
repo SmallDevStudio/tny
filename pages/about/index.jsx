@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import { getSections } from "@/utils/getSections";
 import { db } from "@/services/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import Header from "@/components/utils/Header";
+import Loading from "@/components/utils/Loading";
 
 export default function About() {
   const { t, lang } = useLanguage();
@@ -24,11 +26,7 @@ export default function About() {
           const data = pageSnap.data();
           setPageData(data);
 
-          console.log("🔥 Data from Firebase:", data.sections);
-
           const mappedSections = getSections(data.sections || []);
-
-          console.log("✅ Mapped Sections:", mappedSections);
 
           setSections(mappedSections);
         } else {
@@ -44,21 +42,22 @@ export default function About() {
     fetchData();
   }, [pathname]);
 
+  if (loading) return <Loading />;
+
   return (
     <div>
-      {sections.length === 0 ? (
-        <p>ไม่พบ Sections</p>
-      ) : (
-        sections.map((section) => (
-          <div key={section.id}>
-            {section.component ? (
-              <section.component />
-            ) : (
-              <p>⚠️ ไม่มี Component</p>
-            )}
-          </div>
-        ))
-      )}
+      <Header title={pageData.title} description={pageData.description} />
+      {sections.length > 0
+        ? sections.map((section) => (
+            <div key={section.id}>
+              {section.component ? (
+                <section.component />
+              ) : (
+                <p>⚠️ ไม่มี Component</p>
+              )}
+            </div>
+          ))
+        : null}
     </div>
   );
 }
