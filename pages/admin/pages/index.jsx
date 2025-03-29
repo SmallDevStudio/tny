@@ -1,11 +1,19 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { db } from "@/services/firebase";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import useLanguage from "@/hooks/useLanguage";
+import { Dialog, Slide } from "@mui/material";
+import PageForm from "@/components/Pages/PageForm";
+import { IoClose } from "react-icons/io5";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function AdminPages() {
   const [pages, setPages] = useState([]);
+  const [openForm, setOpenForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { lang, t } = useLanguage();
@@ -33,6 +41,14 @@ export default function AdminPages() {
   }, []);
 
   console.log(pages);
+
+  const handleOpenForm = () => {
+    setOpenForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setOpenForm(false);
+  };
 
   const handleClickAdd = () => {
     router.push("/admin/pages/pageform");
@@ -62,7 +78,7 @@ export default function AdminPages() {
       <h1 className="text-2xl font-bold mb-4">{lang["management_pages"]}</h1>
       <button
         className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4"
-        onClick={handleClickAdd}
+        onClick={handleOpenForm}
       >
         {lang["create_page"]}
       </button>
@@ -82,16 +98,29 @@ export default function AdminPages() {
               >
                 View
               </button>
-              <button
-                className="bg-red-500 text-white px-3 py-1 rounded-md"
-                onClick={() => handleDeletePage(page.id)}
-              >
-                Delete
-              </button>
             </div>
           </li>
         ))}
       </ul>
+      <Dialog
+        fullScreen
+        open={openForm}
+        onClose={handleCloseForm}
+        Transition={Transition}
+        keepMounted
+      >
+        <div>
+          <div className="flex flex-row p-2 items-center justify-between bg-orange-500 text-white">
+            <h2>{lang["create_page"]}</h2>
+            <IoClose
+              size={25}
+              onClick={handleCloseForm}
+              className="cursor-pointer"
+            />
+          </div>
+          <PageForm onClose={handleCloseForm} />
+        </div>
+      </Dialog>
     </div>
   );
 }

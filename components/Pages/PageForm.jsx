@@ -40,7 +40,7 @@ const SortableItem = ({ id, children }) => {
   );
 };
 
-export default function PageForm({ page }) {
+export default function PageForm({ page, onClose }) {
   const [selectedSections, setSelectedSections] = useState([]);
   const [form, setForm] = useState({
     name: "",
@@ -61,7 +61,7 @@ export default function PageForm({ page }) {
 
   // เมื่อ `name.en` เปลี่ยนแปลง ให้สร้าง `slug` อัตโนมัติ เว้นแต่เคยแก้ไขแล้ว
   useEffect(() => {
-    if (form.name) {
+    if (form.name !== "") {
       const newSlug = generateSlug(form.name);
       console.log(newSlug);
       setForm((prev) => ({ ...prev, slug: newSlug }));
@@ -171,6 +171,7 @@ export default function PageForm({ page }) {
     });
     setSelectedSections([]);
     setFiles(null);
+    onClose();
   };
 
   const handleRemoveCover = () => {
