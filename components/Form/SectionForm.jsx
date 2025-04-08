@@ -7,7 +7,7 @@ import TiptapEditor from "../Tiptap/TiptapEditor";
 import ImageTextSection from "./Sections/ImageTextSection";
 import { toast } from "react-toastify";
 import Preview from "../utils/Preview";
-import { Sections } from "@/sections/Sections";
+import { Sections } from "@/sections";
 
 const sampleData = {
   title: {
