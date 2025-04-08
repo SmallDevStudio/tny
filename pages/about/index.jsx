@@ -44,9 +44,11 @@ export default function About() {
 
   if (loading) return <Loading />;
 
+  if (!pathname) return null;
+
   return (
     <div>
-      <Header title={pageData.title} description={pageData.description} />
+      <Header title={t(pageData.title)} description={t(pageData.description)} />
       {sections.length > 0 &&
         sections.map((section) =>
           section?.component ? (

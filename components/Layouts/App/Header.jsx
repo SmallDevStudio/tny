@@ -143,6 +143,29 @@ export default function Header() {
                 <IoClose size={28} />
               </button>
             </div>
+            <div>
+              {!session && (
+                <div className="flex gap-2">
+                  <button
+                    className="text-black dark:text-white hover:text-orange-500"
+                    onClick={() => router.push("/signin")}
+                  >
+                    Sign In
+                  </button>
+                  <span>/</span>
+                  <button
+                    className="text-black dark:text-white hover:text-orange-500"
+                    onClick={() => router.push("/register")}
+                  >
+                    Register
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex px-4 py-2">
+              <UserButton user={session?.user} size={40} />
+            </div>
 
             {/* รายการเมนู (Mobile) */}
             <div className="p-4 flex flex-col gap-4">
