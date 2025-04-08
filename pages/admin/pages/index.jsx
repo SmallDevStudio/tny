@@ -6,6 +6,8 @@ import useLanguage from "@/hooks/useLanguage";
 import { Dialog, Slide } from "@mui/material";
 import PageForm from "@/components/Pages/PageForm";
 import { IoClose } from "react-icons/io5";
+import SelectSections from "@/components/Sections/SelectSection";
+import Link from "next/link";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -14,6 +16,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function AdminPages() {
   const [pages, setPages] = useState([]);
   const [openForm, setOpenForm] = useState(false);
+  const [selectedPage, setSelectedPage] = useState(null);
+  const [openSections, setOpenSections] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { lang, t } = useLanguage();
@@ -40,18 +44,18 @@ export default function AdminPages() {
     fetchPages();
   }, []);
 
-  console.log(pages);
-
   const handleOpenForm = () => {
     setOpenForm(true);
   };
 
   const handleCloseForm = () => {
+    setSelectedPage(null);
     setOpenForm(false);
   };
 
-  const handleClickAdd = () => {
-    router.push("/admin/pages/pageform");
+  const handleEditForm = (page) => {
+    setSelectedPage(page);
+    setOpenForm(true);
   };
 
   const handleDeletePage = async (id) => {
@@ -63,6 +67,16 @@ export default function AdminPages() {
     } catch (error) {
       console.error("Error deleting page:", error);
     }
+  };
+
+  const handleOpenSections = (page) => {
+    setSelectedPage(page);
+    setOpenSections(true);
+  };
+
+  const handleCloseSections = () => {
+    setSelectedPage(null);
+    setOpenSections(false);
   };
 
   if (loading) {
@@ -98,6 +112,34 @@ export default function AdminPages() {
               >
                 View
               </button>
+              <button
+                className="bg-blue-500 text-white px-3 py-1 rounded-md mx-2"
+                onClick={() => handleEditForm(page)}
+              >
+                Edit
+              </button>
+              <button
+                className="bg-orange-500 text-white px-3 py-1 rounded-md mx-2"
+                onClick={() => handleOpenSections(page)}
+              >
+                Sections
+              </button>
+              <Link
+                href={`/test-section?page=${page.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-orange-600 text-white px-3 py-1 rounded-md mx-2 inline-block text-center"
+              >
+                Edit Page
+              </Link>
+              {page.type !== "static" && (
+                <button
+                  className="bg-red-500 text-white px-3 py-1 rounded-md mx-2"
+                  onClick={() => handleDeletePage(page.id)}
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </li>
         ))}
@@ -106,7 +148,7 @@ export default function AdminPages() {
         fullScreen
         open={openForm}
         onClose={handleCloseForm}
-        Transition={Transition}
+        TransitionComponent={Transition}
         keepMounted
       >
         <div>
@@ -118,7 +160,31 @@ export default function AdminPages() {
               className="cursor-pointer"
             />
           </div>
-          <PageForm onClose={handleCloseForm} />
+          <PageForm onClose={handleCloseForm} page={selectedPage} />
+        </div>
+      </Dialog>
+
+      <Dialog
+        fullScreen
+        open={openSections}
+        onClose={handleCloseSections}
+        TransitionComponent={Transition}
+        keepMounted
+      >
+        <div>
+          <div className="flex flex-row p-2 items-center justify-between bg-orange-500 text-white">
+            <h2>{lang["select_section"]}</h2>
+            <IoClose
+              size={25}
+              onClick={handleCloseSections}
+              className="cursor-pointer"
+            />
+          </div>
+          <SelectSections
+            sections={selectedPage?.sections || []}
+            onClose={handleCloseSections}
+            page={selectedPage?.slug || "home"}
+          />
         </div>
       </Dialog>
     </div>

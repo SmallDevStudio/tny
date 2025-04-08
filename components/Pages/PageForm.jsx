@@ -61,16 +61,27 @@ export default function PageForm({ page, onClose }) {
 
   // เมื่อ `name.en` เปลี่ยนแปลง ให้สร้าง `slug` อัตโนมัติ เว้นแต่เคยแก้ไขแล้ว
   useEffect(() => {
-    if (form.name !== "") {
+    if (!page && form.name !== "") {
       const newSlug = generateSlug(form.name);
-      console.log(newSlug);
       setForm((prev) => ({ ...prev, slug: newSlug }));
     }
-  }, [form.name]);
+  }, [form?.name]);
+
+  useEffect(() => {
+    if (page) {
+      setForm({
+        name: page.name,
+        title: page.title,
+        description: page.description,
+        slug: page.slug,
+      });
+    }
+  }, [page]);
 
   // ฟังก์ชันสร้าง `slug`
   const generateSlug = (text) => {
-    return text
+    const raw = typeof text === "string" ? text : text?.en || text?.th || "";
+    return raw
       .trim()
       .toLowerCase()
       .replace(/[^\w\s-]/g, "") // ลบอักขระพิเศษ
@@ -133,12 +144,38 @@ export default function PageForm({ page, onClose }) {
     }
 
     const pageRef = doc(db, "pages", form.slug);
-    const pageSnap = await getDoc(pageRef);
 
+    // ✅ ถ้าเป็นการอัปเดต
+    if (page) {
+      const data = {
+        ...form,
+        sections: selectedSections,
+        content: "",
+        template: { base: "default", page: "page" },
+        updatedAt: new Date(),
+      };
+
+      try {
+        await setDoc(pageRef, data, { merge: true }); // ✅ merge คือ update
+        toast.success(
+          lang["page_updated_successfully"] || "อัปเดตหน้าเรียบร้อย"
+        );
+        handleClearForm();
+        router.push("/admin/pages");
+      } catch (error) {
+        console.error("Error updating page:", error);
+        toast.error(lang["something_went_wrong"]);
+      }
+
+      return;
+    }
+
+    // ✅ ถ้าเป็นการสร้างใหม่
+    const pageSnap = await getDoc(pageRef);
     if (pageSnap.exists()) {
       setError(lang["slug_already_exists"]);
-      toast.error(lang["slug_already_exists"]); // แจ้งเตือนว่ามี slug นี้แล้ว
-      return; // ❌ หยุดการทำงาน
+      toast.error(lang["slug_already_exists"]);
+      return;
     }
 
     const data = {
@@ -147,9 +184,9 @@ export default function PageForm({ page, onClose }) {
       content: "",
       template: { base: "default", page: "page" },
       creator: session.user.id,
+      type: "page",
+      createdAt: new Date(),
     };
-
-    console.log(data);
 
     try {
       await setDoc(pageRef, data);

@@ -220,5 +220,9 @@
   "show_less": "Show Less",
   "show_more": "Show More",
 
-  "menu-management": "Menu Management"
+  "menu-management": "Menu Management",
+  "fontSize": "Font Size",
+  "color": "Color",
+  "gap": "Gap",
+  "cols": "Colume"
 }

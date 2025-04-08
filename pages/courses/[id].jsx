@@ -1,19 +1,27 @@
 import { useState, useEffect } from "react";
-import useLanguage from "@/hooks/useLanguage";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+import useDB from "@/hooks/useDB";
+import useLanguage from "@/hooks/useLanguage";
+import Image from "next/image";
+import { toast } from "react-toastify";
+import SearchBar from "@/components/Bar/SearchBar";
+import Swal from "sweetalert2";
 import { getSections } from "@/utils/getSections";
 import { db } from "@/services/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Header from "@/components/utils/Header";
 import Loading from "@/components/utils/Loading";
 
-export default function About() {
+export default function CoursesId() {
   const { t, lang } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [pageData, setPageData] = useState({});
   const [sections, setSections] = useState([]);
+  const { data: session, status } = useSession();
   const router = useRouter();
-  const pathname = router.pathname.replace("/", "");
+  const { id } = router.query;
+  const pathname = "courses";
 
   useEffect(() => {
     setLoading(true);
@@ -47,15 +55,17 @@ export default function About() {
   return (
     <div>
       <Header title={pageData.title} description={pageData.description} />
-      {sections.length > 0 &&
-        sections.map((section) =>
-          section?.component ? (
-            <div key={section.id} className="group relative transition">
-              {/* เฉพาะ admin เท่านั้นถึงจะแสดงปุ่ม Edit */}
-              <section.component contentId={section.id} />
+      {sections.length > 0
+        ? sections.map((section) => (
+            <div key={section.id}>
+              {section.component ? (
+                <section.component />
+              ) : (
+                <p>⚠️ ไม่มี Component</p>
+              )}
             </div>
-          ) : null
-        )}
+          ))
+        : null}
     </div>
   );
 }

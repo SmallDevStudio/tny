@@ -1,4 +1,4 @@
-import { Sections } from "@/components/Layouts/Sections";
+import { Sections } from "@/sections";
 
 export const getSections = (sectionsData) => {
   if (!sectionsData || !Array.isArray(sectionsData)) {

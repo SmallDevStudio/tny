@@ -224,5 +224,9 @@
   "show_less": "แสดงน้อยลง",
   "show_more": "แสดงมากขึ้น",
 
-  "menu-management": "จัดการเมนู"
+  "menu-management": "จัดการเมนู",
+  "fontSize": "ขนาดอักษร",
+  "color": "สี",
+  "gap": "ระยะห่าง",
+  "cols": "คอลัมน์"
 }

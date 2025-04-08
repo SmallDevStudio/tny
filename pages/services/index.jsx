@@ -7,7 +7,7 @@ import { doc, getDoc } from "firebase/firestore";
 import Header from "@/components/utils/Header";
 import Loading from "@/components/utils/Loading";
 
-export default function About() {
+export default function Services() {
   const { t, lang } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [pageData, setPageData] = useState({});
@@ -44,18 +44,23 @@ export default function About() {
 
   if (loading) return <Loading />;
 
+  console.log("sections", sections);
+  console.log("pageData", pageData);
+
   return (
     <div>
       <Header title={pageData.title} description={pageData.description} />
-      {sections.length > 0 &&
-        sections.map((section) =>
-          section?.component ? (
-            <div key={section.id} className="group relative transition">
-              {/* เฉพาะ admin เท่านั้นถึงจะแสดงปุ่ม Edit */}
-              <section.component contentId={section.id} />
+      {sections.length > 0
+        ? sections.map((section) => (
+            <div key={section.id}>
+              {section.component ? (
+                <section.component />
+              ) : (
+                <p>⚠️ ไม่มี Component</p>
+              )}
             </div>
-          ) : null
-        )}
+          ))
+        : null}
     </div>
   );
 }

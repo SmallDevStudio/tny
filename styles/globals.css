@@ -326,4 +326,8 @@ body {
   .header-bar {
     left: 250px;
   }
+  .preview-box p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
 }
