@@ -5,6 +5,7 @@ import { signInWithEmail } from "@/services/firebase";
 import { db } from "@/services/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import generateId from "@/services/generateId";
+import UAParser from "ua-parser-js";
 
 export default NextAuth({
   providers: [
@@ -46,30 +47,66 @@ export default NextAuth({
   },
   callbacks: {
     async signIn({ user, account }) {
-      const userRef = doc(db, "users", account.providerAccountId); // googleId เป็น providerAccountId
+      const userRef = doc(db, "users", account.providerAccountId);
       const userSnap = await getDoc(userRef);
+      const newUserId = await generateId();
 
-      const newUserId = await generateId(); // ✅ สร้าง userId ใหม่
+      // 🔍 ดึงข้อมูล IP และ User-Agent
+      let ip = "unknown";
+      let deviceInfo = {
+        browser: "unknown",
+        os: "unknown",
+        device: "desktop",
+      };
+
+      try {
+        const ipRes = await fetch("https://api.ipify.org?format=json");
+        const ipData = await ipRes.json();
+        ip = ipData.ip;
+
+        const parser = new UAParser();
+        const result = parser.getResult();
+        deviceInfo = {
+          browser: result.browser.name || "unknown",
+          os: result.os.name || "unknown",
+          device: result.device.type || "desktop",
+        };
+      } catch (err) {
+        console.error("Error getting IP/Device info:", err);
+      }
+
+      const userData = {
+        uid: account.providerAccountId,
+        userId: newUserId,
+        googleId: account.providerAccountId,
+        email: user.email,
+        name: user.name,
+        image: user.image,
+        role: "user",
+        authProvider: "google",
+        last_login: Date.now(),
+        createdAt: Date.now(),
+        ip,
+        browser: deviceInfo.browser,
+        os: deviceInfo.os,
+        device: deviceInfo.device,
+      };
 
       if (!userSnap.exists()) {
-        await setDoc(userRef, {
-          uid: account.providerAccountId,
-          userId: newUserId,
-          googleId: account.providerAccountId, // ✅ บันทึก googleId
-          email: user.email,
-          name: user.name,
-          image: user.image,
-          role: "user",
-          authProvider: "google",
-          last_login: Date.now(),
-          createdAt: Date.now(),
-        });
+        await setDoc(userRef, userData);
       } else {
-        await updateDoc(userRef, { last_login: Date.now() });
+        await updateDoc(userRef, {
+          last_login: Date.now(),
+          ip,
+          browser: deviceInfo.browser,
+          os: deviceInfo.os,
+          device: deviceInfo.device,
+        });
       }
 
       return true;
     },
+
     async jwt({ token, trigger, user, account }) {
       if (user) {
         token.id = user.id;

@@ -14,6 +14,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { SessionProvider } from "next-auth/react";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
+import { trackPageTime, trackClick } from "@/utils/analytics";
+import dynamic from "next/dynamic";
+
+const CookieConsent = dynamic(() => import("@/components/CookieConsent"), {
+  ssr: false,
+});
 
 export default function App({
   Component,
@@ -43,6 +49,13 @@ export default function App({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const handleClick = (e) => trackClick(e.target.outerHTML);
+    document.addEventListener("click", handleClick);
+    trackPageTime();
+    return () => document.removeEventListener("click", handleClick);
+  }, []);
+
   if (isErrorPage || isSigninPage || isRegisterPage || isLoading) {
     return (
       <SessionProvider session={session}>
@@ -50,6 +63,7 @@ export default function App({
         <ThemeProvider>
           <Provider store={store}>
             <Component {...pageProps} />
+            <CookieConsent />
             <ToastContainer position="top-right" autoClose={3000} />
           </Provider>
         </ThemeProvider>
@@ -66,6 +80,7 @@ export default function App({
         <Provider store={store}>
           <Layout>
             <Component {...pageProps} />
+            <CookieConsent />
             <ToastContainer position="top-right" autoClose={3000} />
           </Layout>
         </Provider>
