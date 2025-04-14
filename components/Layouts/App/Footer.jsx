@@ -23,8 +23,22 @@ export default function Footer() {
           {lang["contact_desc"]}
         </p>
         <div className="flex-row items-center self-center text-sm mb-6 lg:text-xl">
-          <span className="mr-2">โทร 098-914-5443</span>|
-          <span className="ml-2">Email: info@thenewyou.co.th</span>
+          <span className="mr-2">
+            โทร :{" "}
+            <Link href="tel:0989145443" className="hover:text-orange-500">
+              098-914-5443
+            </Link>
+          </span>
+          |
+          <span className="ml-2">
+            Email:{" "}
+            <Link
+              href="mailto:thenewyou.pa@gmail.com"
+              className="hover:text-orange-500"
+            >
+              thenewyou.pa@gmail.com
+            </Link>
+          </span>
         </div>
 
         {/* Social media */}
