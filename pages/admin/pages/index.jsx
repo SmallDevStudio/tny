@@ -51,6 +51,7 @@ export default function AdminPages() {
   const handleCloseForm = () => {
     setSelectedPage(null);
     setOpenForm(false);
+    router.reload();
   };
 
   const handleEditForm = (page) => {
@@ -77,6 +78,7 @@ export default function AdminPages() {
   const handleCloseSections = () => {
     setSelectedPage(null);
     setOpenSections(false);
+    router.reload();
   };
 
   if (loading) {

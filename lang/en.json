@@ -224,5 +224,12 @@
   "fontSize": "Font Size",
   "color": "Color",
   "gap": "Gap",
-  "cols": "Colume"
+  "cols": "Colume",
+
+  "add_new_content": "Add New Content",
+  "create": "Create",
+  "url": "URL",
+  "cencel": "cancel",
+  "details_courses": "Details Courses",
+  "size": "Size"
 }

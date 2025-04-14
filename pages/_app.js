@@ -25,8 +25,6 @@ export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }) {
-  const [startPage, setStartPage] = useState(null);
-  const [seoData, setSeoData] = useState({ title: "", description: "" });
   const router = useRouter();
   const isAdminRoute = router.pathname.startsWith("/admin");
   const isErrorPage = router.pathname.startsWith("/error");

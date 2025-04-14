@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "@/styles/slide.module.css";
 import useLanguage from "@/hooks/useLanguage";
+import { useRouter } from "next/router";
 import FormCarousel from "./Forms/FormCarousel";
 import { toast } from "react-toastify";
 import { db } from "@/services/firebase";
@@ -36,19 +37,20 @@ export default function Carousel({
   setLanguage,
   setEditMode, // ให้ parent ส่งมาด้วย
 }) {
-  const [title, setTitle] = useState({});
   const [description, setDescription] = useState({});
   const [images, setImages] = useState([]);
+  const [autoPlay, setAutoPlay] = useState(true);
+  const [autoPlaySpeed, setAutoPlaySpeed] = useState(3000);
   const sliderRef = useRef(null);
-
-  console.log("contentId", contentId);
+  const router = useRouter;
 
   useEffect(() => {
     const fetchData = async () => {
       if (!contentId) {
-        setTitle(sampleData.title);
         setDescription(sampleData.description);
         setImages(sampleData.image);
+        setAutoPlay(autoPlay);
+        setAutoPlaySpeed(autoPlaySpeed);
         return;
       }
 
@@ -58,15 +60,17 @@ export default function Carousel({
 
         if (sectionSnap.exists()) {
           const data = sectionSnap.data();
-          console.log("data", data);
-          setTitle(data?.title || sampleData.title);
           setDescription(data?.description || sampleData.description);
           setImages(data?.images || sampleData.image);
+          setAutoPlay(data?.autoPlay || true);
+          setAutoPlaySpeed(data?.autoPlaySpeed || 3000);
         } else {
           // ไม่มี section นี้
           setTitle(sampleData.title);
           setDescription(sampleData.description);
           setImages(sampleData.image);
+          setAutoPlay(autoPlay);
+          setAutoPlaySpeed(autoPlaySpeed);
         }
       } catch (err) {
         console.error("โหลด section ผิดพลาด:", err);
@@ -80,9 +84,10 @@ export default function Carousel({
 
   const handleSubmit = async () => {
     const newData = {
-      title,
       description,
       images,
+      autoPlay,
+      autoPlaySpeed,
       component: "carousel",
     };
 
@@ -107,31 +112,37 @@ export default function Carousel({
 
   const settings = {
     accessibility: true,
-    autoplay: true,
-    autoplaySpeed: 4000,
+    autoplay: autoPlay,
+    autoplaySpeed: autoPlaySpeed,
     arrows: false,
     dots: true,
     infinite: false,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    cssEase: "linear",
-    lazyLoad: "ondemand",
   };
 
   return (
     <div className="relative w-full">
       <Slider {...settings} className={styles.slider}>
         {images.map((item) => (
-          <div key={item.id} className="w-full">
+          <div
+            key={item.id}
+            className="w-full bg-gray-900"
+            onClick={item.link ? () => router.push(`/${item.link}`) : null}
+          >
             <Image
               src={item.url}
               alt={`Slide ${item.id}`}
               width={1500}
               height={1500}
-              className="relative w-full object-cover"
+              className="relative w-full object-contain"
               loading="lazy"
-              style={{ width: "100%", height: "100%" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                maxHeight: "900px",
+              }}
             />
           </div>
         ))}
@@ -139,12 +150,15 @@ export default function Carousel({
       {editMode && (
         <div className="flex justify-center p-4">
           <FormCarousel
-            title={title}
-            setTitle={setTitle}
             description={description}
             setDescription={setDescription}
             images={images}
             setImages={setImages}
+            setEditMode={setEditMode}
+            autoPlay={autoPlay}
+            setAutoPlay={setAutoPlay}
+            autoPlaySpeed={autoPlaySpeed}
+            setAutoPlaySpeed={setAutoPlaySpeed}
             language={language}
             setLanguage={setLanguage}
             handleSubmit={handleSubmit}

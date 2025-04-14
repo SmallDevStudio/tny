@@ -20,7 +20,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 // รายการเมนู
 const menuItems = [
   { label: "เกี่ยวกับ", name: "about", href: "/about" },
-  { label: "หน้าแรก", name: "home", href: "/" },
+  { label: "หน้าแรก", name: "home", href: "/home" },
   { label: "หลักสูตร", name: "courses", href: "/courses" },
   { label: "บทความ", name: "blog", href: "/blog" },
   { label: "รีวิว", name: "reviews", href: "/reviews" },

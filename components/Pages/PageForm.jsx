@@ -1,19 +1,7 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect, use } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import useDB from "@/hooks/useDB";
-import { DndContext, closestCenter } from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { Sections } from "../Layouts/Sections";
-import { RiDeleteBinLine } from "react-icons/ri";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { Menu, MenuItem, Tooltip } from "@mui/material";
 import { toast } from "react-toastify";
 import UploadImage from "../btn/UploadImage";
@@ -29,19 +17,8 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
-const SortableItem = ({ id, children }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
-  const style = { transform: CSS.Transform.toString(transform), transition };
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {children}
-    </div>
-  );
-};
-
 export default function PageForm({ page, onClose }) {
-  const [selectedSections, setSelectedSections] = useState([]);
+  const [sections, setSections] = useState([]);
   const [form, setForm] = useState({
     name: "",
     title: { en: "", th: "" },
@@ -49,13 +26,12 @@ export default function PageForm({ page, onClose }) {
     slug: "",
   });
   const [isSlugEdited, setIsSlugEdited] = useState(false); // ตรวจสอบว่าแก้ไข slug เองหรือไม่
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
-  const [contextMenu, setContextMenu] = useState(null);
-  const [useSection, setUseSection] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [files, setFiles] = useState(null);
   const [error, setError] = useState(null);
+  const userId = session?.user?.userId;
 
   const { lang } = useLanguage();
 
@@ -75,8 +51,14 @@ export default function PageForm({ page, onClose }) {
         description: page.description,
         slug: page.slug,
       });
+      setSections(page.sections || []);
+      setIsEditing(true);
     }
   }, [page]);
+
+  useEffect(() => {
+    if (status === "loading") return;
+  }, [status]);
 
   // ฟังก์ชันสร้าง `slug`
   const generateSlug = (text) => {
@@ -101,41 +83,6 @@ export default function PageForm({ page, onClose }) {
     setForm((prev) => ({ ...prev, slug: value }));
   };
 
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      setSelectedSections((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  };
-
-  const handleAddSection = (sec) => {
-    setSelectedSections((prev) => [
-      ...prev,
-      { ...sec, id: `${sec.name}-${Date.now()}` },
-    ]);
-  };
-
-  const handleRemoveSection = (id) => {
-    setSelectedSections((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const handleContextMenu = (event, id) => {
-    event.preventDefault();
-    setContextMenu({
-      mouseX: event.clientX - 2,
-      mouseY: event.clientY - 4,
-      id,
-    });
-  };
-
-  const handleClose = () => {
-    setContextMenu(null);
-  };
-
   const handleSubmitPage = async () => {
     if (!form.slug) {
       setError(lang["slug_required"]);
@@ -146,10 +93,10 @@ export default function PageForm({ page, onClose }) {
     const pageRef = doc(db, "pages", form.slug);
 
     // ✅ ถ้าเป็นการอัปเดต
-    if (page) {
+    if (page && isEditing) {
       const data = {
         ...form,
-        sections: selectedSections,
+        sections: sections || [],
         content: "",
         template: { base: "default", page: "page" },
         updatedAt: new Date(),
@@ -180,10 +127,10 @@ export default function PageForm({ page, onClose }) {
 
     const data = {
       ...form,
-      sections: selectedSections,
+      sections: [],
       content: "",
       template: { base: "default", page: "page" },
-      creator: session.user.id,
+      creator: userId,
       type: "page",
       createdAt: new Date(),
     };
@@ -192,7 +139,7 @@ export default function PageForm({ page, onClose }) {
       await setDoc(pageRef, data);
       toast.success(lang["page_added_successfully"]);
       handleClearForm();
-      router.push("/admin/pages");
+      onClose();
     } catch (error) {
       console.error("Error adding page:", error);
       toast.error(lang["something_went_wrong"]);
@@ -206,8 +153,10 @@ export default function PageForm({ page, onClose }) {
       description: { en: "", th: "" },
       slug: "",
     });
-    setSelectedSections([]);
     setFiles(null);
+    setSections([]);
+    setError(null);
+    setIsEditing(false);
     onClose();
   };
 
@@ -399,74 +348,6 @@ export default function PageForm({ page, onClose }) {
           </div>
         </div>
 
-        {/* Section And Selected Section */}
-        {/*<div className="flex items-center mt-4 mb-2">
-                        <input 
-                            type="checkbox" 
-                            name="useSection" 
-                            id="useSection"
-                            checked={useSection}
-                            onChange={(e) => setUseSection(e.target.checked)} 
-                        />
-                        <label 
-                            htmlFor="useSection" 
-                            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                        >
-                            ใช้ Section
-                        </label>
-                    </div>*/}
-        {useSection && (
-          <div className="gap-1 sm:grid-cols-2 sm:gap-2 mt-4">
-            <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">
-              เลือก Section{" "}
-            </h3>
-            <div className="grid gap-2 sm:grid-cols-2 sm:col-span-4">
-              {/* Section */}
-              <div className="w-full gap-2 border border-gray-200 rounded-lg bg-gray-100 p-4 sm:grid-cols-2 sm:gap-4">
-                {Sections.filter(
-                  (sec) =>
-                    !selectedSections.some((sel) => sel.name === sec.name)
-                ).map((sec) => (
-                  <div
-                    key={sec.id}
-                    className="p-2 border bg-white rounded-lg cursor-pointer hover:bg-gray-200"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddSection(sec);
-                    }}
-                  >
-                    {sec.name}
-                  </div>
-                ))}
-              </div>
-              {/* Selected Section */}
-              <DndContext
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-                autoScroll={{ enabled: true }}
-              >
-                <SortableContext
-                  items={selectedSections.map((sec) => sec.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="w-full gap-2 border border-gray-200 rounded-lg bg-gray-100 p-4">
-                    {selectedSections.map((sec) => (
-                      <SortableItem key={sec.id} id={sec.id}>
-                        <div
-                          className="p-2 border bg-white rounded-lg flex justify-between items-center"
-                          onContextMenu={(e) => handleContextMenu(e, sec.id)}
-                        >
-                          {sec.name}
-                        </div>
-                      </SortableItem>
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </div>
-          </div>
-        )}
-
         <div className="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
           <button
             type="submit"
@@ -484,29 +365,6 @@ export default function PageForm({ page, onClose }) {
           </button>
         </div>
       </div>
-
-      <Menu
-        open={contextMenu !== null}
-        onClose={handleClose}
-        anchorReference="anchorPosition"
-        anchorPosition={
-          contextMenu !== null
-            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-            : undefined
-        }
-      >
-        <MenuItem
-          onClick={() => {
-            handleRemoveSection(contextMenu.id);
-            handleClose();
-          }}
-        >
-          <div className="flex items-center gap-2 hover:text-red-500">
-            <RiDeleteBinLine />
-            <span className="text-sm font-bold">ลบ</span>
-          </div>
-        </MenuItem>
-      </Menu>
     </div>
   );
 }

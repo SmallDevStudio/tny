@@ -294,6 +294,52 @@ body {
     line-height: 1.5;
   }
 
+  .preview-box pre {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .preview-box ul {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .preview-box li {
+    font-size: 12px;
+    line-height: 1.5;
+    list-style-type: disc;
+  }
+
+  .preview-box ol {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .preview-box table {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .preview-box img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .preview-box iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .preview-box video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .preview-box audio {
+    max-width: 100%;
+    height: auto;
+  }
+
   .image-section {
     max-width: 300px;
   }

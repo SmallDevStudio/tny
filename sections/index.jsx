@@ -4,6 +4,7 @@ import Layout1 from "./Layout1";
 import Layout2 from "./Layout2";
 import Layout3 from "./Layout3";
 import Layout4 from "./Layout4";
+import Layout5 from "./Layout5";
 import Header from "./Header";
 import ContentList from "./ContentList";
 
@@ -52,6 +53,15 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/layout4.png",
     component: Layout4,
+  },
+  {
+    name: "layout5",
+    description: {
+      en: "image",
+      th: "รูปภาพ",
+    },
+    thumbnail: "/images/sections/previews/layout5.png",
+    component: Layout5,
   },
   {
     name: "team",

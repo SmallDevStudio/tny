@@ -10,53 +10,26 @@ import Loading from "@/components/utils/Loading";
 export default function About() {
   const { t, lang } = useLanguage();
   const [loading, setLoading] = useState(false);
-  const [pageData, setPageData] = useState({});
-  const [sections, setSections] = useState([]);
   const router = useRouter();
-  const pathname = "home";
 
   useEffect(() => {
-    if (!pathname) return;
-
-    setLoading(true);
-    const fetchData = async () => {
-      try {
-        const pageRef = doc(db, "pages", pathname);
-        const pageSnap = await getDoc(pageRef);
-
-        if (pageSnap.exists()) {
-          const data = pageSnap.data();
-          setPageData(data);
-
-          const mappedSections = getSections(data.sections || []);
-          setSections(mappedSections);
+    const fetchSettings = async () => {
+      const settingsRef = doc(db, "settings", "app_settings");
+      const settingsSnap = await getDoc(settingsRef);
+      if (settingsSnap.exists()) {
+        const settings = settingsSnap.data();
+        if (settings.start_page) {
+          router.replace(`/${settings.start_page}`);
         } else {
-          console.error(`Page with slug "${pathname}" not found.`);
+          router.replace("/home");
         }
-      } catch (error) {
-        console.error("Error fetching page data:", error);
-      } finally {
-        setLoading(false);
       }
     };
-
-    fetchData();
-  }, [pathname]);
+    fetchSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) return <Loading />;
 
-  return (
-    <div>
-      <Header title={t(pageData.title)} description={t(pageData.description)} />
-      {sections.length > 0 &&
-        sections.map((section) =>
-          section?.component ? (
-            <div key={section.id} className="group relative transition">
-              {/* เฉพาะ admin เท่านั้นถึงจะแสดงปุ่ม Edit */}
-              <section.component contentId={section.id} />
-            </div>
-          ) : null
-        )}
-    </div>
-  );
+  return <Loading />;
 }
