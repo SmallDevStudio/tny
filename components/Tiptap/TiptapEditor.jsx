@@ -1,50 +1,72 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Heading from '@tiptap/extension-heading';
-import Bold from '@tiptap/extension-bold';
-import Italic from '@tiptap/extension-italic';
-import Underline from '@tiptap/extension-underline';
-import BulletList from '@tiptap/extension-bullet-list';
-import OrderedList from '@tiptap/extension-ordered-list';
-import ListItem from '@tiptap/extension-list-item';
-import TextAlign from '@tiptap/extension-text-align';
-import TextStyle from '@tiptap/extension-text-style';
-import Color from '@tiptap/extension-color';
-import FontSize from '@/components/Tiptap/extensions/FontSize';
-import Blockquote from '@tiptap/extension-blockquote';
-import CodeBlock from '@tiptap/extension-code-block';
-import Table from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import ImageResize from 'tiptap-extension-resize-image';
-import Image from '@tiptap/extension-image';
-import { MdFormatBold, MdFormatItalic, MdFormatUnderlined, 
-  MdFormatListBulleted, MdFormatListNumbered, MdFormatAlignLeft, 
-  MdFormatAlignCenter, MdFormatAlignRight, 
-  MdTextFields, MdFormatColorText, MdAdd, MdAddPhotoAlternate, 
-  MdTableChart, MdUndo, MdRedo, MdCode, MdVisibility } from 'react-icons/md';
+import React, { useState, useEffect, useCallback } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Heading from "@tiptap/extension-heading";
+import Bold from "@tiptap/extension-bold";
+import Italic from "@tiptap/extension-italic";
+import Underline from "@tiptap/extension-underline";
+import BulletList from "@tiptap/extension-bullet-list";
+import OrderedList from "@tiptap/extension-ordered-list";
+import ListItem from "@tiptap/extension-list-item";
+import TextAlign from "@tiptap/extension-text-align";
+import TextStyle from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
+import FontSize from "@/components/Tiptap/extensions/FontSize";
+import Blockquote from "@tiptap/extension-blockquote";
+import CodeBlock from "@tiptap/extension-code-block";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
+import ImageResize from "tiptap-extension-resize-image";
+import Image from "@tiptap/extension-image";
+import {
+  MdFormatBold,
+  MdFormatItalic,
+  MdFormatUnderlined,
+  MdFormatListBulleted,
+  MdFormatListNumbered,
+  MdFormatAlignLeft,
+  MdFormatAlignCenter,
+  MdFormatAlignRight,
+  MdTextFields,
+  MdFormatColorText,
+  MdAdd,
+  MdAddPhotoAlternate,
+  MdTableChart,
+  MdUndo,
+  MdRedo,
+  MdCode,
+  MdVisibility,
+} from "react-icons/md";
 import { GrBlockQuote } from "react-icons/gr";
 import { BiCodeBlock } from "react-icons/bi";
-import { FaYoutube } from "react-icons/fa6"
-import { Divider, Tooltip, MenuItem, Select, TextareaAutosize } from '@mui/material';
-import useLanguage from '@/hooks/useLanguage';
-import Upload from '../utils/Upload';
-import { Dialog, Slide } from '@mui/material';
+import { FaYoutube } from "react-icons/fa6";
+import {
+  Divider,
+  Tooltip,
+  MenuItem,
+  Select,
+  TextareaAutosize,
+} from "@mui/material";
+import useLanguage from "@/hooks/useLanguage";
+import Upload from "../utils/Upload";
+import { Dialog, Slide } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
+  return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const TiptapEditor = ({ content, onChange }) => {
   const [editorContent, setEditorContent] = useState(content);
-  const [fontSize, setFontSize] = useState('16px');
-  const [fontColor, setFontColor] = useState('#000000');
+  const [fontSize, setFontSize] = useState("16px");
+  const [fontColor, setFontColor] = useState("#000000");
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [heading, setHeading] = useState('paragraph');
+  const [heading, setHeading] = useState("paragraph");
   const [isHtmlMode, setIsHtmlMode] = useState(false);
-  const [htmlContent, setHtmlContent] = useState(content || '<p>Start typing here...</p>');
+  const [htmlContent, setHtmlContent] = useState(
+    content || "<p>Start typing here...</p>"
+  );
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [files, setFiles] = useState(null);
 
@@ -62,7 +84,7 @@ const TiptapEditor = ({ content, onChange }) => {
       BulletList,
       OrderedList,
       ListItem,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
       TextStyle,
       Color,
       FontSize,
@@ -75,7 +97,7 @@ const TiptapEditor = ({ content, onChange }) => {
       Image,
       ImageResize,
     ],
-    content: editorContent || '<p>Start typing here...</p>',
+    content: editorContent || "<p>Start typing here...</p>",
     onUpdate: ({ editor }) => {
       if (!isHtmlMode) {
         onChange(editor.getHTML());
@@ -87,7 +109,7 @@ const TiptapEditor = ({ content, onChange }) => {
   useEffect(() => {
     setEditorContent(content); // ✅ อัปเดตค่าทุกครั้งที่เปลี่ยนภาษา
     if (editor) {
-        editor.commands.setContent(content, false); // ✅ รีเซ็ตค่าตามภาษาใหม่
+      editor.commands.setContent(content, false); // ✅ รีเซ็ตค่าตามภาษาใหม่
     }
   }, [content]);
 
@@ -125,13 +147,11 @@ const TiptapEditor = ({ content, onChange }) => {
 
   // อัปโหลดรูปภาพไปที่ Firebase Storage
   const handleImageUpload = (image) => {
-    console.log('image', image);
+    console.log("image", image);
     if (image && image.length > 0) {
       setFiles(image[0]); // เก็บค่าภาพที่อัปโหลด
     }
   };
-
-  console.log('files', files);
 
   const handleImageDialogOpen = () => {
     setFiles(null);
@@ -145,12 +165,16 @@ const TiptapEditor = ({ content, onChange }) => {
   // เปลี่ยน Heading
   const handleHeadingChange = (value) => {
     console.log(value);
-    console.log(editor.isActive('heading'));
+    console.log(editor.isActive("heading"));
     setHeading(value);
     if (value === "paragraph") {
       editor.chain().focus().setParagraph().run();
     } else {
-      editor.chain().focus().toggleHeading({ level: parseInt(value.replace("h", "")) }).run();
+      editor
+        .chain()
+        .focus()
+        .toggleHeading({ level: parseInt(value.replace("h", "")) })
+        .run();
     }
   };
 
@@ -168,12 +192,18 @@ const TiptapEditor = ({ content, onChange }) => {
       {/* Toolbar */}
       <div className="toolbar items-center bg-gray-100 w-full dark:bg-gray-700 dark:text-white">
         <Tooltip title={lang["undo"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
+          <button
+            onClick={() => editor.chain().focus().undo().run()}
+            disabled={!editor.can().undo()}
+          >
             <MdUndo />
           </button>
         </Tooltip>
         <Tooltip title={lang["redo"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}>
+          <button
+            onClick={() => editor.chain().focus().redo().run()}
+            disabled={!editor.can().redo()}
+          >
             <MdRedo />
           </button>
         </Tooltip>
@@ -191,7 +221,13 @@ const TiptapEditor = ({ content, onChange }) => {
           </MenuItem>
           {[1, 2, 3, 4, 5].map((level) => (
             <MenuItem key={level} value={`h${level}`}>
-              <span style={{ fontSize: `${24 - level * 2}px`, fontWeight: "bold", margin: 0 }}>
+              <span
+                style={{
+                  fontSize: `${24 - level * 2}px`,
+                  fontWeight: "bold",
+                  margin: 0,
+                }}
+              >
                 Heading {level}
               </span>
             </MenuItem>
@@ -202,17 +238,26 @@ const TiptapEditor = ({ content, onChange }) => {
 
         {/* Text Align */}
         <Tooltip title={lang["alignleft"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().setTextAlign('left').run()} className={editor.isActive({ textAlign: 'left' }) ? 'active' : ''}>
+          <button
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+            className={editor.isActive({ textAlign: "left" }) ? "active" : ""}
+          >
             <MdFormatAlignLeft />
           </button>
         </Tooltip>
         <Tooltip title={lang["aligncenter"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().setTextAlign('center').run()} className={editor.isActive({ textAlign: 'center' }) ? 'active' : ''}>
+          <button
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+            className={editor.isActive({ textAlign: "center" }) ? "active" : ""}
+          >
             <MdFormatAlignCenter />
           </button>
         </Tooltip>
         <Tooltip title={lang["alignright"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().setTextAlign('right').run()} className={editor.isActive({ textAlign: 'right' }) ? 'active' : ''}>
+          <button
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+            className={editor.isActive({ textAlign: "right" }) ? "active" : ""}
+          >
             <MdFormatAlignRight />
           </button>
         </Tooltip>
@@ -221,17 +266,26 @@ const TiptapEditor = ({ content, onChange }) => {
 
         {/* Font Style Buttons */}
         <Tooltip title={lang["bold"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().toggleBold().run()} className={editor.isActive('bold') ? 'active' : ''}>
+          <button
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            className={editor.isActive("bold") ? "active" : ""}
+          >
             <MdFormatBold />
           </button>
         </Tooltip>
         <Tooltip title={lang["italic"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().toggleItalic().run()} className={editor.isActive('italic') ? 'active' : ''}>
+          <button
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            className={editor.isActive("italic") ? "active" : ""}
+          >
             <MdFormatItalic />
           </button>
         </Tooltip>
         <Tooltip title={lang["underline"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={editor.isActive('underline') ? 'active' : ''}>
+          <button
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            className={editor.isActive("underline") ? "active" : ""}
+          >
             <MdFormatUnderlined />
           </button>
         </Tooltip>
@@ -257,19 +311,27 @@ const TiptapEditor = ({ content, onChange }) => {
 
         {/* Font Size Increment/Decrement */}
         <Tooltip title={lang["decreasefontsize"]} placement="bottom" arrow>
-          <button onClick={() => {
-            const newSize = `${parseInt(fontSize) - 1}px`;
-            setFontSize(newSize);
-            editor.chain().focus().setFontSize(newSize).run();
-          }}>A−</button>
+          <button
+            onClick={() => {
+              const newSize = `${parseInt(fontSize) - 1}px`;
+              setFontSize(newSize);
+              editor.chain().focus().setFontSize(newSize).run();
+            }}
+          >
+            A−
+          </button>
         </Tooltip>
 
         <Tooltip title={lang["increasefontsize"]} placement="bottom" arrow>
-          <button onClick={() => {
-            const newSize = `${parseInt(fontSize) + 1}px`;
-            setFontSize(newSize);
-            editor.chain().focus().setFontSize(newSize).run();
-          }}>A+</button>
+          <button
+            onClick={() => {
+              const newSize = `${parseInt(fontSize) + 1}px`;
+              setFontSize(newSize);
+              editor.chain().focus().setFontSize(newSize).run();
+            }}
+          >
+            A+
+          </button>
         </Tooltip>
 
         {/* Font Color Picker */}
@@ -289,46 +351,72 @@ const TiptapEditor = ({ content, onChange }) => {
 
         {/* Bullet List */}
         <Tooltip title={lang["bulletlist"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive('bulletList') ? 'active' : ''}>
+          <button
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            className={editor.isActive("bulletList") ? "active" : ""}
+          >
             <MdFormatListBulleted />
           </button>
         </Tooltip>
 
         {/* Ordered List */}
         <Tooltip title={lang["numberlist"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={editor.isActive('orderedList') ? 'active' : ''}>
+          <button
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            className={editor.isActive("orderedList") ? "active" : ""}
+          >
             <MdFormatListNumbered />
           </button>
         </Tooltip>
 
         {/* Create Table */}
         <Tooltip title={lang["table"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}>
+          <button
+            onClick={() =>
+              editor
+                .chain()
+                .focus()
+                .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                .run()
+            }
+          >
             <MdTableChart />
           </button>
         </Tooltip>
 
         <Tooltip title={lang["youtube"]} placement="bottom" arrow>
-          <button onClick={() => alert('Embed Youtube!')}><FaYoutube /></button>
+          <button onClick={() => alert("Embed Youtube!")}>
+            <FaYoutube />
+          </button>
         </Tooltip>
         {/* Upload Image */}
         <Tooltip title={lang["upload"]} placement="bottom" arrow>
           <label htmlFor="upload-image">
-            <button
-              onClick={handleImageDialogOpen}
-            >
+            <button onClick={handleImageDialogOpen}>
               <MdAddPhotoAlternate />
             </button>
           </label>
         </Tooltip>
         <Tooltip title={lang["blockquote"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().toggleBlockquote().run()}><GrBlockQuote /></button>
+          <button
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          >
+            <GrBlockQuote />
+          </button>
         </Tooltip>
         <Tooltip title={lang["codeblock"]} placement="bottom" arrow>
-          <button onClick={() => editor.chain().focus().toggleCodeBlock().run()}><BiCodeBlock /></button>
+          <button
+            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          >
+            <BiCodeBlock />
+          </button>
         </Tooltip>
 
-        <Tooltip title={isHtmlMode ? "Switch to WYSIWYG Mode" : "Edit HTML Code"} placement="bottom" arrow>
+        <Tooltip
+          title={isHtmlMode ? "Switch to WYSIWYG Mode" : "Edit HTML Code"}
+          placement="bottom"
+          arrow
+        >
           <button onClick={toggleHtmlMode}>
             {isHtmlMode ? <MdVisibility /> : <MdCode />}
           </button>
@@ -355,7 +443,7 @@ const TiptapEditor = ({ content, onChange }) => {
         onClose={handleImageDialogClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <Upload 
+        <Upload
           handleCloseForm={handleImageDialogClose}
           setFiles={(image) => handleImageUpload(image)}
           newUpload={!files}

@@ -231,5 +231,15 @@
   "url": "URL",
   "cencel": "cancel",
   "details_courses": "Details Courses",
-  "size": "Size"
+  "size": "Size",
+  "page_dynamic": "Page Dynamic",
+  "page_details": "Page Details",
+  "page_management": "Base Page Management",
+  "start_date": "Start Date",
+  "end_date": "End Date",
+  "start_time": "Start Time",
+  "end_time": "End Time",
+  "date": "Date",
+  "time": "Time",
+  "all": "All"
 }

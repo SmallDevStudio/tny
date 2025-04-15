@@ -57,11 +57,7 @@ export default function Courses() {
       {sections.length > 0
         ? sections.map((section) => (
             <div key={section.id}>
-              {section.component ? (
-                <section.component />
-              ) : (
-                <p>⚠️ ไม่มี Component</p>
-              )}
+              {section.component && <section.component />}
             </div>
           ))
         : null}

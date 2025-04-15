@@ -15,9 +15,14 @@ import {
   setDoc,
   doc,
   deleteDoc,
+  query,
+  where,
+  onSnapshot,
+  updateDoc,
+  addDoc,
 } from "firebase/firestore";
 
-export default function PageForm({ page, onClose }) {
+export default function PageDynamicForm({ page, onClose }) {
   const [sections, setSections] = useState([]);
   const [form, setForm] = useState({
     name: "",
@@ -47,8 +52,8 @@ export default function PageForm({ page, onClose }) {
     if (page) {
       setForm({
         name: page.name,
-        title: page.title,
-        description: page.description,
+        title: page.title ? page.title : { en: "", th: "" },
+        description: page.description ? page.description : { en: "", th: "" },
         slug: page.slug,
       });
       setSections(page.sections || []);
@@ -83,6 +88,16 @@ export default function PageForm({ page, onClose }) {
     setForm((prev) => ({ ...prev, slug: value }));
   };
 
+  const updatePageBySlug = async (slug, data) => {
+    const q = query(collection(db, "pages"), where("slug", "==", slug));
+    const snapshot = await getDocs(q);
+    const pageRef = snapshot.docs[0]?.ref;
+
+    if (!pageRef) throw new Error("Page not found");
+
+    await updateDoc(pageRef, data);
+  };
+
   const handleSubmitPage = async () => {
     if (!form.slug) {
       setError(lang["slug_required"]);
@@ -90,59 +105,49 @@ export default function PageForm({ page, onClose }) {
       return;
     }
 
-    const pageRef = doc(db, "pages", form.slug);
-
     // ✅ ถ้าเป็นการอัปเดต
     if (page && isEditing) {
-      const data = {
-        ...form,
-        sections: sections || [],
-        content: "",
-        template: { base: "default", page: "page" },
-        updatedAt: new Date(),
-      };
-
       try {
-        await setDoc(pageRef, data, { merge: true }); // ✅ merge คือ update
+        await updatePageBySlug(form.slug, {
+          ...form,
+          sections: [],
+          content: "",
+          template: { base: "default", page: "page" },
+          creator: userId,
+          type: "dynamic_page",
+          createdAt: new Date(),
+        });
+
         toast.success(
           lang["page_updated_successfully"] || "อัปเดตหน้าเรียบร้อย"
         );
         handleClearForm();
-        router.push("/admin/pages");
       } catch (error) {
         console.error("Error updating page:", error);
         toast.error(lang["something_went_wrong"]);
       }
 
       return;
-    }
+    } else {
+      const data = {
+        ...form,
+        sections: [],
+        content: "",
+        template: { base: "default", page: "page" },
+        creator: userId,
+        type: "dynamic_page",
+        createdAt: new Date(),
+      };
 
-    // ✅ ถ้าเป็นการสร้างใหม่
-    const pageSnap = await getDoc(pageRef);
-    if (pageSnap.exists()) {
-      setError(lang["slug_already_exists"]);
-      toast.error(lang["slug_already_exists"]);
-      return;
-    }
-
-    const data = {
-      ...form,
-      sections: [],
-      content: "",
-      template: { base: "default", page: "page" },
-      creator: userId,
-      type: "page",
-      createdAt: new Date(),
-    };
-
-    try {
-      await setDoc(pageRef, data);
-      toast.success(lang["page_added_successfully"]);
-      handleClearForm();
-      onClose();
-    } catch (error) {
-      console.error("Error adding page:", error);
-      toast.error(lang["something_went_wrong"]);
+      try {
+        await addDoc(collection(db, "pages"), data);
+        toast.success(lang["page_added_successfully"]);
+        handleClearForm();
+        onClose();
+      } catch (error) {
+        console.error("Error adding page:", error);
+        toast.error(lang["something_went_wrong"]);
+      }
     }
   };
 
@@ -354,7 +359,7 @@ export default function PageForm({ page, onClose }) {
             className="text-white bg-orange-500 hover:bg-orange-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             onClick={handleSubmitPage}
           >
-            {isEditing ? lang["update"] : lang["save"]}
+            {isEditing ? lang["edit"] : lang["save"]}
           </button>
           <button
             type="button"

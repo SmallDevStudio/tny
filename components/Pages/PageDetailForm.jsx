@@ -17,7 +17,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
-export default function PageForm({ page, onClose }) {
+export default function PageDetailForm({ page, onClose }) {
   const [sections, setSections] = useState([]);
   const [form, setForm] = useState({
     name: "",

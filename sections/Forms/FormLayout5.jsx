@@ -8,6 +8,16 @@ import { Divider, Tooltip, Slide, Dialog } from "@mui/material";
 import { FaSquarePlus } from "react-icons/fa6";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import { db } from "@/services/firebase";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -39,7 +49,11 @@ export default function FormLayout5({
   const [selectedContent, setSelectedContent] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [showContentForm, setShowContentForm] = useState(false);
+  const [sectionData, setSectionData] = useState([]);
+  const [selectedSectionIndex, setSelectedSectionIndex] = useState("");
   const { t, lang } = useLanguage();
+
+  const component = "layout5";
 
   useEffect(() => {
     if (contents) {
@@ -50,6 +64,25 @@ export default function FormLayout5({
   useEffect(() => {
     setContents(contentsForm);
   }, [contentsForm]);
+
+  useEffect(() => {
+    const fetchSectionData = async () => {
+      try {
+        const sectionsRef = collection(db, "sections");
+        const q = query(sectionsRef, where("component", "==", component));
+        const querySnapshot = await getDocs(q);
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setSectionData(data);
+      } catch (error) {
+        console.error("Error fetching section data:", error);
+      }
+    };
+
+    fetchSectionData();
+  }, []);
 
   const e = (data) => {
     return data?.[language] || "";
@@ -69,9 +102,16 @@ export default function FormLayout5({
   };
 
   const handleClear = () => {
+    setContentsForm([
+      {
+        title: { th: "", en: "" },
+        description: { th: "", en: "" },
+        image: { url: "" },
+        url: "",
+      },
+    ]);
     setTitle({});
     setDescription({});
-    setContents([]);
     setLanguage("th");
     setEditMode(false);
   };
@@ -107,10 +147,45 @@ export default function FormLayout5({
     setShowContentForm(false);
   };
 
+  const handleDuplicateData = (sectionId) => {
+    const selectedSection = sectionData.find((s) => s.id === sectionId);
+
+    if (selectedSection) {
+      setTitle(selectedSection.title || { th: "", en: "" });
+      setDescription(selectedSection.description || { th: "", en: "" });
+      setStyle(selectedSection.style || {});
+      setContentsForm(selectedSection.contents || []);
+      setContents(selectedSection.contents || []);
+    }
+  };
+
+  console.log("sectionData", sectionData);
+
   return (
     <div className="w-full">
       {/* Edit Mode */}
       <div className="flex flex-col border border-gray-300 rounded-md p-4 gap-2 shadow-lg">
+        <div>
+          <label htmlFor="duplicate">Duplicate Data</label>
+          <select
+            name="duplicate"
+            id="duplicate"
+            value={selectedSectionIndex}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSelectedSectionIndex(value);
+              if (value) handleDuplicateData(value);
+            }}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-2/3 p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          >
+            <option value="">Select Data</option>
+            {sectionData.map((section) => (
+              <option key={section.id} value={section.id}>
+                {t(section.title)}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="title">{lang["title"]}</label>
           <input

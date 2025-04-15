@@ -7,6 +7,7 @@ import Layout4 from "./Layout4";
 import Layout5 from "./Layout5";
 import Header from "./Header";
 import ContentList from "./ContentList";
+import ContentListImage from "./ContentListImage";
 
 export const Sections = [
   {
@@ -91,5 +92,14 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/contentList.png",
     component: ContentList,
+  },
+  {
+    name: "contentListImage",
+    description: {
+      en: "show content list",
+      th: "แสดงรายการเนื้อหา",
+    },
+    thumbnail: "/images/sections/previews/contentListImage.png",
+    component: ContentListImage,
   },
 ];
