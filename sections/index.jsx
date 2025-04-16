@@ -8,6 +8,7 @@ import Layout5 from "./Layout5";
 import Header from "./Header";
 import ContentList from "./ContentList";
 import ContentListImage from "./ContentListImage";
+import YoutubeShow from "./YoutubeShow";
 
 export const Sections = [
   {
@@ -101,5 +102,14 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/contentListImage.png",
     component: ContentListImage,
+  },
+  {
+    name: "youtubeShow",
+    description: {
+      en: "show content list",
+      th: "แสดงรายการเนื้อหา",
+    },
+    thumbnail: "/images/sections/previews/youtubeShow.png",
+    component: YoutubeShow,
   },
 ];

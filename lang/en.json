@@ -241,5 +241,9 @@
   "end_time": "End Time",
   "date": "Date",
   "time": "Time",
-  "all": "All"
+  "all": "All",
+  "limit_data": "Limit Data",
+  "menu": "Menu",
+  "vertical": "Vertical",
+  "horizontal": "Horizontal"
 }

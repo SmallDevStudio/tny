@@ -159,8 +159,6 @@ export default function FormLayout5({
     }
   };
 
-  console.log("sectionData", sectionData);
-
   return (
     <div className="w-full">
       {/* Edit Mode */}

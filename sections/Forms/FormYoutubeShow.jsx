@@ -1,9 +1,16 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import useLanguage from "@/hooks/useLanguage";
-import UploadImage from "@/components/btn/UploadImage";
 import Image from "next/image";
+import { IoClose } from "react-icons/io5";
+import { IoLogoYoutube } from "react-icons/io";
+import { Divider, Slide, Dialog } from "@mui/material";
+import YoutubeModal from "@/components/modal/YoutubeModal";
 
-export default function FormContentListImage({
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+export default function FormYoutubeShow({
   title,
   setTitle,
   description,
@@ -17,6 +24,8 @@ export default function FormContentListImage({
   setEditMode,
   handleSubmit,
 }) {
+  const [youtubeContent, setYoutubeContent] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
   const { t, lang } = useLanguage();
 
   const e = (data) => {
@@ -26,10 +35,17 @@ export default function FormContentListImage({
   const handleClear = () => {
     setTitle({});
     setDescription({});
-    setContents({});
+    setContents([]);
+    setStyle({});
+    setYoutubeContent([]);
     setLanguage("th");
     setEditMode(false);
   };
+
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
+
+  console.log("style", style);
 
   return (
     <div className="w-full">
@@ -81,14 +97,13 @@ export default function FormContentListImage({
           />
         </div>
 
-        <div className="flex flex-row items-center gap-4">
+        <div className="flex flex-row items-center gap-8">
           <div>
             <label htmlFor="gap">{lang["gap"]}</label>
             <input
               type="number"
-              id="gap"
               name="gap"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-1/4 p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               value={style.gap}
               onChange={(e) => setStyle({ ...style, gap: e.target.value })}
             />
@@ -98,11 +113,21 @@ export default function FormContentListImage({
             <label htmlFor="cols">{lang["cols"]}</label>
             <input
               type="number"
-              id="cols"
               name="cols"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-1/4 p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               value={style.cols}
               onChange={(e) => setStyle({ ...style, cols: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="size">{lang["size"]}</label>
+            <input
+              type="number"
+              name="size"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              value={style.size}
+              onChange={(e) => setStyle({ ...style, size: e.target.value })}
             />
           </div>
 
@@ -110,42 +135,45 @@ export default function FormContentListImage({
             <label htmlFor="limit">{lang["limit_data"]}</label>
             <input
               type="number"
-              id="limit"
               name="limit"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-1/4 p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               value={style.limited}
               onChange={(e) => setStyle({ ...style, limited: e.target.value })}
             />
           </div>
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor="showMore">{lang["show_more"]}</label>
-            <input
-              type="checkbox"
-              id="showMore"
-              name="showMore"
-              value={style.showMore}
-              onChange={(e) =>
-                setStyle({ ...style, showMore: e.target.checked })
-              }
-            />
-          </div>
         </div>
 
+        <Divider />
+
         <div className="flex flex-col gap-2">
-          <label htmlFor="contents">{lang["content"]}</label>
-          <select
-            name="contents"
-            id="contents"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-1/2 p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-            value={contents}
-            onChange={(e) => setContents(e.target.value)}
+          <label htmlFor="" className="font-bold">
+            Youtube
+          </label>
+          <div className="flex flex-col gap-2 mb-2">
+            <div>
+              {contents.length > 0 &&
+                contents.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between gap-2 border bg-gray-300 hover:bg-gray-400 py-2 px-6 rounded-xl text-black w-1/2 cursor-pointer"
+                  >
+                    <span>{item.title}</span>
+                    <div className="bg-red-500 hover:bg-red-600 p-1 rounded-full text-white cursor-pointer">
+                      <IoClose size={15} />
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+          <button
+            className="flex items-center gap-2 border border-gray-300 hover:bg-gray-400 p-2 rounded-xl text-black font-bold w-56"
+            onClick={handleOpenDialog}
           >
-            <option value="">เลือก {lang["content"]}</option>
-            <option value="courses">Courses</option>
-            <option value="articles">Articles</option>
-            <option value="blog">Blog</option>
-          </select>
+            <div className="flex items-center gap-2">
+              <IoLogoYoutube size={40} className="text-red-500" />
+              <span>Youtube Managements</span>
+            </div>
+          </button>
         </div>
 
         {/* Save Button */}
@@ -165,6 +193,20 @@ export default function FormContentListImage({
           </button>
         </div>
       </div>
+
+      <Dialog
+        fullScreen
+        open={openDialog}
+        onClose={handleCloseDialog}
+        TransitionComponent={Transition}
+        aria-labelledby="alert-dialog-title"
+      >
+        <YoutubeModal
+          onClose={handleCloseDialog}
+          contents={contents}
+          setContents={setContents}
+        />
+      </Dialog>
     </div>
   );
 }

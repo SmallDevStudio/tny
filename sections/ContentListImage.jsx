@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import useLanguage from "@/hooks/useLanguage";
-import FormHearder from "./Forms/FormHearder";
+import FormContentListImage from "./Forms/FormContentListImage";
 import { toast } from "react-toastify";
 import { db } from "@/services/firebase";
 import {
@@ -118,8 +118,6 @@ export default function ContentListImage({
     fetchData();
   }, [contents, style?.limited, showAll]);
 
-  console.log("contentsList", contentsList);
-
   const e = (data) => data?.[language] || "";
 
   const handleSubmit = async () => {
@@ -163,7 +161,7 @@ export default function ContentListImage({
         </div>
 
         <div
-          className={`grid grid-cols-1 gap-${style.gap} lg:grid-cols-${style.cols}`}
+          className={`grid grid-cols-1 py-6 gap-${style.gap} lg:grid-cols-${style.cols}`}
         >
           {contentsList.length > 0 ? (
             contentsList.map((item) => (
@@ -214,7 +212,7 @@ export default function ContentListImage({
                     )
                   }
                 >
-                  {e(item.description)}
+                  {t(item.description)}
                 </p>
                 <span className="font-semibold hover:text-orange-500 cursor-pointer">
                   {lang["details_courses"]}
@@ -244,6 +242,23 @@ export default function ContentListImage({
           </div>
         )}
       </div>
+
+      {editMode && (
+        <FormContentListImage
+          title={title}
+          setTitle={setTitle}
+          description={description}
+          setDescription={setDescription}
+          contents={contents}
+          setContents={setContents}
+          style={style}
+          setStyle={setStyle}
+          language={language}
+          setLanguage={setLanguage}
+          setEditMode={setEditMode}
+          handleSubmit={handleSubmit}
+        />
+      )}
     </section>
   );
 }

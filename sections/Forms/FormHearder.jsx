@@ -2,6 +2,16 @@ import { useState, useEffect } from "react";
 import useLanguage from "@/hooks/useLanguage";
 import UploadImage from "@/components/btn/UploadImage";
 import Image from "next/image";
+import { db } from "@/services/firebase";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
 
 export default function FormHearder({
   title,
@@ -17,15 +27,36 @@ export default function FormHearder({
   setEditMode,
   handleSubmit,
 }) {
-  const [colorPicker, setColorPicker] = useState(false);
+  const [sectionData, setSectionData] = useState([]);
+  const [selectedSectionIndex, setSelectedSectionIndex] = useState("");
   const [activePicker, setActivePicker] = useState(null);
   const [bgColor, setBgColor] = useState(style?.bgColor || "#757474");
   const [titleColor, setTitleColor] = useState(style?.titleColor || "#f5f2f2");
   const [desecriptionColor, setDescriptionColor] = useState(
     style?.descriptionColor || "#f5f2f2"
   );
-  const [tempColor, setTempColor] = useState(style?.color || "#000000");
   const { t, lang } = useLanguage();
+
+  const component = "header";
+
+  useEffect(() => {
+    const fetchSectionData = async () => {
+      try {
+        const sectionsRef = collection(db, "sections");
+        const q = query(sectionsRef, where("component", "==", component));
+        const querySnapshot = await getDocs(q);
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setSectionData(data);
+      } catch (error) {
+        console.error("Error fetching section data:", error);
+      }
+    };
+
+    fetchSectionData();
+  }, []);
 
   const e = (data) => {
     return data?.[language] || "";
@@ -44,10 +75,43 @@ export default function FormHearder({
     setEditMode(false);
   };
 
+  const handleDuplicateData = (sectionId) => {
+    const selectedSection = sectionData.find((s) => s.id === sectionId);
+
+    if (selectedSection) {
+      setTitle(selectedSection.title || { th: "", en: "" });
+      setDescription(selectedSection.description || { th: "", en: "" });
+      setStyle(selectedSection.style || {});
+      setContentsForm(selectedSection.contents || []);
+      setContents(selectedSection.contents || []);
+    }
+  };
+
   return (
     <div className="w-full">
       {/* Edit Mode */}
       <div className="flex flex-col border border-gray-300 rounded-md p-4 gap-2 shadow-lg">
+        <div>
+          <label htmlFor="duplicate">Duplicate Data</label>
+          <select
+            name="duplicate"
+            id="duplicate"
+            value={selectedSectionIndex}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSelectedSectionIndex(value);
+              if (value) handleDuplicateData(value);
+            }}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-2/3 p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          >
+            <option value="">Select Data</option>
+            {sectionData.map((section) => (
+              <option key={section.id} value={section.id}>
+                {t(section.title)}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="bgColor">Backgroup Color</label>
           <div className="flex flex-row items-center gap-2 relative">

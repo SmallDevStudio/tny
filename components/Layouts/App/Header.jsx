@@ -12,39 +12,48 @@ import LogoComponents from "@/components/LogoComponents";
 import SearchButton from "@/components/btn/SearchButton";
 import CartButton from "@/components/btn/CartButton";
 import useLanguage from "@/hooks/useLanguage";
+import Menu from "@/components/menu/Menu";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "@/services/firebase";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="right" ref={ref} {...props} />;
 });
 
-// รายการเมนู
-const menuItems = [
-  { label: "เกี่ยวกับ", name: "about", href: "/about" },
-  { label: "หน้าแรก", name: "home", href: "/home" },
-  { label: "หลักสูตร", name: "courses", href: "/courses" },
-  { label: "บทความ", name: "blog", href: "/blog" },
-  { label: "รีวิว", name: "reviews", href: "/reviews" },
-  { label: "ทีม", name: "team", href: "/team" }, // ✅ เปลี่ยนจาก "#" เป็น "/team"
-];
-
 export default function Header() {
+  const [menuItems, setMenuItems] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeMenuItem, setActiveMenuItem] = useState("home");
   const { theme, toggleTheme } = useTheme();
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t, lang } = useLanguage();
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      const data = await getDocs(collection(db, "menu"));
+      setMenuItems(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    fetchMenu();
+  }, []);
 
   useEffect(() => {
     const currentPath = router.asPath;
+    const items = menuItems[0]?.items || [];
 
-    // ✅ ตรวจสอบว่า currentPath มีค่า `/team/xxx` หรือ `/blog/xxx`
-    const matchedMenu = menuItems.find(
+    const matchedItem = items.find(
       (item) =>
-        currentPath === item.href || currentPath.startsWith(item.href + "/")
+        currentPath === item.url || currentPath.startsWith(item.url + "/")
     );
 
-    setActiveMenuItem(matchedMenu ? matchedMenu.name : "home");
-  }, [router.asPath]);
+    setActiveMenuItem(matchedItem?.url || "home"); // ใช้ url เป็น key แทน
+  }, [router.asPath, menuItems]);
 
   if (status === "loading") return null;
 
@@ -57,19 +66,19 @@ export default function Header() {
 
           {/* Desktop Menu (แสดงเฉพาะจอใหญ่) */}
           <div className="hidden lg:flex items-center gap-8">
-            {menuItems.map((item, index) => (
+            {menuItems[0]?.items?.map((item, index) => (
               <Link
                 key={index}
-                href={item.href}
+                href={item.url}
                 className={`text-lg text-gray-700 hover:text-orange-500 dark:text-gray-50 dark:hover:text-orange-500
-                    ${
-                      item.name === activeMenuItem
-                        ? "font-semibold text-orange-500 dark:text-orange-500"
-                        : ""
-                    }
-                `}
+      ${
+        item.url === activeMenuItem
+          ? "font-semibold text-orange-500 dark:text-orange-500"
+          : ""
+      }
+    `}
               >
-                {item.label}
+                {t(item.title)}
               </Link>
             ))}
           </div>
