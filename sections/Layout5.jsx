@@ -168,6 +168,7 @@ export default function Layout5({
                   height={500}
                   loading="lazy"
                   className="h-full w-auto object-contain cursor-pointer"
+                  onClick={() => (m.url ? window.open(m.url, "_blank") : null)}
                 />
               </div>
               <h2 className="text-2xl font-bold">{t(m.title)}</h2>
@@ -177,7 +178,7 @@ export default function Layout5({
               {m.url && (
                 <span
                   className="text-md text-center cursor-pointer hover:text-orange-500"
-                  onClick={() => window.open(m.url, "_blank")}
+                  onClick={() => (m.url ? window.open(m.url, "_blank") : null)}
                 >
                   {lang["details_courses"]}
                 </span>
