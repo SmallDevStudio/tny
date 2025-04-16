@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import DynamicPage from "@/components/pages/DynamicPage";
+import DynamicPage from "@/components/Pages/DynamicPage";
 
 export default function SubgroupCoursesPage() {
   const router = useRouter();
