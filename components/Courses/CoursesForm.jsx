@@ -34,7 +34,7 @@ import "react-clock/dist/Clock.css";
 import th from "date-fns/locale/th";
 registerLocale("th", th);
 import { CiCalendar } from "react-icons/ci";
-import ParticipantsModel from "../modal/participantsModel";
+import ParticipantsModel from "@/components/modal/participantsModel";
 import { FiUsers } from "react-icons/fi";
 import { FaPlusSquare } from "react-icons/fa";
 
