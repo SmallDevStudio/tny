@@ -63,8 +63,6 @@ export default function TestSection() {
     setEditMode(sectionId);
   };
 
-  console.log("sections", sections);
-
   return (
     <div>
       <Header title={t(pageData.title)} description={t(pageData.description)} />

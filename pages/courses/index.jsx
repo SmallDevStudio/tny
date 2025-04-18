@@ -20,13 +20,15 @@ export default function Courses() {
   const [sections, setSections] = useState([]);
   const { data: session, status } = useSession();
   const router = useRouter();
-  const pathname = router.pathname.replace("/", "");
+  const page = router.pathname.replace("/", "");
 
   useEffect(() => {
+    if (!page) return; // รอจนกว่าจะได้ค่าจาก query
+
     setLoading(true);
     const fetchData = async () => {
       try {
-        const pageRef = doc(db, "pages", pathname);
+        const pageRef = doc(db, "pages", page);
         const pageSnap = await getDoc(pageRef);
 
         if (pageSnap.exists()) {
@@ -34,10 +36,9 @@ export default function Courses() {
           setPageData(data);
 
           const mappedSections = getSections(data.sections || []);
-
           setSections(mappedSections);
         } else {
-          console.error(`Page with slug "${pathname}" not found.`);
+          console.error(`Page with slug "${page}" not found.`);
         }
       } catch (error) {
         console.error("Error fetching page data:", error);
@@ -47,11 +48,9 @@ export default function Courses() {
     };
 
     fetchData();
-  }, [pathname]);
+  }, [page]);
 
   if (loading) return <Loading />;
-
-  console.log("sections", sections);
 
   return (
     <div>
@@ -59,7 +58,9 @@ export default function Courses() {
       {sections.length > 0
         ? sections.map((section) => (
             <div key={section.id}>
-              {section.component && <section.component />}
+              {section.component && (
+                <section.component contentId={section.id} />
+              )}
             </div>
           ))
         : null}
