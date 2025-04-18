@@ -89,14 +89,18 @@ export default function CourseSlugPage() {
         <div className="flex flex-col mt-4 mx-auto justify-center items-center text-center gap-1">
           <h1 className="text-3xl font-semibold text-orange-500">
             {t(contentData.name)}{" "}
-            <span className="text-xl">
-              {lang["gen"]} {contentData?.gen}
-            </span>
+            {contentData.gen > 0 ? (
+              <span className="text-xl">
+                {lang["gen"]} {contentData?.gen}
+              </span>
+            ) : null}
           </h1>
           <p className="text-gray-500">{t(contentData.description)}</p>
-          <p className="text-orange-500 font-bold text-3xl my-2">
-            {Number(contentData.price).toLocaleString("th-TH")} ฿
-          </p>
+          {contentData.price && contentData.price > 0 && (
+            <p className="text-orange-500 font-bold text-3xl my-2">
+              {Number(contentData.price).toLocaleString("th-TH")} ฿
+            </p>
+          )}
           {contentData?.registration_url && (
             <div className="flex gap-4 mb-4">
               <button
@@ -190,14 +194,18 @@ export default function CourseSlugPage() {
         <div className="flex flex-col mt-4 mx-auto justify-center items-center text-center gap-1">
           <h1 className="text-3xl font-semibold text-orange-500">
             {t(contentData.name)}{" "}
-            <span className="text-xl">
-              {lang["gen"]} {contentData?.gen}
-            </span>
+            {contentData.gen > 0 ? (
+              <span className="text-xl">
+                {lang["gen"]} {contentData?.gen}
+              </span>
+            ) : null}
           </h1>
           <p className="text-gray-500">{t(contentData.description)}</p>
-          <p className="text-orange-500 font-bold text-3xl my-2">
-            {Number(contentData.price).toLocaleString("th-TH")} ฿
-          </p>
+          {contentData.price && contentData.price > 0 && (
+            <p className="text-orange-500 font-bold text-3xl my-2">
+              {Number(contentData.price).toLocaleString("th-TH")} ฿
+            </p>
+          )}
           {contentData?.registration_url && (
             <div className="flex gap-4 mb-4">
               <button
