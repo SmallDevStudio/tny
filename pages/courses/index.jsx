@@ -51,9 +51,11 @@ export default function Courses() {
 
   if (loading) return <Loading />;
 
+  console.log("sections", sections);
+
   return (
     <div>
-      <Header title={pageData.title} description={pageData.description} />
+      <Header title={t(pageData.title)} description={t(pageData.description)} />
       {sections.length > 0
         ? sections.map((section) => (
             <div key={section.id}>

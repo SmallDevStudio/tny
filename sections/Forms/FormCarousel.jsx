@@ -3,6 +3,16 @@ import useLanguage from "@/hooks/useLanguage";
 import UploadImage from "@/components/btn/UploadImage";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
+import { db } from "@/services/firebase";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
 
 export default function FormCarousel({
   description,
@@ -18,7 +28,32 @@ export default function FormCarousel({
   setEditMode,
   handleSubmit,
 }) {
+  const [sectionData, setSectionData] = useState([]);
+  const [selectedSectionIndex, setSelectedSectionIndex] = useState("");
   const { t, lang } = useLanguage();
+
+  const component = "carousel";
+
+  useEffect(() => {
+    const fetchSectionData = async () => {
+      try {
+        const sectionsRef = collection(db, "sections");
+        const q = query(sectionsRef, where("component", "==", component));
+        const querySnapshot = await getDocs(q);
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setSectionData(data);
+      } catch (error) {
+        console.error("Error fetching section data:", error);
+      }
+    };
+
+    fetchSectionData();
+  }, []);
+
+  console.log("sectionData", sectionData);
 
   const e = (data) => {
     return data?.[language] || "";
@@ -43,17 +78,48 @@ export default function FormCarousel({
   };
 
   const handleClear = () => {
-    setTitle({});
     setDescription({});
     setImages([]);
     setLanguage("th");
     setEditMode(false);
   };
 
+  const handleDuplicateData = (sectionId) => {
+    const selectedSection = sectionData.find((s) => s.id === sectionId);
+
+    if (selectedSection) {
+      setDescription(selectedSection.description || { th: "", en: "" });
+      setImages(selectedSection.images || []);
+      setAutoPlay(selectedSection.autoPlay || true);
+      setAutoPlaySpeed(selectedSection.autoPlaySpeed || 3000);
+    }
+  };
+
   return (
     <div className="w-full">
       {/* Edit Mode */}
       <div className="flex flex-col border border-gray-300 rounded-md p-4 gap-2 shadow-lg">
+        <div>
+          <label htmlFor="duplicate">Duplicate Data</label>
+          <select
+            name="duplicate"
+            id="duplicate"
+            value={selectedSectionIndex}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSelectedSectionIndex(value);
+              if (value) handleDuplicateData(value);
+            }}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-2/3 p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          >
+            <option value="">Select Data</option>
+            {sectionData.map((section) => (
+              <option key={section.id} value={section.id}>
+                {t(section.description)}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="description">{lang["description"]}</label>
           <textarea

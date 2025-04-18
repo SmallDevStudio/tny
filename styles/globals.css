@@ -300,14 +300,18 @@ body {
   }
 
   .preview-box ul {
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: 14px;
+    line-height: 1.6;
+    padding-left: 1.5rem; /* ระยะ indent จากซ้าย */
+    margin-bottom: 1rem;
+    list-style-type: disc;
   }
 
   .preview-box li {
-    font-size: 12px;
-    line-height: 1.5;
-    list-style-type: disc;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+    list-style-type: disc; /* เพิ่ม bullet */
   }
 
   .preview-box ol {
@@ -338,6 +342,15 @@ body {
   .preview-box audio {
     max-width: 100%;
     height: auto;
+  }
+
+  .preview-box table,
+  .preview-box tr,
+  .preview-box td,
+  .preview-box th {
+    border: none !important;
+    border-collapse: collapse;
+    outline: none;
   }
 
   .image-section {

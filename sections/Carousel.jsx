@@ -66,7 +66,6 @@ export default function Carousel({
           setAutoPlaySpeed(data?.autoPlaySpeed || 3000);
         } else {
           // ไม่มี section นี้
-          setTitle(sampleData.title);
           setDescription(sampleData.description);
           setImages(sampleData.image);
           setAutoPlay(autoPlay);
@@ -132,6 +131,7 @@ export default function Carousel({
             onClick={item.link ? () => router.push(`/${item.link}`) : null}
           >
             <Image
+              key={item.id}
               src={item.url}
               alt={`Slide ${item.id}`}
               width={1500}

@@ -5,6 +5,7 @@ import { getFormattedCode } from "@/utils/getFormattedCode";
 
 export default function FormatCode({
   data,
+  code,
   setCode,
   documentId,
   group,
@@ -37,7 +38,7 @@ export default function FormatCode({
       if (data) {
         const formattedCode = await getFormattedCode(
           codeData?.document,
-          course.id,
+          data.id,
           group,
           subgroup
         );

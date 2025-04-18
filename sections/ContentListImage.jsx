@@ -11,6 +11,8 @@ import {
   addDoc,
   collection,
   getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import moment from "moment";
 import "moment/locale/th";
@@ -92,8 +94,8 @@ export default function ContentListImage({
 
     const fetchData = async () => {
       try {
-        const collectionRef = collection(db, contents);
-        const snapshot = await getDocs(collectionRef);
+        const q = query(collection(db, contents), where("active", "!=", false));
+        const snapshot = await getDocs(q);
 
         const data = snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -178,7 +180,7 @@ export default function ContentListImage({
                     className="object-contain w-full h-full hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer"
                     onClick={() =>
                       window.open(
-                        `${contents}/${item.group}/${item.slug}`,
+                        `/${contents}/${item.group}/${item.slug}`,
                         "_blank"
                       )
                     }
@@ -207,7 +209,7 @@ export default function ContentListImage({
                   className="inline-block text-sm lg:text-md text-gray-500"
                   onClick={() =>
                     window.open(
-                      `${contents}/${item.group}/${item.slug}`,
+                      `/${contents}/${item.group}/${item.slug}`,
                       "_blank"
                     )
                   }
