@@ -146,7 +146,12 @@ export default function CourseSlugPage() {
                   height={30}
                   alt="place-icon"
                 />
-                <span className="text-orange-500 text-xl">
+                <span
+                  className="text-orange-500 text-xl cursor-pointer"
+                  onClick={() =>
+                    window.open(contentData.location_url, "_blank")
+                  }
+                >
                   {contentData.location}
                 </span>
               </div>
