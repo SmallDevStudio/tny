@@ -26,6 +26,7 @@ import {
   where,
 } from "firebase/firestore";
 import dynamic from "next/dynamic";
+import ParticipantsModel from "@/components/modal/ParticipantsModel";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TimePicker from "react-time-picker";
@@ -34,16 +35,11 @@ import "react-clock/dist/Clock.css";
 import th from "date-fns/locale/th";
 registerLocale("th", th);
 import { CiCalendar } from "react-icons/ci";
-import ParticipantsModel from "@/components/modal/participantsModel";
+
 import { FiUsers } from "react-icons/fi";
 import { FaPlusSquare } from "react-icons/fa";
-
 const TiptapEditor = dynamic(() => import("@/components/Tiptap/TiptapEditor"), {
   ssr: false,
-});
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function CoursesForm({ onClose, course, isNewCourse }) {

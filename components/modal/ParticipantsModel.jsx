@@ -2,9 +2,6 @@ import { useState, useEffect } from "react";
 import useLanguage from "@/hooks/useLanguage";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
-import { toast } from "react-toastify";
-import { useRouter } from "next/router";
-import { Divider } from "@mui/material";
 import useDB from "@/hooks/useDB";
 
 export default function ParticipantsModel({

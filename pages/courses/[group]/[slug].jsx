@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -5,14 +6,12 @@ import { db } from "@/services/firebase";
 import Image from "next/image";
 import Header from "@/components/utils/Header";
 import Loading from "@/components/utils/Loading";
-import { getSections } from "@/utils/getSections";
 import useLanguage from "@/hooks/useLanguage";
 import { Breadcrumbs, Divider } from "@mui/material";
 import Link from "next/link";
 import moment from "moment";
 import "moment/locale/th";
 import ReactPlayer from "react-player";
-import DOMPurify from "dompurify";
 import dynamic from "next/dynamic";
 
 const ClientOnlyContent = dynamic(
@@ -29,7 +28,6 @@ export default function CourseSlugPage() {
   const { slug } = router.query;
   const page = "courses";
   const { t, lang } = useLanguage();
-  const cleanHTML = DOMPurify.sanitize(contentData?.content || "");
 
   useEffect(() => {
     if (!slug) return; // ✅ หยุดก่อนถ้า slug ยังไม่มา
@@ -56,8 +54,15 @@ export default function CourseSlugPage() {
     fetchData();
   }, [slug, router]);
 
+  if (!contentData) return null;
+  if (loading || !contentData) return <Loading />;
+
   return (
     <div className="bg-white dark:bg-gray-800">
+      <Header
+        title={t(contentData?.name)}
+        description={t(contentData?.description)}
+      />
       <div className="max-w-screen-lg mx-auto px-4">
         <Image
           src={contentData?.image?.url}
@@ -169,7 +174,7 @@ export default function CourseSlugPage() {
         </div>
       </div>
       <div className="max-w-screen-xl mx-auto px-4 py-6 mb-4">
-        <ClientOnlyContent html={cleanHTML} />
+        <ClientOnlyContent html={contentData.content} />
       </div>
       <Divider />
       <div className="max-w-screen-lg mx-auto px-4 py-6">
