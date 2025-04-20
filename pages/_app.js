@@ -31,6 +31,7 @@ export default function App({
   const isSigninPage = router.pathname === "/signin";
   const isRegisterPage = router.pathname === "/register";
   const isLoading = router.pathname === "/loading";
+  const isPolicy = router.pathname === "/privacy-policy";
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -54,7 +55,7 @@ export default function App({
     return () => document.removeEventListener("click", handleClick);
   }, []);
 
-  if (isErrorPage || isSigninPage || isRegisterPage || isLoading) {
+  if (isErrorPage || isSigninPage || isRegisterPage || isLoading || isPolicy) {
     return (
       <SessionProvider session={session}>
         <Header />

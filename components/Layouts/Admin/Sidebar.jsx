@@ -16,6 +16,7 @@ import { TbSection } from "react-icons/tb";
 import { RiTeamLine } from "react-icons/ri";
 import { LuPaintbrush } from "react-icons/lu";
 import { MdOutlineArticle } from "react-icons/md";
+import { MdOutlinePolicy } from "react-icons/md";
 
 const menuItems = [
   { title: "Dashboard", icon: <IoHome />, href: "/admin" },
@@ -43,15 +44,11 @@ const menuItems = [
     icon: <RiArticleLine />,
     href: "/admin/courses",
   },
-  //{
-  //  title: "Blog",
-  //  icon: <MdOutlineArticle />,
-  //  href: "/admin/blog",
-  //  subMenu: [
-  //    { title: "Blog", href: "/admin/blog" },
-  //    { title: "Pages", href: "/admin/blog/pages" },
-  //  ],
-  //},
+  {
+    title: "Blog",
+    icon: <MdOutlineArticle />,
+    href: "/admin/blog",
+  },
   { title: "Pages", icon: <RiPagesLine />, href: "/admin/pages" },
   { title: "Menu", icon: <BsFillMenuButtonFill />, href: "/admin/menu" },
   { title: "Teams", icon: <RiTeamLine />, href: "/admin/teams" },
@@ -71,6 +68,11 @@ const menuItems = [
       { title: "General Settings", href: "/admin/settings" },
       { title: "Appearance", href: "/admin/settings/appearance" },
     ],
+  },
+  {
+    title: "Privacy Policy",
+    icon: <MdOutlinePolicy />,
+    href: "/admin/privacy-policy",
   },
 ];
 

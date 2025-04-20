@@ -78,7 +78,7 @@ export default function Header() {
                 }
               `}
               >
-                {t(item.title)}
+                <span className="capitalize">{t(item.title)}</span>
               </Link>
             ))}
           </div>

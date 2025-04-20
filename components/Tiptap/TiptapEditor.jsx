@@ -72,6 +72,27 @@ const TiptapEditor = ({ content, onChange }) => {
 
   const { lang } = useLanguage();
 
+  const CustomTableCell = TableCell.extend({
+    addAttributes() {
+      return {
+        // extend the existing attributes …
+        ...this.parent?.(),
+
+        // and add a new one …
+        backgroundColor: {
+          default: null,
+          parseHTML: (element) => element.getAttribute("data-background-color"),
+          renderHTML: (attributes) => {
+            return {
+              "data-background-color": attributes.backgroundColor,
+              style: `background-color: ${attributes.backgroundColor}`,
+            };
+          },
+        },
+      };
+    },
+  });
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -90,10 +111,13 @@ const TiptapEditor = ({ content, onChange }) => {
       FontSize,
       Blockquote,
       CodeBlock,
-      Table.configure({ resizable: true }), // เปิดให้ปรับขนาดตาราง
+      Table.configure({
+        resizable: true,
+      }),
       TableRow,
       TableCell,
       TableHeader,
+      CustomTableCell,
       Image,
       ImageResize,
     ],

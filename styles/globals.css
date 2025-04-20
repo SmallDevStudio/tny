@@ -344,13 +344,29 @@ body {
     height: auto;
   }
 
-  .preview-box table,
+  .preview-box table {
+    border-collapse: collapse;
+    margin: 0;
+    overflow: hidden;
+    table-layout: fixed;
+    width: 100%;
+  }
   .preview-box tr,
   .preview-box td,
   .preview-box th {
     border: none !important;
     border-collapse: collapse;
     outline: none;
+  }
+
+  .preview-box .tableWrapper {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+
+  .preview-box .resize-cursor {
+    cursor: ew-resize;
+    cursor: col-resize;
   }
 
   .image-section {

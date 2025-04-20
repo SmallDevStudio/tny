@@ -8,6 +8,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/services/firebase";
 import useLanguage from "@/hooks/useLanguage";
+import { Dialog, Slide, Divider } from "@mui/material";
 import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
 import { FaPlus } from "react-icons/fa";
@@ -15,9 +16,15 @@ import Link from "next/link";
 
 export default function Menu() {
   const [menu, setMenu] = useState([]);
+  const [items, setItems] = useState([]);
+  const [itemForm, setItemForm] = useState({
+    title: { th: "", en: "" },
+    url: "",
+  });
   const [pages, setPages] = useState([]);
   const [filteredPages, setFilteredPages] = useState([]);
   const [previewMenu, setPreviewMenu] = useState([]);
+  const [openMenuItemsForm, setOpenMenuItemsForm] = useState(null);
   const [style, setStyle] = useState({ position: "horizontal" });
   const { lang, t } = useLanguage();
 
@@ -124,6 +131,14 @@ export default function Menu() {
     }
   };
 
+  const handleOpenMenuItem = (type) => {
+    setOpenMenuItemsForm(type);
+  };
+
+  const handleCloseMenuItem = () => {
+    setOpenMenuItemsForm(null);
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800">
       <div className="max-w-screen px-4">
@@ -211,7 +226,15 @@ export default function Menu() {
       </div>
 
       {/* Pages Selector */}
-      <div className="border border-gray-400 rounded-xl mt-4">
+      <div className="flex flex-row items-center gap-2 px-4 py-2 mt-4">
+        <div
+          className="bg-orange-500 text-white p-2 rounded-lg cursor-pointer"
+          onClick={() => handleOpenMenuItem("menu")}
+        >
+          <FaPlus />
+        </div>
+      </div>
+      <div className="border border-gray-400 rounded-xl ">
         <h3 className="p-4 border-b border-gray-400 bg-orange-500 rounded-t-xl text-white">
           {lang["menu"]}
         </h3>
@@ -226,7 +249,79 @@ export default function Menu() {
             </div>
           ))}
         </div>
+        {items.length > 0 && (
+          <>
+            <Divider />
+            <div className="grid grid-cols-1 gap-2 p-4 lg:grid-cols-4"></div>
+          </>
+        )}
       </div>
+
+      {openMenuItemsForm && (
+        <div className="p-4">
+          <div className="flex flex-col border border-gray-400 p-4 rounded-xl mt-4 gap-2">
+            <div className="flex flex-row items-center justify-between w-full">
+              <h2>เพิ่ม menu</h2>
+              <IoClose
+                size={24}
+                className="cursor-pointer"
+                onClick={handleCloseMenuItem}
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label htmlFor="title">{lang["title"]}</label>
+              <input
+                type="text"
+                id="title"
+                className="border border-gray-400 rounded-xl p-1"
+                value={itemForm.title.th}
+                onChange={(e) =>
+                  setItemForm({ ...itemForm, title: { th: e.target.value } })
+                }
+                placeholder="TH"
+              />
+              <input
+                type="text"
+                id="title"
+                className="border border-gray-400 rounded-xl p-1"
+                value={itemForm.title.en}
+                onChange={(e) =>
+                  setItemForm({ ...itemForm, title: { en: e.target.value } })
+                }
+                placeholder="EN"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label htmlFor="url">{lang["url"]}</label>
+              <input
+                type="text"
+                id="url"
+                className="border border-gray-400 rounded-xl p-1"
+                value={itemForm.url}
+                onChange={(e) =>
+                  setItemForm({ ...itemForm, url: e.target.value })
+                }
+                placeholder="URL"
+              />
+            </div>
+            <div className="flex flex-row justify-center gap-4">
+              <button
+                type="button"
+                className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600"
+              >
+                {lang["save"]}
+              </button>
+              <button
+                type="button"
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+              >
+                {lang["cancel"]}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
