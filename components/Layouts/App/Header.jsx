@@ -152,7 +152,7 @@ export default function Header() {
                 <IoClose size={28} />
               </button>
             </div>
-            <div>
+            <div className="flex px-4 py-2">
               {!session && (
                 <div className="flex gap-2">
                   <button
