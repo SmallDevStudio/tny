@@ -43,25 +43,17 @@ const menuItems = [
     icon: <RiArticleLine />,
     href: "/admin/courses",
   },
-  {
-    title: "Blog",
-    icon: <MdOutlineArticle />,
-    href: "/admin/blog",
-    subMenu: [
-      { title: "Blog", href: "/admin/blog" },
-      { title: "Pages", href: "/admin/blog/pages" },
-    ],
-  },
+  //{
+  //  title: "Blog",
+  //  icon: <MdOutlineArticle />,
+  //  href: "/admin/blog",
+  //  subMenu: [
+  //    { title: "Blog", href: "/admin/blog" },
+  //    { title: "Pages", href: "/admin/blog/pages" },
+  //  ],
+  //},
   { title: "Pages", icon: <RiPagesLine />, href: "/admin/pages" },
   { title: "Menu", icon: <BsFillMenuButtonFill />, href: "/admin/menu" },
-  {
-    title: "About",
-    icon: <MdOutlinePermContactCalendar />,
-    subMenu: [
-      { title: "Sections", href: "/admin/about" },
-      { title: "Contents", href: "/admin/about/contents" },
-    ],
-  },
   { title: "Teams", icon: <RiTeamLine />, href: "/admin/teams" },
   { title: "Themes", icon: <LuPaintbrush />, href: "/admin/themes" },
   {

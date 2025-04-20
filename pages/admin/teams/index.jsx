@@ -62,8 +62,6 @@ export default function Teams() {
     }));
   };
 
-  console.log("teams", teams);
-
   const handleMoveRow = async (index, direction) => {
     const newTeams = [...teams];
     const targetIndex = index + direction;
