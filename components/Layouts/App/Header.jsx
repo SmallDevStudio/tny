@@ -66,7 +66,7 @@ export default function Header() {
 
           {/* Desktop Menu (แสดงเฉพาะจอใหญ่) */}
           <div className="hidden lg:flex items-center gap-8">
-            {menuItems?.items?.map((item, index) => (
+            {menuItems[0].items?.map((item, index) => (
               <Link
                 key={index}
                 href={item?.url}
