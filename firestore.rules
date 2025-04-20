@@ -5,5 +5,11 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write;
     }
+    match /upload/{document=*} {
+      allow read, write;
+    }
+    match /teams/{document=*} {
+      allow read, write;
+    }
   }
 }

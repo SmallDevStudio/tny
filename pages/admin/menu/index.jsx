@@ -16,6 +16,7 @@ import Link from "next/link";
 export default function Menu() {
   const [menu, setMenu] = useState([]);
   const [pages, setPages] = useState([]);
+  const [filteredPages, setFilteredPages] = useState([]);
   const [previewMenu, setPreviewMenu] = useState([]);
   const [style, setStyle] = useState({ position: "horizontal" });
   const { lang, t } = useLanguage();
@@ -37,6 +38,13 @@ export default function Menu() {
   }, []);
 
   useEffect(() => {
+    const updated = pages.filter(
+      (p) => !previewMenu.find((item) => item.id === p.id)
+    );
+    setFilteredPages(updated);
+  }, [pages, previewMenu]);
+
+  useEffect(() => {
     if (menu.length > 0) {
       const saved = menu[0];
 
@@ -55,12 +63,9 @@ export default function Menu() {
     }
   }, [menu, pages]); // ✅ ให้ทำงานใหม่เมื่อ menu หรือ pages ถูกโหลด
 
-  console.log(previewMenu);
-
   const handleAddToPreview = (page) => {
     if (!previewMenu.find((item) => item.id === page.id)) {
       setPreviewMenu([...previewMenu, page]);
-      setPages(pages.filter((p) => p.id !== page.id));
     }
   };
 
@@ -211,7 +216,7 @@ export default function Menu() {
           {lang["menu"]}
         </h3>
         <div className="grid grid-cols-1 gap-2 p-4 lg:grid-cols-4">
-          {pages.map((page) => (
+          {filteredPages.map((page) => (
             <div
               key={page.id}
               className="flex flex-row items-center border border-gray-400 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
