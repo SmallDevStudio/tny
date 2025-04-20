@@ -30,14 +30,14 @@ const menuItems = [
       },
     ],
   },
-  {
-    title: "Home",
-    icon: <IoHomeOutline />,
-    subMenu: [
-      { title: "Sections", href: "/admin/home/sections" },
-      { title: "Contents", href: "/admin/home/contents" },
-    ],
-  },
+  //{
+  //  title: "Home",
+  //  icon: <IoHomeOutline />,
+  //  subMenu: [
+  //    { title: "Sections", href: "/admin/home/sections" },
+  //    { title: "Contents", href: "/admin/home/contents" },
+  //  ],
+  // },
   {
     title: "Courses",
     icon: <RiArticleLine />,

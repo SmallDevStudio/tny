@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import LogoComponents from "@/components/LogoComponents";
 import useLanguage from "@/hooks/useLanguage";
 import { Social } from "@/components/utils/SocialMedia"; // ✅ นำเข้า Social Icons
 import { Tooltip } from "@mui/material";
