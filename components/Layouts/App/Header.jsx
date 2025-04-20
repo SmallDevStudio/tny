@@ -66,17 +66,17 @@ export default function Header() {
 
           {/* Desktop Menu (แสดงเฉพาะจอใหญ่) */}
           <div className="hidden lg:flex items-center gap-8">
-            {menuItems[0]?.items?.map((item, index) => (
+            {menuItems?.items?.map((item, index) => (
               <Link
                 key={index}
-                href={item.url}
+                href={item?.url}
                 className={`text-lg text-gray-700 hover:text-orange-500 dark:text-gray-50 dark:hover:text-orange-500
-      ${
-        item.url === activeMenuItem
-          ? "font-semibold text-orange-500 dark:text-orange-500"
-          : ""
-      }
-    `}
+                ${
+                  item.url === activeMenuItem
+                    ? "font-semibold text-orange-500 dark:text-orange-500"
+                    : ""
+                }
+              `}
               >
                 {t(item.title)}
               </Link>
@@ -178,18 +178,18 @@ export default function Header() {
 
             {/* รายการเมนู (Mobile) */}
             <div className="p-4 flex flex-col gap-4">
-              {menuItems.map((item, index) => (
+              {menuItems[0]?.items?.map((item, index) => (
                 <Link
                   key={index}
-                  href={item.href}
+                  href={item.url}
                   className={`text-lg text-gray-700 dark:text-gray-50 ${
-                    item.name === activeMenuItem
+                    item.url === activeMenuItem
                       ? "font-semibold text-orange-500 dark:text-orange-500"
                       : ""
                   }`}
                   onClick={() => setDialogOpen(false)}
                 >
-                  {item.label}
+                  {t(item.title)}
                 </Link>
               ))}
             </div>
