@@ -17,6 +17,7 @@ import { RiTeamLine } from "react-icons/ri";
 import { LuPaintbrush } from "react-icons/lu";
 import { MdOutlineArticle, MdOutlinePolicy } from "react-icons/md";
 import { FaYoutube } from "react-icons/fa";
+import { IoNewspaperOutline } from "react-icons/io5";
 
 const menuItems = [
   { title: "Dashboard", icon: <IoHome />, href: "/admin" },
@@ -49,6 +50,7 @@ const menuItems = [
     icon: <MdOutlineArticle />,
     href: "/admin/blog",
   },
+  { title: "News", icon: <IoNewspaperOutline />, href: "/admin/news" },
   { title: "Pages", icon: <RiPagesLine />, href: "/admin/pages" },
   { title: "Menu", icon: <BsFillMenuButtonFill />, href: "/admin/menu" },
   { title: "Teams", icon: <RiTeamLine />, href: "/admin/teams" },
