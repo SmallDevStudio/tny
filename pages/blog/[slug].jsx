@@ -79,25 +79,25 @@ export default function BlogSlug() {
               <h2
                 className="text-2xl lg:text-4xl font-extrabold"
                 style={{
-                  color: blog.style.titleColor,
-                  fontSize: blog.style.titleFontSize,
+                  color: blog?.style.titleColor,
+                  fontSize: blog?.style.titleFontSize,
                 }}
               >
-                {t(blog.title)}
+                {t(blog?.title)}
               </h2>
               <p
                 className="font-light"
                 style={{
-                  color: blog.style.desecriptionColor,
-                  fontSize: blog.style.descriptionFontSize,
+                  color: blog?.style.desecriptionColor,
+                  fontSize: blog?.style.descriptionFontSize,
                 }}
               >
-                {t(blog.description)}
+                {t(blog?.description)}
               </p>
             </div>
             <div className="flex justify-center w-full mt-6 lg:mt-0 lg:max-w-[500px] mx-auto">
               <Image
-                src={blog.image.url}
+                src={blog?.image.url}
                 alt="mockup"
                 width={500}
                 height={500}
@@ -112,27 +112,27 @@ export default function BlogSlug() {
       {/* Creator Section */}
       <section className="max-w-screen-xl mx-auto px-4 py-6">
         <div className="flex flex-row items-center w-full">
-          {blog.creator.map((creator) => (
+          {blog?.creator.map((creator) => (
             <div key={creator.id} className="flex flex-row items-center gap-2">
               <div className="flex w-16 h-16 hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer">
                 <Image
-                  src={creator.image.url || "/images/avatar.png"}
+                  src={creator?.image?.url || "/images/avatar.png"}
                   alt="creator"
                   width={50}
                   height={50}
                   className="object-contain rounded-full border bg-white border-gray-200 w-full h-full"
                   priority
                   onClick={() =>
-                    router.push(creator.slug ? creator.slug : null)
+                    router.push(creator?.slug ? creator?.slug : null)
                   }
                 />
               </div>
               <div className="flex flex-col">
                 <h2 className="text-xl font-bold text-orange-500">
-                  {creator.name}
+                  {creator?.name}
                 </h2>
-                {creator.position && <span>{creator?.position}</span>}
-                <span>{moment(blog.createAt).fromNow()}</span>
+                {creator?.position && <span>{creator?.position}</span>}
+                <span>{moment(blog?.createAt).fromNow()}</span>
               </div>
             </div>
           ))}
@@ -142,7 +142,7 @@ export default function BlogSlug() {
       {/* Content Section */}
       <div>
         <div className="max-w-screen-xl mx-auto px-4 py-6 mb-4">
-          <ClientOnlyContent html={blog.content} />
+          <ClientOnlyContent html={blog?.content} />
         </div>
       </div>
     </div>
