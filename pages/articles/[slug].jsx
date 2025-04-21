@@ -24,7 +24,7 @@ const ClientOnlyContent = dynamic(
   { ssr: false }
 );
 
-const blog = {
+const article = {
   id: 1,
   image: { url: "/images/sections/sample-image-500x210.png" },
   title: {
@@ -57,7 +57,7 @@ const blog = {
   },
 };
 
-export default function BlogSlug() {
+export default function ArticleSlug() {
   const { t, lang } = useLanguage();
   const router = useRouter();
   const { slug } = router.query;
@@ -79,25 +79,25 @@ export default function BlogSlug() {
               <h2
                 className="text-2xl lg:text-4xl font-extrabold"
                 style={{
-                  color: blog.style.titleColor,
-                  fontSize: blog.style.titleFontSize,
+                  color: article.style.titleColor,
+                  fontSize: article.style.titleFontSize,
                 }}
               >
-                {t(blog.title)}
+                {t(article.title)}
               </h2>
               <p
                 className="font-light"
                 style={{
-                  color: blog.style.desecriptionColor,
-                  fontSize: blog.style.descriptionFontSize,
+                  color: article.style.desecriptionColor,
+                  fontSize: article.style.descriptionFontSize,
                 }}
               >
-                {t(blog.description)}
+                {t(article.description)}
               </p>
             </div>
             <div className="flex justify-center w-full mt-6 lg:mt-0 lg:max-w-[500px] mx-auto">
               <Image
-                src={blog.image.url}
+                src={article.image.url}
                 alt="mockup"
                 width={500}
                 height={500}
@@ -112,7 +112,7 @@ export default function BlogSlug() {
       {/* Creator Section */}
       <section className="max-w-screen-xl mx-auto px-4 py-6">
         <div className="flex flex-row items-center w-full">
-          {blog.creator.map((creator) => (
+          {article.creator.map((creator) => (
             <div key={creator.id} className="flex flex-row items-center gap-2">
               <div className="flex w-16 h-16 hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer">
                 <Image
@@ -132,7 +132,7 @@ export default function BlogSlug() {
                   {creator.name}
                 </h2>
                 {creator.position && <span>{creator?.position}</span>}
-                <span>{moment(blog.createAt).fromNow()}</span>
+                <span>{moment(article.createAt).fromNow()}</span>
               </div>
             </div>
           ))}
@@ -142,7 +142,7 @@ export default function BlogSlug() {
       {/* Content Section */}
       <div>
         <div className="max-w-screen-xl mx-auto px-4 py-6 mb-4">
-          <ClientOnlyContent html={blog.content} />
+          <ClientOnlyContent html={article.content} />
         </div>
       </div>
     </div>

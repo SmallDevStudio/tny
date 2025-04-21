@@ -15,7 +15,6 @@ import Header from "@/components/utils/Header";
 import Loading from "@/components/utils/Loading";
 import Image from "next/image";
 import ContentCard from "@/components/Card/ContentCard";
-import HightLight from "@/components/Card/HightLight";
 
 const blogData = {
   title: {
@@ -69,19 +68,6 @@ const blogData = {
       },
       url: "https://www.thenewyou.co.th",
     },
-    {
-      id: 4,
-      image: { url: "/images/sections/sample-image-500x210.png" },
-      title: {
-        th: "ทดสอบหัวเรื่อง",
-        en: "Sample title",
-      },
-      description: {
-        th: "คําอธิบายภาษาไทย",
-        en: "English description",
-      },
-      url: "https://www.thenewyou.co.th",
-    },
   ],
   style: {
     bgColor: "#757474",
@@ -94,7 +80,7 @@ const blogData = {
   },
 };
 
-export default function BlogPage() {
+export default function ArticlePage() {
   const { t, lang } = useLanguage();
   const [title, setTitle] = useState({
     th: "ทดสอบหัวเรื่อง",
@@ -111,7 +97,7 @@ export default function BlogPage() {
     desecriptionColor: "#f5f2f2",
     descriptionFontSize: "20px",
     gap: 2,
-    cols: 4,
+    cols: 3,
   });
   const [image, setImage] = useState({
     url: "/images/sections/sample-image-500x210.png",
@@ -144,6 +130,9 @@ export default function BlogPage() {
 
     fetchData();
   }, [pathname]);
+
+  console.log("pageData", pageData);
+  console.log("blogs", blogs);
 
   if (loading) return <Loading />;
   if (!pathname) return null;
@@ -194,9 +183,6 @@ export default function BlogPage() {
           </div>
         </div>
       </section>
-
-      {/* Highlight Section */}
-      <HightLight item={blogData.contents} />
 
       {/* Blog Section */}
       <section>
