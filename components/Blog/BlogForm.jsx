@@ -89,18 +89,18 @@ export default function BlogForm({ onClose, blog, isNewblog }) {
     setCover(file[0]);
   };
 
-  const handleThumbnail = (file) => {
-    setThumbnail(file[0]);
-  };
-
   const handleRemoveCover = () => {
     deleteFile(cover.file_id);
     setCover(null);
   };
 
-  const handleRemoveThumbnail = () => {
-    deleteFile(thumbnail.file_id);
-    setThumbnail(null);
+  const generateSlug = (text) => {
+    const raw = typeof text === "string" ? text : text?.en || text?.th || "";
+    return raw
+      .trim()
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "") // ลบอักขระพิเศษ
+      .replace(/\s+/g, "-"); // แปลงช่องว่างเป็น `-`
   };
 
   const handleSubmit = async (e) => {
@@ -120,7 +120,6 @@ export default function BlogForm({ onClose, blog, isNewblog }) {
         cover: cover ? cover : null,
         group: form.group,
         subgroup: form.subgroup,
-        price: form.price,
         tags: tags,
         content: content,
         active: true,
@@ -128,7 +127,10 @@ export default function BlogForm({ onClose, blog, isNewblog }) {
         updated_at: new Date().toISOString(),
         created_by: "",
         updated_by: "",
+        slug: generateSlug(form.name.en),
       };
+
+      console.log("data", data);
 
       const docRef = doc(db, "blogs", newId.toString());
       const docSnap = await getDoc(docRef);
