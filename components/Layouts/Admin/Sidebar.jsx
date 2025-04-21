@@ -15,8 +15,8 @@ import { MdOutlinePermContactCalendar } from "react-icons/md";
 import { TbSection } from "react-icons/tb";
 import { RiTeamLine } from "react-icons/ri";
 import { LuPaintbrush } from "react-icons/lu";
-import { MdOutlineArticle } from "react-icons/md";
-import { MdOutlinePolicy } from "react-icons/md";
+import { MdOutlineArticle, MdOutlinePolicy } from "react-icons/md";
+import { FaYoutube } from "react-icons/fa";
 
 const menuItems = [
   { title: "Dashboard", icon: <IoHome />, href: "/admin" },
@@ -52,6 +52,7 @@ const menuItems = [
   { title: "Pages", icon: <RiPagesLine />, href: "/admin/pages" },
   { title: "Menu", icon: <BsFillMenuButtonFill />, href: "/admin/menu" },
   { title: "Teams", icon: <RiTeamLine />, href: "/admin/teams" },
+  { title: "Videos", icon: <FaYoutube />, href: "/admin/videos" },
   { title: "Themes", icon: <LuPaintbrush />, href: "/admin/themes" },
   {
     title: "Users",

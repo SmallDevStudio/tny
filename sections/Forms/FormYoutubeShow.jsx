@@ -45,8 +45,6 @@ export default function FormYoutubeShow({
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
 
-  console.log("style", style);
-
   return (
     <div className="w-full">
       {/* Edit Mode */}
