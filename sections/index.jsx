@@ -8,6 +8,10 @@ import Layout5 from "./Layout5";
 import Header from "./Header";
 import ContentList from "./ContentList";
 import ContentListImage from "./ContentListImage";
+import HightLight from "./HightLight";
+import FixHightLight from "./FixHightLight";
+import ContentHightLight from "./ContentHightLight";
+import ShortHightLight from "./ShortHightLight";
 import YoutubeShow from "./YoutubeShow";
 
 export const Sections = [
@@ -84,7 +88,42 @@ export const Sections = [
     thumbnail: "/images/sections/previews/header.png",
     component: Header,
   },
-
+  {
+    name: "hightlight",
+    description: {
+      en: "content hightlight",
+      th: "เนื้อหาสําคัญ",
+    },
+    thumbnail: "/images/sections/previews/hightlight.png",
+    component: HightLight,
+  },
+  {
+    name: "fixHightlight",
+    description: {
+      en: "content hightlight",
+      th: "เนื้อหาสําคัญ",
+    },
+    thumbnail: "/images/sections/previews/hightlight.png",
+    component: FixHightLight,
+  },
+  {
+    name: "contentHightlight",
+    description: {
+      en: "content hightlight",
+      th: "เนื้อหาสําคัญ",
+    },
+    thumbnail: "/images/sections/previews/contentHightlight.png",
+    component: ContentHightLight,
+  },
+  {
+    name: "shortHightlight",
+    description: {
+      en: "content hightlight",
+      th: "เนื้อหาสําคัญ",
+    },
+    thumbnail: "/images/sections/previews/shortHightlight.png",
+    component: ShortHightLight,
+  },
   {
     name: "contentList",
     description: {
