@@ -338,7 +338,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                       <button
                         type="button"
                         className="bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                        onClick={() => handleRemoveImage()}
+                        onClick={() => handleRemoveImage(image)}
                       >
                         <IoClose size={10} />
                       </button>
