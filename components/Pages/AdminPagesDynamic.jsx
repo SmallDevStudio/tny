@@ -12,10 +12,8 @@ import {
 import { useRouter } from "next/router";
 import useLanguage from "@/hooks/useLanguage";
 import { Dialog, Slide, Divider } from "@mui/material";
-import PageDynamicForm from "./PageDynamicForm";
 import { IoClose } from "react-icons/io5";
 import SectionDynamic from "./SectionDynamic";
-import GroupForm from "./GroupForm";
 import Link from "next/link";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -24,83 +22,71 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function AdminPagesDynamic() {
   const [pages, setPages] = useState([]);
-  const [openForm, setOpenForm] = useState(false);
   const [selectedPage, setSelectedPage] = useState(null);
   const [openSections, setOpenSections] = useState(false);
-  const [openSelectForm, setOpenSelectForm] = useState(false);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { lang, t } = useLanguage();
 
   useEffect(() => {
     const pagesRef = collection(db, "pages");
+    const pageSlugRef = collection(db, "pages_slug");
 
-    // Firebase ยังไม่รองรับ where("type", "!=", "dynamic_page") แบบ realtime โดยตรงบน client
-    // ดังนั้นเราจะใช้ onSnapshot กับทั้งหมด แล้ว filter เอง
-    const unsubscribe = onSnapshot(
-      pagesRef,
-      (snapshot) => {
-        const pagesData = snapshot.docs
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-          .filter((page) => page.type === "dynamic_page");
+    const fetchData = async () => {
+      try {
+        const [pagesSnap, pageSlugSnap] = await Promise.all([
+          getDocs(pagesRef),
+          getDocs(pageSlugRef),
+        ]);
 
-        setPages(pagesData);
+        // ✅ 1. เตรียม Pages ที่ multiple === true
+        const pagesData = pagesSnap.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .filter((page) => page.multiple === true);
+
+        // ✅ 2. เตรียม Pages_slug ทั้งหมด
+        const pageSlugData = pageSlugSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        // ✅ 3. รวมข้อมูลจาก pages + pages_slug
+        const combinedData = pagesData.map((page) => {
+          const matchedPageSlug = pageSlugData.find(
+            (slug) => slug.page === page.slug
+          );
+
+          return {
+            title: page.title,
+            slug: page.slug,
+            sections: matchedPageSlug?.sections || [],
+          };
+        });
+
+        setPages(combinedData);
         setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching pages:", error);
+      } catch (error) {
+        console.error("Error fetching data:", error);
         setLoading(false);
       }
-    );
+    };
 
-    return () => unsubscribe(); // ✅ cleanup เมื่อ component unmount
+    fetchData();
   }, []);
 
-  const handleOpenForm = () => {
-    setOpenForm(true);
-  };
-
-  const handleCloseForm = () => {
-    setSelectedPage(null);
-    setOpenForm(false);
-    router.reload();
-  };
-
-  const handleEditForm = (page) => {
-    setSelectedPage(page);
-    setOpenForm(true);
-  };
-
-  const handleDeletePage = async (id) => {
-    if (!confirm("Are you sure you want to delete this page?")) return;
-
-    try {
-      await deleteDoc(doc(db, "pages", id));
-      setPages(pages.filter((page) => page.id !== id));
-    } catch (error) {
-      console.error("Error deleting page:", error);
-    }
-  };
+  console.log(pages);
 
   const handleOpenSections = (page) => {
     setSelectedPage(page);
+    setSections(page.sections);
     setOpenSections(true);
   };
 
   const handleCloseSections = () => {
     setSelectedPage(null);
+    setSections([]);
     setOpenSections(false);
-  };
-
-  const handleOpenGroup = () => {
-    setOpenSelectForm(true);
-  };
-
-  const handleCloseGroup = () => {
-    setOpenSelectForm(false);
   };
 
   if (loading) {
@@ -111,15 +97,10 @@ export default function AdminPagesDynamic() {
     );
   }
 
-  console.log("selectedPage", selectedPage);
-
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">{lang["management_pages"]}</h1>
-      <button
-        className="bg-orange-500 text-white px-3 py-1 rounded-md mb-4"
-        onClick={handleOpenGroup}
-      >
+      <button className="bg-orange-500 text-white px-3 py-1 rounded-md mb-4">
         Group Managements
       </button>
       <Divider sx={{ mb: 2, mt: 2 }} />
@@ -134,20 +115,8 @@ export default function AdminPagesDynamic() {
             </span>
             <div>
               <button
-                className="bg-green-500 text-white px-3 py-1 rounded-md mx-2"
-                onClick={() => router.push(`/${page.slug}`)}
-              >
-                View
-              </button>
-              <button
-                className="bg-blue-500 text-white px-3 py-1 rounded-md mx-2"
-                onClick={() => handleEditForm(page)}
-              >
-                Edit
-              </button>
-              <button
-                className="bg-orange-500 text-white px-3 py-1 rounded-md mx-2"
                 onClick={() => handleOpenSections(page)}
+                className="bg-orange-500 text-white px-3 py-1 rounded-md mx-2"
               >
                 Sections
               </button>
@@ -159,36 +128,10 @@ export default function AdminPagesDynamic() {
               >
                 Edit Page
               </Link>
-
-              <button
-                className="bg-red-500 text-white px-3 py-1 rounded-md mx-2"
-                onClick={() => handleDeletePage(page.id)}
-              >
-                Delete
-              </button>
             </div>
           </li>
         ))}
       </ul>
-      <Dialog
-        fullScreen
-        open={openForm}
-        onClose={handleCloseForm}
-        TransitionComponent={Transition}
-        keepMounted
-      >
-        <div>
-          <div className="flex flex-row p-2 items-center justify-between bg-orange-500 text-white">
-            <h2>{lang["create_page"]}</h2>
-            <IoClose
-              size={25}
-              onClick={handleCloseForm}
-              className="cursor-pointer"
-            />
-          </div>
-          <PageDynamicForm onClose={handleCloseForm} page={selectedPage} />
-        </div>
-      </Dialog>
 
       <Dialog
         fullScreen
@@ -196,41 +139,26 @@ export default function AdminPagesDynamic() {
         onClose={handleCloseSections}
         TransitionComponent={Transition}
         keepMounted
+        sx={{
+          "& .MuiDialog-paper": {
+            zIndex: 99,
+          },
+        }}
       >
-        <div>
-          <div className="flex flex-row p-2 items-center justify-between bg-orange-500 text-white">
-            <h2>{lang["select_section"]}</h2>
+        <div className="flex flex-col h-screen">
+          <div className="flex flex-row items-center justify-between p-4 bg-orange-500">
+            <span className="text-white font-bold">Section Select</span>
             <IoClose
-              size={25}
+              className="text-white"
+              size={24}
               onClick={handleCloseSections}
-              className="cursor-pointer"
             />
           </div>
           <SectionDynamic
-            sections={selectedPage?.sections || []}
+            page={selectedPage}
+            sections={sections}
             onClose={handleCloseSections}
-            page={selectedPage?.slug || "home"}
           />
-        </div>
-      </Dialog>
-
-      <Dialog
-        fullScreen
-        open={openSelectForm}
-        onClose={handleCloseGroup}
-        TransitionComponent={Transition}
-        keepMounted
-      >
-        <div>
-          <div className="flex flex-row p-2 items-center justify-between bg-orange-500 text-white">
-            <h2>{lang["select_group"]}</h2>
-            <IoClose
-              size={25}
-              onClick={handleCloseGroup}
-              className="cursor-pointer"
-            />
-          </div>
-          <GroupForm collectionPath="groups" />
         </div>
       </Dialog>
     </div>

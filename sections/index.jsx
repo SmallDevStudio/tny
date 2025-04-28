@@ -13,6 +13,10 @@ import FixHightLight from "./FixHightLight";
 import ContentHightLight from "./ContentHightLight";
 import ShortHightLight from "./ShortHightLight";
 import YoutubeShow from "./YoutubeShow";
+import HeaderCourses from "./HeaderCourses";
+import Contents from "./Contents";
+import FooterCourses from "./FooterCourses";
+import HeaderTeam from "./HeaderTeam";
 
 export const Sections = [
   {
@@ -23,6 +27,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/carousel.png",
     component: Carousel,
+    group: "slideshow",
   },
   {
     name: "layout1",
@@ -32,6 +37,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/layout1.png",
     component: Layout1,
+    group: "layout",
   },
   {
     name: "layout2",
@@ -41,6 +47,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/layout2.png",
     component: Layout2,
+    group: "layout",
   },
   {
     name: "layout3",
@@ -50,6 +57,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/layout3.png",
     component: Layout3,
+    group: "layout",
   },
   {
     name: "layout4",
@@ -59,6 +67,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/layout4.png",
     component: Layout4,
+    group: "layout",
   },
   {
     name: "layout5",
@@ -68,6 +77,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/layout5.png",
     component: Layout5,
+    group: "layout",
   },
   {
     name: "team",
@@ -77,6 +87,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/team.png",
     component: Team,
+    group: "layout",
   },
 
   {
@@ -87,6 +98,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/header.png",
     component: Header,
+    group: "header",
   },
   {
     name: "hightlight",
@@ -96,6 +108,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/hightlight.png",
     component: HightLight,
+    group: "hightlight",
   },
   {
     name: "fixHightlight",
@@ -105,6 +118,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/hightlight.png",
     component: FixHightLight,
+    group: "hightlight",
   },
   {
     name: "contentHightlight",
@@ -114,6 +128,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/contentHightlight.png",
     component: ContentHightLight,
+    group: "hightlight",
   },
   {
     name: "shortHightlight",
@@ -123,6 +138,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/shortHightlight.png",
     component: ShortHightLight,
+    group: "hightlight",
   },
   {
     name: "contentList",
@@ -132,6 +148,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/contentList.png",
     component: ContentList,
+    group: "content",
   },
   {
     name: "contentListImage",
@@ -141,6 +158,7 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/contentListImage.png",
     component: ContentListImage,
+    group: "content",
   },
   {
     name: "youtubeShow",
@@ -150,5 +168,46 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/youtubeShow.png",
     component: YoutubeShow,
+    group: "media",
+  },
+  {
+    name: "headerCourses",
+    description: {
+      en: "Header for Courses",
+      th: "ส่วนหัวเพจ courses",
+    },
+    thumbnail: "/images/sections/previews/headerCourses.png",
+    component: HeaderCourses,
+    group: "courses",
+  },
+  {
+    name: "contents",
+    description: {
+      en: "show content",
+      th: "แสดงเนื้อหา",
+    },
+    thumbnail: "/images/sections/previews/contents.png",
+    component: Contents,
+    group: "content",
+  },
+  {
+    name: "footerCourses",
+    description: {
+      en: "Footer for Courses",
+      th: "ส่วนท้ายเพจ Courses",
+    },
+    thumbnail: "/images/sections/previews/headerCourses.png",
+    component: FooterCourses,
+    group: "courses",
+  },
+  {
+    name: "headerTeam",
+    description: {
+      en: "Header for Team",
+      th: "ส่วนหัวเพจ Team",
+    },
+    thumbnail: "/images/sections/previews/headerTeam.png",
+    component: HeaderTeam,
+    group: "team",
   },
 ];

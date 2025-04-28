@@ -29,6 +29,8 @@ import {
   updateDoc,
   addDoc,
 } from "firebase/firestore";
+import { Popover } from "@mui/material";
+import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
 
 const SortableItem = ({ id, children }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -43,7 +45,10 @@ const SortableItem = ({ id, children }) => {
 
 export default function SectionDynamic({ page, sections, onClose }) {
   const [selectedSections, setSelectedSections] = useState([]);
+  const [expandedGroups, setExpandedGroups] = useState({});
   const [contextMenu, setContextMenu] = useState(null);
+  const [selectedPreview, setSelectedPreview] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const { lang } = useLanguage();
   const { update } = useDB("pages");
 
@@ -61,13 +66,18 @@ export default function SectionDynamic({ page, sections, onClose }) {
 
   // ✅ ฟังก์ชันเลือก Section และป้องกันการเลือกซ้ำ
   const handleSelectedSection = (section) => {
-    setSelectedSections((prev) => [
+    const newSection = {
+      id: nanoid(), // สร้าง id
+      component: section.name,
+    };
+    setSelectedSections((prev) => [...prev, newSection]);
+  };
+
+  const toggleGroup = (group) => {
+    setExpandedGroups((prev) => ({
       ...prev,
-      {
-        id: nanoid(), // ✅ id สำหรับจัดเรียง
-        component: section.name, // ✅ ประเภทของ section
-      },
-    ]);
+      [group]: !prev[group], // toggle true/false
+    }));
   };
 
   // ✅ ฟังก์ชันลบ Section ออกจาก `selectedSections`
@@ -101,20 +111,40 @@ export default function SectionDynamic({ page, sections, onClose }) {
     setContextMenu(null);
   };
 
-  const updatePageBySlug = async (slug, data) => {
-    const q = query(collection(db, "pages"), where("slug", "==", slug));
-    const snapshot = await getDocs(q);
-    const pageRef = snapshot.docs[0]?.ref;
-
-    if (!pageRef) throw new Error("Page not found");
-
-    await updateDoc(pageRef, data);
-  };
-
   const handleSubmit = async () => {
-    if (selectedSections.length > 0) {
+    if (selectedSections.length > 0 && page?.slug) {
       try {
-        await updatePageBySlug(page, { sections: selectedSections });
+        const now = new Date();
+        const docRef = doc(db, "pages_slug", page.slug); // 👉 ชื่อเอกสารตาม slug
+        const docSnap = await getDoc(docRef);
+
+        // ✅ สำคัญ! sanitize sections ก่อน save
+        const cleanSections = selectedSections
+          .map((s) => ({
+            id: s.id || nanoid(),
+            component: typeof s.component === "string" ? s.component : "", // ป้องกันพัง
+            contentId: s.contentId || null,
+          }))
+          .filter((s) => s.component); // กรอง component ว่างออก
+
+        if (docSnap.exists()) {
+          // ✅ ถ้าเอกสารมีอยู่แล้ว ➔ update
+          await updateDoc(docRef, {
+            page: page.slug,
+            sections: cleanSections,
+            updateAt: now,
+          });
+        } else {
+          // ✅ ถ้าเอกสารยังไม่มี ➔ create ใหม่
+          await setDoc(docRef, {
+            id: nanoid(),
+            page: page.slug,
+            sections: cleanSections,
+            createAt: now,
+            updateAt: now,
+          });
+        }
+
         toast.success("บันทึกข้อมูลสำเร็จแล้ว!");
         onClose();
       } catch (error) {
@@ -133,19 +163,104 @@ export default function SectionDynamic({ page, sections, onClose }) {
           <span className="text-sm text-gray-500 mb-2">
             {lang["available_sections_desc"]}
           </span>
-          {Sections.map((section, index) => (
+
+          {/* GROUP SECTIONS */}
+          {Object.entries(
+            Sections.reduce((acc, section) => {
+              if (!acc[section.group]) acc[section.group] = [];
+              acc[section.group].push(section);
+              return acc;
+            }, {})
+          ).map(([groupName, groupSections]) => (
             <div
-              key={index}
-              className="flex flex-row items-center gap-6 border border-gray-400 p-4 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-              onClick={() => handleSelectedSection(section)}
+              key={groupName}
+              className="border border-gray-300 rounded-md overflow-hidden"
             >
-              <Image
-                src={section?.thumbnail}
-                alt={section.name}
-                width={80}
-                height={80}
-              />
-              <div className="font-semibold">{section.name}</div>
+              {/* Group Title */}
+              <div
+                onClick={() => toggleGroup(groupName)}
+                className="bg-gray-200 dark:bg-gray-700 px-4 py-2 cursor-pointer flex justify-between items-center font-bold"
+              >
+                <span>{groupName}</span>
+                <span>
+                  {expandedGroups[groupName] ? (
+                    <IoIosArrowDown />
+                  ) : (
+                    <IoIosArrowBack />
+                  )}
+                </span>
+              </div>
+
+              {/* Section Items (only show when expanded) */}
+              {expandedGroups[groupName] && (
+                <div className="flex flex-col gap-2 p-2 bg-white dark:bg-gray-800">
+                  {groupSections.map((section) => (
+                    <div
+                      key={section.name}
+                      className="relative flex items-center gap-4 p-2 border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer"
+                      onClick={(e) => {
+                        if (selectedPreview === section.name) {
+                          // ถ้ากดอันเดิม ให้ปิด
+                          setSelectedPreview(null);
+                          setAnchorEl(null);
+                        } else {
+                          // ถ้ากดอันใหม่
+                          setSelectedPreview(section.name);
+                          setAnchorEl(e.currentTarget);
+                        }
+                      }}
+                      onDoubleClick={() => {
+                        handleSelectedSection(section);
+                        setSelectedPreview(null);
+                        setAnchorEl(null);
+                      }}
+                    >
+                      <Image
+                        src={section?.thumbnail}
+                        alt={section.name}
+                        width={30}
+                        height={30}
+                      />
+                      <div className="text-sm font-medium">{section.name}</div>
+
+                      {/* ✅ Tooltip Preview */}
+                      <Popover
+                        open={
+                          Boolean(anchorEl) && selectedPreview === section.name
+                        }
+                        anchorEl={anchorEl}
+                        onClose={() => {
+                          setSelectedPreview(null);
+                          setAnchorEl(null);
+                        }}
+                        anchorOrigin={{
+                          vertical: "center",
+                          horizontal: "right",
+                        }}
+                        transformOrigin={{
+                          vertical: "center",
+                          horizontal: "left",
+                        }}
+                      >
+                        <div className="flex flex-col items-center p-4 w-64">
+                          <Image
+                            src={section.thumbnail}
+                            width={400}
+                            height={400}
+                            alt="preview"
+                          />
+                          <h3 className="text-md font-bold mt-2">
+                            {section.description.th}
+                          </h3>
+                          <p className="text-xs text-gray-500">
+                            {section.description.en}
+                          </p>
+                        </div>
+                      </Popover>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>

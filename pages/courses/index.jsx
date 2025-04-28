@@ -59,7 +59,10 @@ export default function Courses() {
         ? sections.map((section) => (
             <div key={section.id}>
               {section.component && (
-                <section.component contentId={section.id} />
+                <section.component
+                  contentId={section.contentId}
+                  pageData={pageData}
+                />
               )}
             </div>
           ))

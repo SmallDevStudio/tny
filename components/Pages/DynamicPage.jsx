@@ -46,12 +46,13 @@ export default function DynamicPage({ slugPath }) {
   return (
     <div>
       <Header title={t(pageData.title)} description={t(pageData.description)} />
-      {sections.map((section) =>
-        section?.component ? (
-          <div key={section.id}>
-            <section.component contentId={section.id} />
-          </div>
-        ) : null
+      {sections.map(
+        (section) =>
+          section?.component && (
+            <div key={section.id}>
+              <section.component contentId={section.id} />
+            </div>
+          )
       )}
     </div>
   );

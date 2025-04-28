@@ -5,6 +5,7 @@ import FormLayout4 from "./Forms/FormLayout4";
 import { toast } from "react-toastify";
 import { db } from "@/services/firebase";
 import { doc, getDoc, setDoc, addDoc, collection } from "firebase/firestore";
+import { useRouter } from "next/router";
 
 const sampleData = {
   title: {
@@ -43,9 +44,12 @@ export default function Layout4({
   const [title, setTitle] = useState({});
   const [description, setDescription] = useState({});
   const [image, setImage] = useState([]);
+  const [contents, setContents] = useState([]);
   const [style, setStyle] = useState({});
+  const [type, setType] = useState("");
 
   const { t } = useLanguage();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,12 +63,16 @@ export default function Layout4({
         setTitle(data?.title || sampleData.title);
         setDescription(data?.description || sampleData.description);
         setImage(data?.image || sampleData.image);
+        setContents(data?.contents || []);
         setStyle(data?.style || sampleData.style);
+        setType(data?.type || "");
       } else {
         setTitle(sampleData.title);
         setDescription(sampleData.description);
         setImage(sampleData.image);
         setStyle(sampleData.style);
+        setType(sampleData.type || "");
+        setContents([]);
       }
     };
 
@@ -78,7 +86,9 @@ export default function Layout4({
       title,
       description,
       image,
+      contents,
       style,
+      type,
       component: "layout4",
     };
 
@@ -116,23 +126,47 @@ export default function Layout4({
       <div
         className={`grid max-w-screen-xl px-4 py-4 mx-auto lg:gap-${style.gap} xl:gap-${style.gap} lg:py-2 lg:grid-cols-${style.cols}`}
       >
-        {image &&
-          image.length > 0 &&
-          image.map((m, index) => (
-            <div
-              key={index}
-              className="relative hover:scale-105 transition-all duration-500 ease-in-out hover:z-50 active:z-50"
-            >
-              <Image
-                src={m.url}
-                alt={`image-${index}`}
-                width={700}
-                height={700}
-                loading="lazy"
-                className="w-full h-full object-contain cursor-pointer"
-              />
-            </div>
-          ))}
+        {type === "images"
+          ? image &&
+            image.length > 0 &&
+            image.map((m, index) => (
+              <div
+                key={index}
+                className="relative hover:scale-105 transition-all duration-500 ease-in-out hover:z-50 active:z-50"
+              >
+                <Image
+                  src={m.url}
+                  alt={`image-${index}`}
+                  width={700}
+                  height={700}
+                  loading="lazy"
+                  className="w-full h-full object-contain cursor-pointer"
+                />
+              </div>
+            ))
+          : contents.map((item, index) => (
+              <div
+                key={index}
+                className="relative hover:scale-105 transition-all duration-500 ease-in-out hover:z-50 active:z-50"
+                onClick={() => {
+                  if (!item?.slug) return; // ✅ ถ้า slug ไม่มี ไม่ทำอะไร
+                  const path = item.group
+                    ? `/${item.page}/${item.group}/${item.slug}`
+                    : `/${item.page}/${item.slug}`;
+
+                  router.push(path);
+                }}
+              >
+                <Image
+                  src={item?.image?.url || "/default-image.png"} // ✅ กัน null error ด้วย
+                  alt={`image-${index}`}
+                  width={700}
+                  height={700}
+                  loading="lazy"
+                  className="w-full h-full object-contain cursor-pointer"
+                />
+              </div>
+            ))}
       </div>
       {editMode && (
         <div className="flex justify-center p-4">
@@ -143,8 +177,12 @@ export default function Layout4({
             setDescription={setDescription}
             image={image}
             setImage={setImage}
+            contents={contents}
+            setContents={setContents}
             style={style}
             setStyle={setStyle}
+            type={type}
+            setType={setType}
             language={language}
             setLanguage={setLanguage}
             handleSubmit={handleSubmit}

@@ -285,5 +285,8 @@
   "edit_news": "แก้ไขข่าวสาร",
   "delete_news": "ลบข่าวสาร",
   "type_news": "ประเภทข่าวสาร",
-  "multiple_choice": "มีเพจย่อย"
+  "multiple_choice": "มีเพจย่อย",
+  "images": "รูปภาพ",
+  "select_type": "เลือกประเภท",
+  "select_content": "เลือกเนื้อหา"
 }

@@ -8,10 +8,14 @@ export const getSections = (sectionsData) => {
 
   return sectionsData
     .map((section) => {
+      if (!section.component || typeof section.component !== "string") {
+        console.warn("Invalid component type in section:", section);
+        return null;
+      }
       const foundSection = Sections.find((s) => s.name === section.component);
       return foundSection
         ? { ...foundSection, id: section.id, contentId: section.contentId }
         : null;
     })
-    .filter(Boolean); // กรองค่า null ออก
+    .filter(Boolean);
 };

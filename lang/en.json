@@ -281,5 +281,8 @@
   "edit_news": "Edits News",
   "delete_news": "Delete News",
   "type_news": "Type News",
-  "multiple_choice": "Multiple Page"
+  "multiple_choice": "Multiple Page",
+  "images": "Images",
+  "select_type": "Select Type",
+  "select_content": "Select Content"
 }
