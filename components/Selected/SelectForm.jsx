@@ -23,18 +23,17 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function SelectForm({ collectionPath, value, setValue, page }) {
+export default function SelectForm({ page, value, setValue, type }) {
   const [group, setGroup] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [optionName, setOptionName] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
-  const { lang } = useLanguage();
-  const { subscribe, add, update, remove } = useDB(collectionPath);
+  const [optionName, setOptionName] = useState({ th: "", en: "" });
+  const [openDialogModal, setopenDialogModalModal] = useState(false);
+  const { t, lang } = useLanguage();
 
   useEffect(() => {
-    if (!collectionPath || !page) return;
+    if (!type || !page) return;
 
-    const q = query(collection(db, collectionPath), where("page", "==", page));
+    const q = query(collection(db, "options"), where("page", "==", page));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const groups = snapshot.docs.map((doc) => ({
@@ -45,89 +44,60 @@ export default function SelectForm({ collectionPath, value, setValue, page }) {
     });
 
     return () => unsubscribe();
-  }, [collectionPath, page]);
+  }, [type, page]);
 
   useEffect(() => {
     if (value === "create") {
-      setOpenDialog(true);
+      setopenDialogModalModal(true);
     }
   }, [value]);
 
-  const generateSlug = (text) => {
-    const raw = typeof text === "string" ? text : text?.en || text?.th || "";
-    return raw
-      .trim()
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, "") // ลบอักขระพิเศษ
-      .replace(/\s+/g, "-"); // แปลงช่องว่างเป็น `-`
-  };
-
   const handleCreateOption = async () => {
-    if (!optionName.trim()) return;
+    if (!optionName?.th?.trim() && !optionName?.en?.trim()) return;
 
-    const valueSlug = optionName.toLowerCase().replace(/\s+/g, "_");
-    const slug = generateSlug(valueSlug);
+    const valueKey = optionName.en.toLowerCase().replace(/\s+/g, "_");
 
     try {
       if (selectedGroup) {
-        // 👇 แก้ไข group
-        await update(selectedGroup.id, {
-          name: optionName,
-          value: valueSlug,
+        // 👇 Update Option
+        await updateDoc(doc(db, "options", selectedGroup.id), {
+          name: {
+            th: optionName.th,
+            en: optionName.en,
+          },
+          value: valueKey,
           page: page,
+          type: type, // << ต้องมี type ด้วย
+          updated_at: new Date().toISOString(),
         });
-
-        // 👇 แก้ไข page
-        const q = query(
-          collection(db, "pages"),
-          where("slug", "==", `${page}/${selectedGroup.value}`)
-        );
-        const snapshot = await getDocs(q);
-
-        const pageRef = snapshot.docs[0]?.ref;
-        if (pageRef) {
-          await updateDoc(pageRef, {
-            name: optionName,
-            slug: `${page}/${slug}`,
-          });
-        }
-
         setSelectedGroup(null);
       } else {
-        // 👇 เพิ่ม group ใหม่
+        // 👇 Create New Option
         const newOption = {
-          name: optionName,
-          value: valueSlug,
+          name: {
+            th: optionName.th,
+            en: optionName.en,
+          },
+          value: valueKey,
           page: page,
-        };
-        await add(newOption);
-
-        const pageData = {
-          name: optionName,
-          title: {
-            en: "",
-            th: "",
-          },
-          description: {
-            en: "",
-            th: "",
-          },
-          slug: `${page}/${slug}`,
-          template: { base: "default", page },
-          sections: [],
-          type: "dynamic_page",
-          createdAt: new Date(),
+          type: type, // << ต้องมี type ด้วย
+          active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         };
 
-        await addDoc(collection(db, "pages"), pageData);
+        console.log("newOption", newOption);
+
+        // ต้องสร้าง doc ใหม่ให้ firebase สร้าง id ให้อัตโนมัติ
+        await addDoc(collection(db, "options"), newOption);
       }
 
       // รีเซ็ต state
-      setOptionName("");
+      setOptionName({ th: "", en: "" });
       setValue("");
-      setOpenDialog(false);
+      setopenDialogModalModal(false);
     } catch (err) {
-      console.error("Error creating/updating:", err);
+      console.error("Error creating/updating option:", err);
     }
   };
 
@@ -135,15 +105,7 @@ export default function SelectForm({ collectionPath, value, setValue, page }) {
     setValue("");
     setOptionName("");
     setSelectedGroup(null);
-    setOpenDialog(false);
-  };
-
-  const deletePageBySlug = async (slug) => {
-    const q = query(collection(db, "pages"), where("slug", "==", slug));
-    const snapshot = await getDocs(q);
-
-    const batchDeletes = snapshot.docs.map((docSnap) => deleteDoc(docSnap.ref));
-    await Promise.all(batchDeletes);
+    setopenDialogModalModal(false);
   };
 
   const handleRemoveOption = async (group) => {
@@ -163,10 +125,6 @@ export default function SelectForm({ collectionPath, value, setValue, page }) {
       try {
         // 1. ลบ group
         await remove(group.id);
-
-        // 2. ลบ page
-        const slug = `${page}/${group.value}`;
-        await deletePageBySlug(slug);
 
         setSelectedGroup(null);
       } catch (err) {
@@ -189,9 +147,9 @@ export default function SelectForm({ collectionPath, value, setValue, page }) {
       >
         <option value="">{lang["select_option"]}</option>
         {group.length > 0 ? (
-          group.map((data) => (
-            <option key={data.id} value={data.value}>
-              {data.name}
+          group.map((data, index) => (
+            <option key={index} value={data.value}>
+              {t(data.name)}
             </option>
           ))
         ) : (
@@ -202,11 +160,17 @@ export default function SelectForm({ collectionPath, value, setValue, page }) {
       </select>
 
       <Dialog
-        open={openDialog}
+        open={openDialogModal}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleCloseDialog}
         aria-describedby="alert-dialog-slide-description"
+        sx={{
+          "& .MuiDialog-paper": {
+            width: "100% !important",
+            maxWidth: "600px !important",
+          },
+        }}
       >
         <div className="flex flex-col">
           {/* Header */}
@@ -215,14 +179,14 @@ export default function SelectForm({ collectionPath, value, setValue, page }) {
             <IoClose onClick={handleCloseDialog} size={24} />
           </div>
           {/* Groups */}
-          <div className="flex flex-col w-full p-2">
+          <div className="flex flex-col w-full px-2 py-1">
             {group.length > 0
               ? group.map((item, index) => (
                   <div
                     key={index}
                     className="grid grid-cols-2 items-center gap-2"
                   >
-                    <span className="text-sm">{item.name}</span>
+                    <span className="text-sm">{t(item.name)}</span>
                     <div className="flex flex-row items-center gap-2">
                       <RiPencilLine
                         className="text-blue-600 hover:text-blue-800"
@@ -238,15 +202,35 @@ export default function SelectForm({ collectionPath, value, setValue, page }) {
               : null}
           </div>
           {/* form */}
-          <div className="flex flex-row items-center gap-2 p-2">
-            <input
-              type="text"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-              placeholder={lang["create_option_placeholder"]}
-              value={optionName}
-              onChange={(e) => setOptionName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreateOption()}
-            />
+          <div className="flex flex-col gap-2 p-2">
+            <div>
+              <label htmlFor="th">TH:</label>
+              <input
+                type="text"
+                id="th"
+                name="th"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                placeholder={"TH"}
+                value={optionName.th}
+                onChange={(e) =>
+                  setOptionName({ ...optionName, th: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <label htmlFor="en">EN:</label>
+              <input
+                type="text"
+                id="en"
+                name="en"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                placeholder={"EN"}
+                value={optionName.en}
+                onChange={(e) =>
+                  setOptionName({ ...optionName, en: e.target.value })
+                }
+              />
+            </div>
             <button
               className="px-3 py-1 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               onClick={handleCreateOption}

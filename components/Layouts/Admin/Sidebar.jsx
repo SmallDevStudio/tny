@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import useLanguage from "@/hooks/useLanguage";
 import {
   IoHome,
   IoPeople,
@@ -19,16 +20,24 @@ import { MdOutlineArticle, MdOutlinePolicy } from "react-icons/md";
 import { FaYoutube } from "react-icons/fa";
 import { IoNewspaperOutline } from "react-icons/io5";
 import { GrArticle } from "react-icons/gr";
+import { FaRegFolder, FaWpforms } from "react-icons/fa6";
+import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
+import { MdOutlinePayment } from "react-icons/md";
+import { AiOutlineDashboard } from "react-icons/ai";
 
 const menuItems = [
-  { title: "Dashboard", icon: <IoHome />, href: "/admin" },
   {
-    title: "Administrative",
+    title: { en: "Dashboard", th: "แดชบอร์ด" },
+    icon: <AiOutlineDashboard />,
+    href: "/admin",
+  },
+  {
+    title: { en: "Administrative", th: "ผู้ดูแลระบบ" },
     icon: <CgWebsite />,
     subMenu: [
-      { title: "Company", href: "/admin/company" },
+      { title: { en: "Company", th: "บริษัท" }, href: "/admin/company" },
       {
-        title: "Document Numbering",
+        title: { en: "Document Numbering", th: "เลขที่เอกสาร" },
         href: "/admin/settings/document-numbering",
       },
     ],
@@ -42,40 +51,86 @@ const menuItems = [
   //  ],
   // },
   {
-    title: "Courses",
+    title: { en: "Courses", th: "คอร์ส" },
     icon: <RiArticleLine />,
     href: "/admin/courses",
   },
   {
-    title: "Blog",
+    title: { en: "Blog", th: "บล็อก" },
     icon: <MdOutlineArticle />,
     href: "/admin/blog",
   },
-  { title: "Articles", icon: <GrArticle />, href: "/admin/articles" },
-  { title: "News", icon: <IoNewspaperOutline />, href: "/admin/news" },
-  { title: "Pages", icon: <RiPagesLine />, href: "/admin/pages" },
-  { title: "Menu", icon: <BsFillMenuButtonFill />, href: "/admin/menu" },
-  { title: "Teams", icon: <RiTeamLine />, href: "/admin/teams" },
-  { title: "Videos", icon: <FaYoutube />, href: "/admin/videos" },
-  { title: "Themes", icon: <LuPaintbrush />, href: "/admin/themes" },
   {
-    title: "Users",
+    title: { en: "Articles", th: "บทความ" },
+    icon: <GrArticle />,
+    href: "/admin/articles",
+  },
+  {
+    title: { en: "News", th: "ข่าวสาร" },
+    icon: <IoNewspaperOutline />,
+    href: "/admin/news",
+  },
+  {
+    title: { en: "Pages", th: "หน้าเพจ" },
+    icon: <RiPagesLine />,
+    href: "/admin/pages",
+  },
+  {
+    title: { en: "Menu", th: "เมนู" },
+    icon: <BsFillMenuButtonFill />,
+    href: "/admin/menu",
+  },
+  {
+    title: { en: "Teams", th: "ทีม" },
+    icon: <RiTeamLine />,
+    href: "/admin/teams",
+  },
+  {
+    title: { en: "Media", th: "มีเดีย" },
+    icon: <FaRegFolder />,
+    href: "/admin/media",
+  },
+  {
+    title: { en: "Forms", th: "แบบฟอร์ม" },
+    icon: <FaWpforms />,
+    href: "/admin/forms",
+  },
+  {
+    title: { en: "Chat", th: "แชท" },
+    icon: <IoChatbubbleEllipsesOutline />,
+    href: "/admin/chat",
+  },
+  {
+    title: { en: "Payments", th: "การชําระเงิน" },
+    icon: <MdOutlinePayment />,
+    href: "/admin/payments",
+  },
+  {
+    title: { en: "Themes", th: "ธีม" },
+    icon: <LuPaintbrush />,
+    href: "/admin/themes",
+  },
+  {
+    title: { en: "Users", th: "ผู้ใช้" },
     icon: <IoPeople />,
     subMenu: [
-      { title: "Users", href: "/admin/users" },
-      { title: "User Groups", href: "/admin/users/groups" },
+      { title: { en: "Users", th: "ผู้ใช้" }, href: "/admin/users" },
+      { title: { en: "Groups", th: "กลุ่ม" }, href: "/admin/users/groups" },
     ],
   },
   {
-    title: "Settings",
+    title: { en: "Settings", th: "การตั้งค่า" },
     icon: <BsFillMenuButtonFill />,
     subMenu: [
-      { title: "General Settings", href: "/admin/settings" },
-      { title: "Appearance", href: "/admin/settings/appearance" },
+      { title: { en: "General", th: "ทั่วไป" }, href: "/admin/settings" },
+      {
+        title: { en: "Appearance", th: "ออกแบบ" },
+        href: "/admin/settings/appearance",
+      },
     ],
   },
   {
-    title: "Privacy Policy",
+    title: { en: "Privacy Policy", th: "นโยบายความเป็นส่วนตัว" },
     icon: <MdOutlinePolicy />,
     href: "/admin/privacy-policy",
   },
@@ -85,6 +140,8 @@ export default function Sidebar({ isCollapsed }) {
   const { theme } = useTheme();
   const router = useRouter();
   const currentPath = router.pathname;
+
+  const { t, lang } = useLanguage();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedSubMenu, setSelectedSubMenu] = useState(null);
@@ -128,7 +185,7 @@ export default function Sidebar({ isCollapsed }) {
         {menuItems.map((item, index) => (
           <Tooltip
             key={index}
-            title={isCollapsed ? item.title : ""}
+            title={isCollapsed ? item.title.en : ""}
             placement="right"
           >
             <li
@@ -143,7 +200,9 @@ export default function Sidebar({ isCollapsed }) {
             >
               <span className="dark:text-white">{item.icon}</span>
               {!isCollapsed && (
-                <span className="menu-text dark:text-white">{item.title}</span>
+                <span className="menu-text dark:text-white">
+                  {t(item.title)}
+                </span>
               )}
               {item.subMenu && !isCollapsed && (
                 <IoChevronForward className="submenu-icon" />
@@ -182,7 +241,7 @@ export default function Sidebar({ isCollapsed }) {
               onClick={() => handleMenuItemClick(sub.href)}
               className="cursor-pointer"
             >
-              <ListItemText primary={sub.title} />
+              <ListItemText primary={t(sub.title)} />
             </ListItem>
           ))}
         </List>

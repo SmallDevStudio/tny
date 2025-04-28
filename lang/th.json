@@ -274,5 +274,16 @@
   "add_article_success": "เพิ่มบทความสําเร็จ",
   "edit_article_success": "แก้ไขบทความสําเร็จ",
   "delete_article_success": "ลบบทความสําเร็จ",
-  "content_All": "เนื้อหาทั้งหมด"
+  "content_All": "เนื้อหาทั้งหมด",
+  "news": "ข่าวสาร",
+  "news_details": "รายละเอียดข่าวสาร",
+  "news_updated_successfully": "อัพเดตรายละเอียดข่าวสารสําเร็จ",
+  "news_added_successfully": "เพิ่มรายละเอียดข่าวสารสําเร็จ",
+  "news_deleted_successfully": "ลบรายละเอียดข่าวสารสําเร็จ",
+  "news_create": "สร้างข่าวสาร",
+  "articles": "บทความ",
+  "edit_news": "แก้ไขข่าวสาร",
+  "delete_news": "ลบข่าวสาร",
+  "type_news": "ประเภทข่าวสาร",
+  "multiple_choice": "มีเพจย่อย"
 }

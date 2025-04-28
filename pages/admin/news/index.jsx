@@ -6,7 +6,7 @@ import { Dialog, Slide, Tooltip } from "@mui/material";
 import { toast } from "react-toastify";
 import SearchBar from "@/components/Bar/SearchBar";
 import Swal from "sweetalert2";
-import BlogForm from "@/components/Blog/BlogForm";
+import NewsForm from "@/components/News/NewsForm";
 import moment from "moment";
 import "moment/locale/th";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
@@ -17,20 +17,27 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AdminBlog() {
-  const [blog, setBlog] = useState([]);
-  const [selectedBlog, setSelectedBlog] = useState(null);
-  const [filterBlog, setFilterBlog] = useState([]);
+const TypeData = [
+  { label: { th: "ข่าวประชาสัมพันธ์", en: "News" }, value: "news" },
+  { label: { th: "ป๊อปอัพ", en: "PopUp" }, value: "popup" },
+  { label: { th: "ประกาศ", en: "Announcement" }, value: "announcement" },
+];
+
+export default function AdminNews() {
+  const [news, setNews] = useState([]);
+  const [selectedNews, setSelectedNews] = useState(null);
+  const [selectType, setSelectType] = useState("all");
+  const [filterNews, setFilterNews] = useState([]);
   const [search, setSearch] = useState("");
   const [openForm, setOpenForm] = useState(false);
   const { lang, t } = useLanguage();
-  const { subscribe, getAll, add, update, remove } = useDB("blogs");
+  const { subscribe, getAll, add, update, remove } = useDB("news");
 
   useEffect(() => {
-    const unsubscribe = subscribe((blogData) => {
-      if (blogData) {
-        setBlog(blogData);
-        setFilterBlog(blogData);
+    const unsubscribe = subscribe((newsData) => {
+      if (newsData) {
+        setNews(newsData);
+        setFilterNews(newsData);
       }
     });
 
@@ -38,46 +45,53 @@ export default function AdminBlog() {
   }, []); // ✅ ทำให้ useEffect รันแค่ครั้งเดียว
 
   useEffect(() => {
+    let filtered = [...news];
+
+    // ถ้ามีการค้นหา (search)
     if (search) {
-      const filtered = blog.filter(
-        (blog) =>
-          blog.name.en.toLowerCase().includes(search.toLowerCase()) ||
-          blog.name.th.toLowerCase().includes(search.toLowerCase()) ||
-          blog.description.en.toLowerCase().includes(search.toLowerCase()) ||
-          blog.description.th.toLowerCase().includes(search.toLowerCase())
+      filtered = filtered.filter(
+        (item) =>
+          item.name.en.toLowerCase().includes(search.toLowerCase()) ||
+          item.name.th.toLowerCase().includes(search.toLowerCase()) ||
+          item.description.en.toLowerCase().includes(search.toLowerCase()) ||
+          item.description.th.toLowerCase().includes(search.toLowerCase())
       );
-      setFilterBlog(filtered);
-    } else {
-      setFilterBlog(blog);
     }
-  }, [search, blog]);
+
+    // ถ้าเลือก type ไม่ใช่ all → filter ตาม type
+    if (selectType !== "all") {
+      filtered = filtered.filter((item) => item.type === selectType);
+    }
+
+    setFilterNews(filtered);
+  }, [search, selectType, news]);
 
   const handleOpenForm = () => {
-    setSelectedBlog(null);
+    setSelectedNews(null);
     setOpenForm(true);
   };
 
   const handleCloseForm = () => {
-    setSelectedBlog(null);
+    setSelectedNews(null);
     setOpenForm(false);
   };
 
-  const handleEdit = (blog) => {
-    setSelectedBlog(blog);
+  const handleEdit = (news) => {
+    setSelectedNews(news);
     setOpenForm(true);
   };
 
   const handleUpdateActive = async (active, id) => {
     try {
       await update(id, { active: !active }); // Toggle active status
-      toast.success(lang["blog_updated_successfully"]); // Show success toast message
+      toast.success(lang["news_updated_successfully"]); // Show success toast message
     } catch (error) {
       console.error(error);
       toast.error(lang["update_failed"]); // Show error toast message
     }
   };
 
-  const handleDelete = (blog) => {
+  const handleDelete = (news) => {
     Swal.fire({
       title: lang["are_you_sure"],
       text: lang["you_wont_be_able_to_revert_this"],
@@ -90,7 +104,7 @@ export default function AdminBlog() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await remove(blog.id.toString());
+          await remove(news.id.toString());
           toast.success(lang["deleted_successfully"]);
         } catch (error) {
           console.error(error);
@@ -120,6 +134,7 @@ export default function AdminBlog() {
     },
     { field: "group", headerName: "Group", width: 150 },
     { field: "subgroup", headerName: "SubGroup", width: 150 },
+    { field: "type", headerName: "Type", width: 100 },
     {
       field: "active",
       headerName: "Active",
@@ -188,7 +203,7 @@ export default function AdminBlog() {
     <div className="bg-white dark:bg-gray-800">
       <div className="max-w-screen-xl px-2 py-4">
         <span className="text-2xl font-semibold text-gray-900 dark:text-white">
-          {lang["blog"]}
+          {lang["news"]}
         </span>
       </div>
 
@@ -201,18 +216,34 @@ export default function AdminBlog() {
               className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600"
               onClick={handleOpenForm}
             >
-              <span>{lang["create_blog"]}</span>
+              <span>{lang["news_create"]}</span>
             </button>
           </div>
-          <div>
+          <div className="flex flex-row items-center gap-2">
             <SearchBar search={search} setSearch={setSearch} />
+            <div>
+              <select
+                name="type"
+                id="type"
+                value={selectType}
+                onChange={(e) => setSelectType(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+              >
+                <option value="all">{lang["all"]}</option>
+                {TypeData.map((type, index) => (
+                  <option key={index} value={type.value}>
+                    {t(type.label)}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
         {/* Table */}
         <div className="mt-4">
           <DataGrid
-            rows={filterBlog}
+            rows={filterNews}
             columns={columes}
             pageSize={10}
             rowsPerPageOptions={[10]}
@@ -231,10 +262,10 @@ export default function AdminBlog() {
         onClose={handleCloseForm}
         aria-describedby="alert-dialog-slide-description"
       >
-        <BlogForm
+        <NewsForm
           onClose={handleCloseForm}
-          blog={selectedBlog}
-          isNewBlog={!selectedBlog}
+          news={selectedNews}
+          isNewNews={!selectedNews}
         />
       </Dialog>
     </div>

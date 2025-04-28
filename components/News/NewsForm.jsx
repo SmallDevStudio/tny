@@ -10,8 +10,6 @@ import { deleteFile } from "@/hooks/useStorage";
 import SelectForm from "@/components/Selected/SelectForm";
 import Loading from "../utils/Loading";
 import Tags from "../Input/Tags";
-import FormatCode from "../Input/FormatCode";
-import { updateLastNumber } from "@/utils/getFormattedCode";
 import { db } from "@/services/firebase";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import dynamic from "next/dynamic";
@@ -21,7 +19,13 @@ const TiptapEditor = dynamic(() => import("@/components/Tiptap/TiptapEditor"), {
   ssr: false,
 });
 
-export default function BlogForm({ onClose, blog, isNewBlog }) {
+const TypeData = [
+  { label: { th: "ข่าวประชาสัมพันธ์", en: "News" }, value: "news" },
+  { label: { th: "ป๊อปอัพ", en: "PopUp" }, value: "popup" },
+  { label: { th: "ประกาศ", en: "Announcement" }, value: "announcement" },
+];
+
+export default function NewsForm({ onClose, news, isNewNews }) {
   const { t, lang } = useLanguage();
   const { data: session } = useSession();
   const userId = session?.user?.userId;
@@ -30,28 +34,29 @@ export default function BlogForm({ onClose, blog, isNewBlog }) {
     description: { th: "", en: "" },
     group: "",
     subgroup: "",
+    type: "news",
   });
   const [loading, setLoading] = useState(false);
   const [cover, setCover] = useState(null);
   const [tags, setTags] = useState([]);
-  const [code, setCode] = useState(null);
   const [content, setContent] = useState(null);
 
   useEffect(() => {
-    if (blog) {
+    if (news) {
       setForm({
-        name: blog.name || { th: "", en: "" },
-        description: blog.description || { th: "", en: "" },
-        group: blog.group || "",
-        subgroup: blog.subgroup || "",
+        name: news.name || { th: "", en: "" },
+        description: news.description || { th: "", en: "" },
+        group: news.group || "",
+        subgroup: news.subgroup || "",
+        type: news.type || "news",
       });
-      setCover(blog.cover || null);
-      setTags(blog.tags || []);
-      setContent(blog.content);
-    } else if (isNewBlog) {
+      setCover(news.cover || null);
+      setTags(news.tags || []);
+      setContent(news.content);
+    } else if (isNewNews) {
       setTags([]);
     }
-  }, [blog]);
+  }, [news]);
 
   const handleClear = () => {
     setForm({
@@ -59,9 +64,9 @@ export default function BlogForm({ onClose, blog, isNewBlog }) {
       description: { th: "", en: "" },
       group: "",
       subgroup: "",
+      type: "news",
     });
     setTags([]);
-    setCode(null);
     setCover(null);
     onClose();
   };
@@ -84,6 +89,8 @@ export default function BlogForm({ onClose, blog, isNewBlog }) {
       .replace(/\s+/g, "-"); // แปลงช่องว่างเป็น `-`
   };
 
+  console.log("form", form);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -98,6 +105,7 @@ export default function BlogForm({ onClose, blog, isNewBlog }) {
         subgroup: form.subgroup,
         tags: tags,
         content: content,
+        type: form.type,
         active: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -106,23 +114,25 @@ export default function BlogForm({ onClose, blog, isNewBlog }) {
         slug: generateSlug(form.name.en),
       };
 
-      const docRef = doc(db, "blogs", blog ? blog.id : newId.toString());
+      console.log(data);
+
+      const docRef = doc(db, "news", news ? news.id : newId.toString());
       const docSnap = await getDoc(docRef);
 
-      if (isNewBlog) {
+      if (isNewNews) {
         data.id = newId;
         data.created_by = userId;
-        await setDoc(doc(db, "blogs", data.id), data);
-        toast.success(lang["add_blog_success"]);
+        await setDoc(doc(db, "news", data.id), data);
+        toast.success(lang["news_added_successfully"]);
       } else {
         data.updated_at = new Date().toISOString();
         data.updated_by = userId;
         await updateDoc(docRef, data);
-        toast.success(lang["update_blog_success"]);
+        toast.success(lang["news_updated_successfully"]);
       }
       handleClear();
     } catch (error) {
-      console.error("Error saving blog:", error);
+      console.error("Error saving news:", error);
       toast.error(lang["error_occured"]);
     } finally {
       setLoading(false);
@@ -136,7 +146,7 @@ export default function BlogForm({ onClose, blog, isNewBlog }) {
       <div className="flex flex-col w-full h-full">
         <div className="flex flex-row px-4 py-2 items-center justify-between bg-orange-500 w-full">
           <h1 className="text-2xl font-semibold text-white">
-            {blog ? lang["edit_blog"] : lang["create_blog"]}
+            {news ? lang["edit_news"] : lang["create_news"]}
           </h1>
           <Tooltip title={lang["close"]} placement="bottom">
             <button
@@ -180,7 +190,7 @@ export default function BlogForm({ onClose, blog, isNewBlog }) {
               )}
               <UploadImage
                 onUpload={(file) => handleCover(file)}
-                folder="blogs"
+                folder="newss"
                 size={20}
                 userId={userId}
               />
@@ -264,28 +274,48 @@ export default function BlogForm({ onClose, blog, isNewBlog }) {
             </div>
           </div>
           <div className="flex flex-row gap-2">
-            <div className="w-1/2">
+            <div className="w-1/3">
               <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
                 {lang["group"]}
               </label>
               <SelectForm
                 type={"group"}
-                page={"blogs"}
+                page={"news"}
                 value={form.group}
                 setValue={(value) => setForm({ ...form, group: value })}
               />
             </div>
 
-            <div className="w-1/2">
+            <div className="w-1/3">
               <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
                 {lang["subgroup"]}
               </label>
               <SelectForm
                 type={"subgroup"}
-                page={"blogs"}
+                page={"news"}
                 value={form.subgroup}
                 setValue={(value) => setForm({ ...form, subgroup: value })}
               />
+            </div>
+
+            <div className="w-1/3">
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
+                {lang["type_news"]}
+              </label>
+              <select
+                name="type"
+                id="type"
+                value={form.type}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                onChange={(e) => setForm({ ...form, type: e.target.value })}
+                defaultValue={"news"}
+              >
+                {TypeData.map((item, index) => (
+                  <option key={index} value={item.value}>
+                    {t(item.label)} {/* ใช้ตามภาษา */}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

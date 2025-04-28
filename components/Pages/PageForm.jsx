@@ -24,12 +24,12 @@ export default function PageForm({ page, onClose }) {
     title: { en: "", th: "" },
     description: { en: "", th: "" },
     slug: "",
+    multiple: false,
   });
   const [isSlugEdited, setIsSlugEdited] = useState(false); // ตรวจสอบว่าแก้ไข slug เองหรือไม่
   const { data: session, status } = useSession();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
-  const [files, setFiles] = useState(null);
   const [error, setError] = useState(null);
   const userId = session?.user?.userId;
 
@@ -50,6 +50,7 @@ export default function PageForm({ page, onClose }) {
         title: page.title,
         description: page.description,
         slug: page.slug,
+        multiple: page.multiple,
       });
       setSections(page.sections || []);
       setIsEditing(true);
@@ -92,10 +93,10 @@ export default function PageForm({ page, onClose }) {
 
     const pageRef = doc(db, "pages", form.slug);
 
-    // ✅ ถ้าเป็นการอัปเดต
     if (page && isEditing) {
       const data = {
         ...form,
+        multiple: form.multiple ?? false, // ✅ เพิ่มตรงนี้เพื่อกัน undefined
         sections: sections || [],
         content: "",
         template: { base: "default", page: "page" },
@@ -103,7 +104,7 @@ export default function PageForm({ page, onClose }) {
       };
 
       try {
-        await setDoc(pageRef, data, { merge: true }); // ✅ merge คือ update
+        await setDoc(pageRef, data, { merge: true }); // ✅ merge ให้เพิ่ม field multiple ได้
         toast.success(
           lang["page_updated_successfully"] || "อัปเดตหน้าเรียบร้อย"
         );
@@ -152,16 +153,12 @@ export default function PageForm({ page, onClose }) {
       title: { en: "", th: "" },
       description: { en: "", th: "" },
       slug: "",
+      multiple: false,
     });
-    setFiles(null);
     setSections([]);
     setError(null);
     setIsEditing(false);
     onClose();
-  };
-
-  const handleRemoveCover = () => {
-    setFiles(null);
   };
 
   return (
@@ -291,60 +288,19 @@ export default function PageForm({ page, onClose }) {
           </div>
 
           <div className="sm:col-span-2">
+            <input
+              type="checkbox"
+              name="multiple"
+              id="multiple"
+              checked={form.multiple} // ✅ ผูกค่ากับ form.multiple
+              onChange={(e) => setForm({ ...form, multiple: e.target.checked })}
+            />
             <label
-              htmlFor="cover"
-              className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
+              htmlFor="multiple"
+              className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
             >
-              {lang["cover"]} <span className="text-red-500">*</span>
-              <span className="text-gray-400 ml-2 text-xs">
-                ({lang["exam_cover"]})
-              </span>
+              {lang["multiple_choice"]}
             </label>
-            {files && (
-              <div className="flex flex-col w-full mb-2">
-                <div className="relative">
-                  <Image
-                    src={files.url}
-                    width={1000}
-                    height={1000}
-                    alt="Cover"
-                    className="w-full h-auto rounded-lg"
-                    priority
-                  />
-                  <Tooltip
-                    title={lang["remove-image"]}
-                    placement="bottom"
-                    arrow
-                  >
-                    <button
-                      type="button"
-                      className="absolute top-0 right-0 m-2 p-1 text-white bg-red-500 rounded-full hover:bg-red-600"
-                      onClick={() => handleRemoveCover()}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </Tooltip>
-                </div>
-                <span className="text-sm mt-2">
-                  <strong className="mr-2 text-orange-500">File Name:</strong>{" "}
-                  {files.file_name}
-                </span>
-              </div>
-            )}
-            <OpenLibrary onUpload={setFiles} folder="cover" size={24} />
           </div>
         </div>
 
@@ -354,7 +310,7 @@ export default function PageForm({ page, onClose }) {
             className="text-white bg-orange-500 hover:bg-orange-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             onClick={handleSubmitPage}
           >
-            {isEditing ? lang["update"] : lang["save"]}
+            {isEditing ? lang["edit"] : lang["save"]}
           </button>
           <button
             type="button"

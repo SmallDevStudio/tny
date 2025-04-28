@@ -63,25 +63,12 @@ export default function AdminPagesManagement() {
           >
             {lang["page_dynamic"]}
           </li>
-          <li
-            className={`cursor-pointer border-t border-l border-r rounded-t-xl px-6 pt-2
-              ${
-                activeTab === "page_details"
-                  ? "bg-orange-400 text-white"
-                  : "bg-gray-200 text-gray-600"
-              }
-              `}
-            onClick={() => handleActiveTab("page_details")}
-          >
-            {lang["page_details"]}
-          </li>
         </ul>
       </div>
       {/* Content */}
       <div className="flex border border-gray-200 rounded-lg p-4 shadow-lg">
         {activeTab === "pages" && <AdminPages />}
         {activeTab === "page_dynamic" && <AdminPagesDynamic />}
-        {activeTab === "page_details" && <AdminPagesDetail />}
       </div>
     </div>
   );

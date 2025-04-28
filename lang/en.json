@@ -270,5 +270,16 @@
   "add_article_success": "Add Article Successfully",
   "edit_article_success": "Edit Article Successfully",
   "delete_article_success": "Delete Article Successfully",
-  "content_All": "All"
+  "content_All": "All",
+  "news": "News",
+  "news_details": "News Details",
+  "news_updated_successfully": "News updated successfully",
+  "news_added_successfully": "News added successfully",
+  "news_deleted_successfully": "News deleted successfully",
+  "news_create": "สร้างรายละเอียดข่าวสาร",
+  "articles": "Articles",
+  "edit_news": "Edits News",
+  "delete_news": "Delete News",
+  "type_news": "Type News",
+  "multiple_choice": "Multiple Page"
 }

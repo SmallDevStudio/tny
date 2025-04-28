@@ -561,10 +561,10 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                 {lang["group"]}
               </label>
               <SelectForm
-                collectionPath={"groups"}
+                type={"group"}
+                page={"courses"}
                 value={form.group}
                 setValue={(value) => setForm({ ...form, group: value })}
-                page="courses"
               />
             </div>
 
@@ -573,10 +573,10 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                 {lang["subgroup"]}
               </label>
               <SelectForm
-                collectionPath={"subgroups"}
+                type={"subgroup"}
+                page={"courses"}
                 value={form.subgroup}
-                setValue={(value) => setForm({ ...form, group: value })}
-                page="courses"
+                setValue={(value) => setForm({ ...form, subgroup: value })}
               />
             </div>
           </div>

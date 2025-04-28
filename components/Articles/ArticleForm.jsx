@@ -15,12 +15,13 @@ import { updateLastNumber } from "@/utils/getFormattedCode";
 import { db } from "@/services/firebase";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import dynamic from "next/dynamic";
+import { nanoid } from "nanoid";
 
 const TiptapEditor = dynamic(() => import("@/components/Tiptap/TiptapEditor"), {
   ssr: false,
 });
 
-export default function BlogForm({ onClose, article, isNewArticle }) {
+export default function ArticleForm({ onClose, article, isNewArticle }) {
   const { lang } = useLanguage();
   const { data: session } = useSession();
   const userId = session?.user?.userId;
@@ -32,7 +33,6 @@ export default function BlogForm({ onClose, article, isNewArticle }) {
   });
   const [loading, setLoading] = useState(false);
   const [cover, setCover] = useState(null);
-  const [thumbnail, setThumbnail] = useState(null);
   const [tags, setTags] = useState([]);
   const [code, setCode] = useState(null);
   const [content, setContent] = useState(null);
@@ -47,29 +47,11 @@ export default function BlogForm({ onClose, article, isNewArticle }) {
       });
       setCover(article.cover || null);
       setTags(article.tags || []);
-      setCode({
-        docEntry: article.docEntry,
-        code: article.code,
-      });
       setContent(article.content);
     } else if (isNewArticle) {
       setTags([]);
     }
   }, [article]);
-
-  const generateUniqueDocEntry = async (baseId) => {
-    let newId = baseId;
-    let docRef = doc(db, "articles", newId.toString());
-    let docSnap = await getDoc(docRef);
-
-    while (docSnap.exists()) {
-      newId += 1;
-      docRef = doc(db, "articles", newId.toString());
-      docSnap = await getDoc(docRef);
-    }
-
-    return newId;
-  };
 
   const handleClear = () => {
     setForm({
@@ -81,7 +63,6 @@ export default function BlogForm({ onClose, article, isNewArticle }) {
     setTags([]);
     setCode(null);
     setCover(null);
-    setThumbnail(null);
     onClose();
   };
 
@@ -108,13 +89,8 @@ export default function BlogForm({ onClose, article, isNewArticle }) {
     setLoading(true);
 
     try {
-      let newId = code?.docEntry
-        ? code.docEntry
-        : await generateUniqueDocEntry(1); // กำหนดค่าเริ่มต้นที่ 1 ถ้าไม่มี id
+      const newId = nanoid(15);
       const data = {
-        id: newId,
-        code: code ? code.code : null,
-        docEntry: newId,
         name: { th: form.name.th, en: form.name.en },
         description: { th: form.description.th, en: form.description.en },
         cover: cover ? cover : null,
@@ -130,20 +106,17 @@ export default function BlogForm({ onClose, article, isNewArticle }) {
         slug: generateSlug(form.name.en),
       };
 
-      console.log("data", data);
-
-      const docRef = doc(db, "articles", newId.toString());
+      const docRef = doc(
+        db,
+        "articles",
+        article ? article.id : newId.toString()
+      );
       const docSnap = await getDoc(docRef);
 
       if (isNewArticle) {
-        if (docSnap.exists()) {
-          newId = await generateUniqueDocEntry(newId);
-          data.id = newId;
-          data.docEntry = newId;
-        }
+        data.id = newId;
         data.created_by = userId;
         await setDoc(doc(db, "articles", newId.toString()), data);
-        await updateLastNumber("articles", newId);
         toast.success(lang["add_article_success"]);
       } else {
         data.updated_at = new Date().toISOString();
@@ -180,19 +153,6 @@ export default function BlogForm({ onClose, article, isNewArticle }) {
           </Tooltip>
         </div>
         <div className="flex flex-col p-4 gap-2">
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-              {lang["code"]}
-            </label>
-            <FormatCode
-              setCode={setCode}
-              documentId="blog"
-              group={form?.group}
-              subgroup={form?.subgroup}
-              isNewCode={isNewArticle}
-              data={article}
-            />
-          </div>
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
             <div className="flex flex-col gap-2">
               <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
