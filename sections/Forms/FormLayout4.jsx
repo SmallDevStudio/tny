@@ -15,6 +15,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { toast } from "react-toastify";
+import SelectContents from "@/components/Selected/SelectContents";
 
 export default function FormLayout4({
   title,
@@ -25,6 +26,8 @@ export default function FormLayout4({
   setImage,
   contents,
   setContents,
+  contentCollection,
+  setContentCollection,
   style,
   setStyle,
   type,
@@ -34,9 +37,7 @@ export default function FormLayout4({
   setEditMode,
   handleSubmit,
 }) {
-  const [contentCollection, setContentCollection] = useState("");
-  const [constentsData, setContentsData] = useState([]);
-  const [selectedContents, setSelectedContents] = useState([]);
+  const [contentsData, setContentsData] = useState([]);
   const { t, lang } = useLanguage();
 
   useEffect(() => {
@@ -101,8 +102,6 @@ export default function FormLayout4({
   const handleRemoveContent = (id) => {
     setContents((prev) => prev.filter((item) => item.id !== id));
   };
-
-  console.log("contents", contents);
 
   return (
     <div className="w-full">
@@ -217,41 +216,12 @@ export default function FormLayout4({
           )}
         </div>
         <div>
-          {constentsData.length > 0 && (
-            <div className="grid grid-cols-2 bg-gray-50 rounded-lg w-full">
-              {/* contents data */}
-              <div className="flex flex-col gap-2 px-4 py-2">
-                <span>{lang["content"]}:</span>
-                {constentsData.map((m) => (
-                  <div
-                    key={m.id}
-                    className="flex items-center px-2 py-1 bg-gray-200 hover:bg-gray-300 cursor-pointer w-1/2 rounded-full"
-                    onClick={() => handleSelectContent(m)}
-                  >
-                    <span>{t(m.name)}</span>
-                  </div>
-                ))}
-              </div>
-              {/* select content */}
-              <div className="flex flex-col gap-2 px-4 py-2">
-                <span>{lang["select_content"]}:</span>
-                {contents &&
-                  contents.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-row items-center justify-between px-2 py-1 bg-white rounded-md shadow-sm w-1/2"
-                    >
-                      <span>{e(item.name)}</span>
-                      <IoClose
-                        size={18}
-                        className="text-red-500 cursor-pointer"
-                        onClick={() => handleRemoveContent(item.id)}
-                      />
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
+          <SelectContents
+            contents={contents}
+            setContents={setContents}
+            contentsData={contentsData}
+            contentCollection={contentCollection}
+          />
         </div>
         {type === "images" && (
           <div className="flex flex-col gap-2 w-full">

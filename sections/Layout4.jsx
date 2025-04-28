@@ -45,6 +45,7 @@ export default function Layout4({
   const [description, setDescription] = useState({});
   const [image, setImage] = useState([]);
   const [contents, setContents] = useState([]);
+  const [contentCollection, setContentCollection] = useState("");
   const [style, setStyle] = useState({});
   const [type, setType] = useState("");
 
@@ -64,6 +65,7 @@ export default function Layout4({
         setDescription(data?.description || sampleData.description);
         setImage(data?.image || sampleData.image);
         setContents(data?.contents || []);
+        setContentCollection(data?.contentCollection);
         setStyle(data?.style || sampleData.style);
         setType(data?.type || "");
       } else {
@@ -72,7 +74,6 @@ export default function Layout4({
         setImage(sampleData.image);
         setStyle(sampleData.style);
         setType(sampleData.type || "");
-        setContents([]);
       }
     };
 
@@ -87,6 +88,7 @@ export default function Layout4({
       description,
       image,
       contents,
+      contentCollection,
       style,
       type,
       component: "layout4",
@@ -179,6 +181,8 @@ export default function Layout4({
             setImage={setImage}
             contents={contents}
             setContents={setContents}
+            contentCollection={contentCollection}
+            setContentCollection={setContentCollection}
             style={style}
             setStyle={setStyle}
             type={type}
