@@ -105,7 +105,10 @@ export default function ArticlePage() {
         return (
           Component && (
             <div key={section.id}>
-              <Component contentId={section.contentId} pageData={pageData} />
+              <Component
+                contentId={section.contentId || section.id}
+                pageData={pageData}
+              />
             </div>
           )
         );

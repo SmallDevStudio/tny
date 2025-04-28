@@ -59,7 +59,10 @@ export default function NewsPage() {
         ? sections.map((section) => (
             <div key={section.id}>
               {section.component && (
-                <section.component contentId={section.id} />
+                <section.component
+                  contentId={section.contentId || section.id}
+                  pageData={pageData}
+                />
               )}
             </div>
           ))

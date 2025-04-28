@@ -13,7 +13,7 @@ import { doc, getDoc } from "firebase/firestore";
 import Header from "@/components/utils/Header";
 import Loading from "@/components/utils/Loading";
 
-export default function Courses() {
+export default function CoursesPage() {
   const { t, lang } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [pageData, setPageData] = useState({});
@@ -60,7 +60,7 @@ export default function Courses() {
             <div key={section.id}>
               {section.component && (
                 <section.component
-                  contentId={section.contentId}
+                  contentId={section.contentId || section.id}
                   pageData={pageData}
                 />
               )}
