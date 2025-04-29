@@ -14,7 +14,7 @@ import ErrorPage from "next/error";
 import Header from "@/components/utils/Header";
 import useLanguage from "@/hooks/useLanguage";
 
-export default function BlogPage() {
+export default function blogPage() {
   const router = useRouter();
   const { slug } = router.query;
 
@@ -29,57 +29,87 @@ export default function BlogPage() {
     if (!slug) return; // wait router ready
 
     const fetchData = async () => {
+      setLoading(true);
+      setNotFound(false);
       try {
         if (!Array.isArray(slug)) return;
 
-        let blogData = null;
+        let pageData = null;
+        let resolvedSections = [];
 
         if (slug.length === 1) {
-          // ✅ /blogs/the-new-you
-          const blogRef = collection(db, "blogs");
-          const q = query(blogRef, where("slug", "==", slug[0]));
+          // ✅ /blog/the-new-you
+          const courseRef = collection(db, "blog");
+          const q = query(courseRef, where("slug", "==", slug[0]));
           const snap = await getDocs(q);
 
           if (!snap.empty) {
-            blogData = snap.docs[0].data();
+            pageData = snap.docs[0].data();
+
+            // ดึง sections จาก pages_slug (ตามระบบเดิม)
+            const pagesSlugRef = doc(db, "pages_slug", "blog");
+            const pagesSlugDoc = await getDoc(pagesSlugRef);
+
+            if (pagesSlugDoc.exists()) {
+              const slugData = pagesSlugDoc.data();
+              if (slugData?.sections) {
+                resolvedSections = getSections(slugData.sections);
+              }
+            }
+          } else {
+            // ❗ ไม่เจอใน blog ลองไปหาใน pages (ใหม่)
+            const pagesRef = collection(db, "pages");
+            const pageQ = query(
+              pagesRef,
+              where("slug", "==", `blog/${slug[0]}`)
+            );
+            const pageSnap = await getDocs(pageQ);
+
+            if (!pageSnap.empty) {
+              pageData = pageSnap.docs[0].data();
+
+              if (pageData?.sections) {
+                resolvedSections = getSections(pageData.sections);
+              }
+            }
           }
         } else if (slug.length === 2) {
-          // ✅ /blogs/public_blogs/the-new-you
-          const [groupName, blogSlug] = slug;
+          // ✅ /blog/:group/:slug
+          const [groupName, bloglug] = slug;
 
-          const blogRef = collection(db, "blogs");
+          const courseRef = collection(db, "blogs");
           const q = query(
-            blogRef,
+            courseRef,
             where("group", "==", groupName),
-            where("slug", "==", blogSlug)
+            where("slug", "==", bloglug)
           );
           const snap = await getDocs(q);
 
           if (!snap.empty) {
-            blogData = snap.docs[0].data();
+            pageData = snap.docs[0].data();
+
+            // ดึง sections จาก pages_slug (ตามระบบเดิม)
+            const pagesSlugRef = doc(db, "pages_slug", "blog");
+            const pagesSlugDoc = await getDoc(pagesSlugRef);
+
+            if (pagesSlugDoc.exists()) {
+              const slugData = pagesSlugDoc.data();
+              if (slugData?.sections) {
+                resolvedSections = getSections(slugData.sections);
+              }
+            }
           }
         }
 
-        if (!blogData) {
+        if (!pageData) {
           setNotFound(true);
           return;
         }
 
-        setPageData(blogData);
-
-        // ดึง sections จาก pages_slug
-        const pagesSlugRef = doc(db, "pages_slug", "blog");
-        const pagesSlugDoc = await getDoc(pagesSlugRef);
-
-        if (pagesSlugDoc.exists()) {
-          const slugData = pagesSlugDoc.data();
-          if (slugData?.sections) {
-            const resolvedSections = getSections(slugData.sections);
-            setSections(resolvedSections);
-          }
-        }
+        setPageData(pageData);
+        setSections(resolvedSections);
       } catch (error) {
-        console.error("Error fetching blog:", error);
+        console.error("Error fetching course or page:", error);
         setNotFound(true);
       } finally {
         setLoading(false);
@@ -92,7 +122,7 @@ export default function BlogPage() {
   if (loading) return <div className="p-4 text-center">Loading...</div>;
   if (notFound) return <ErrorPage statusCode={404} />;
 
-  console.log("sections", sections);
+  console.log("pageData", pageData);
 
   return (
     <div className="min-h-screen p-4">

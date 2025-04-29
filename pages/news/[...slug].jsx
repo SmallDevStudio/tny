@@ -29,57 +29,87 @@ export default function NewsPage() {
     if (!slug) return; // wait router ready
 
     const fetchData = async () => {
+      setLoading(true);
+      setNotFound(false);
       try {
         if (!Array.isArray(slug)) return;
 
-        let newsData = null;
+        let pageData = null;
+        let resolvedSections = [];
 
         if (slug.length === 1) {
-          // ✅ /newss/the-new-you
-          const newsRef = collection(db, "news");
-          const q = query(newsRef, where("slug", "==", slug[0]));
+          // ✅ /news/the-new-you
+          const courseRef = collection(db, "news");
+          const q = query(courseRef, where("slug", "==", slug[0]));
           const snap = await getDocs(q);
 
           if (!snap.empty) {
-            newsData = snap.docs[0].data();
+            pageData = snap.docs[0].data();
+
+            // ดึง sections จาก pages_slug (ตามระบบเดิม)
+            const pagesSlugRef = doc(db, "pages_slug", "news");
+            const pagesSlugDoc = await getDoc(pagesSlugRef);
+
+            if (pagesSlugDoc.exists()) {
+              const slugData = pagesSlugDoc.data();
+              if (slugData?.sections) {
+                resolvedSections = getSections(slugData.sections);
+              }
+            }
+          } else {
+            // ❗ ไม่เจอใน news ลองไปหาใน pages (ใหม่)
+            const pagesRef = collection(db, "pages");
+            const pageQ = query(
+              pagesRef,
+              where("slug", "==", `news/${slug[0]}`)
+            );
+            const pageSnap = await getDocs(pageQ);
+
+            if (!pageSnap.empty) {
+              pageData = pageSnap.docs[0].data();
+
+              if (pageData?.sections) {
+                resolvedSections = getSections(pageData.sections);
+              }
+            }
           }
         } else if (slug.length === 2) {
-          // ✅ /newss/public_newss/the-new-you
-          const [groupName, newsSlug] = slug;
+          // ✅ /news/:group/:slug
+          const [groupName, newslug] = slug;
 
-          const newsRef = collection(db, "newss");
+          const courseRef = collection(db, "news");
           const q = query(
-            newsRef,
+            courseRef,
             where("group", "==", groupName),
-            where("slug", "==", newsSlug)
+            where("slug", "==", newslug)
           );
           const snap = await getDocs(q);
 
           if (!snap.empty) {
-            newsData = snap.docs[0].data();
+            pageData = snap.docs[0].data();
+
+            // ดึง sections จาก pages_slug (ตามระบบเดิม)
+            const pagesSlugRef = doc(db, "pages_slug", "news");
+            const pagesSlugDoc = await getDoc(pagesSlugRef);
+
+            if (pagesSlugDoc.exists()) {
+              const slugData = pagesSlugDoc.data();
+              if (slugData?.sections) {
+                resolvedSections = getSections(slugData.sections);
+              }
+            }
           }
         }
 
-        if (!newsData) {
+        if (!pageData) {
           setNotFound(true);
           return;
         }
 
-        setPageData(newsData);
-
-        // ดึง sections จาก pages_slug
-        const pagesSlugRef = doc(db, "pages_slug", "news");
-        const pagesSlugDoc = await getDoc(pagesSlugRef);
-
-        if (pagesSlugDoc.exists()) {
-          const slugData = pagesSlugDoc.data();
-          if (slugData?.sections) {
-            const resolvedSections = getSections(slugData.sections);
-            setSections(resolvedSections);
-          }
-        }
+        setPageData(pageData);
+        setSections(resolvedSections);
       } catch (error) {
-        console.error("Error fetching news:", error);
+        console.error("Error fetching course or page:", error);
         setNotFound(true);
       } finally {
         setLoading(false);
@@ -91,6 +121,8 @@ export default function NewsPage() {
 
   if (loading) return <div className="p-4 text-center">Loading...</div>;
   if (notFound) return <ErrorPage statusCode={404} />;
+
+  console.log("pageData", pageData);
 
   return (
     <div className="min-h-screen p-4">

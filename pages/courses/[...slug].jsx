@@ -29,10 +29,13 @@ export default function CoursesPage() {
     if (!slug) return; // wait router ready
 
     const fetchData = async () => {
+      setLoading(true);
+      setNotFound(false);
       try {
         if (!Array.isArray(slug)) return;
 
-        let courseData = null;
+        let pageData = null;
+        let resolvedSections = [];
 
         if (slug.length === 1) {
           // ✅ /courses/the-new-you
@@ -41,10 +44,37 @@ export default function CoursesPage() {
           const snap = await getDocs(q);
 
           if (!snap.empty) {
-            courseData = snap.docs[0].data();
+            pageData = snap.docs[0].data();
+
+            // ดึง sections จาก pages_slug (ตามระบบเดิม)
+            const pagesSlugRef = doc(db, "pages_slug", "courses");
+            const pagesSlugDoc = await getDoc(pagesSlugRef);
+
+            if (pagesSlugDoc.exists()) {
+              const slugData = pagesSlugDoc.data();
+              if (slugData?.sections) {
+                resolvedSections = getSections(slugData.sections);
+              }
+            }
+          } else {
+            // ❗ ไม่เจอใน courses ลองไปหาใน pages (ใหม่)
+            const pagesRef = collection(db, "pages");
+            const pageQ = query(
+              pagesRef,
+              where("slug", "==", `courses/${slug[0]}`)
+            );
+            const pageSnap = await getDocs(pageQ);
+
+            if (!pageSnap.empty) {
+              pageData = pageSnap.docs[0].data();
+
+              if (pageData?.sections) {
+                resolvedSections = getSections(pageData.sections);
+              }
+            }
           }
         } else if (slug.length === 2) {
-          // ✅ /courses/public_courses/the-new-you
+          // ✅ /courses/:group/:slug
           const [groupName, courseSlug] = slug;
 
           const courseRef = collection(db, "courses");
@@ -56,30 +86,30 @@ export default function CoursesPage() {
           const snap = await getDocs(q);
 
           if (!snap.empty) {
-            courseData = snap.docs[0].data();
+            pageData = snap.docs[0].data();
+
+            // ดึง sections จาก pages_slug (ตามระบบเดิม)
+            const pagesSlugRef = doc(db, "pages_slug", "courses");
+            const pagesSlugDoc = await getDoc(pagesSlugRef);
+
+            if (pagesSlugDoc.exists()) {
+              const slugData = pagesSlugDoc.data();
+              if (slugData?.sections) {
+                resolvedSections = getSections(slugData.sections);
+              }
+            }
           }
         }
 
-        if (!courseData) {
+        if (!pageData) {
           setNotFound(true);
           return;
         }
 
-        setPageData(courseData);
-
-        // ดึง sections จาก pages_slug
-        const pagesSlugRef = doc(db, "pages_slug", "courses");
-        const pagesSlugDoc = await getDoc(pagesSlugRef);
-
-        if (pagesSlugDoc.exists()) {
-          const slugData = pagesSlugDoc.data();
-          if (slugData?.sections) {
-            const resolvedSections = getSections(slugData.sections);
-            setSections(resolvedSections);
-          }
-        }
+        setPageData(pageData);
+        setSections(resolvedSections);
       } catch (error) {
-        console.error("Error fetching course:", error);
+        console.error("Error fetching course or page:", error);
         setNotFound(true);
       } finally {
         setLoading(false);

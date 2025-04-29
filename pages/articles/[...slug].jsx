@@ -14,7 +14,7 @@ import ErrorPage from "next/error";
 import Header from "@/components/utils/Header";
 import useLanguage from "@/hooks/useLanguage";
 
-export default function ArticlePage() {
+export default function ArticlesPage() {
   const router = useRouter();
   const { slug } = router.query;
 
@@ -29,57 +29,87 @@ export default function ArticlePage() {
     if (!slug) return; // wait router ready
 
     const fetchData = async () => {
+      setLoading(true);
+      setNotFound(false);
       try {
         if (!Array.isArray(slug)) return;
 
-        let articlesData = null;
+        let pageData = null;
+        let resolvedSections = [];
 
         if (slug.length === 1) {
-          // ✅ /articless/the-new-you
-          const articlesRef = collection(db, "articles");
-          const q = query(articlesRef, where("slug", "==", slug[0]));
+          // ✅ /articles/the-new-you
+          const courseRef = collection(db, "articles");
+          const q = query(courseRef, where("slug", "==", slug[0]));
           const snap = await getDocs(q);
 
           if (!snap.empty) {
-            articlesData = snap.docs[0].data();
+            pageData = snap.docs[0].data();
+
+            // ดึง sections จาก pages_slug (ตามระบบเดิม)
+            const pagesSlugRef = doc(db, "pages_slug", "articles");
+            const pagesSlugDoc = await getDoc(pagesSlugRef);
+
+            if (pagesSlugDoc.exists()) {
+              const slugData = pagesSlugDoc.data();
+              if (slugData?.sections) {
+                resolvedSections = getSections(slugData.sections);
+              }
+            }
+          } else {
+            // ❗ ไม่เจอใน articles ลองไปหาใน pages (ใหม่)
+            const pagesRef = collection(db, "pages");
+            const pageQ = query(
+              pagesRef,
+              where("slug", "==", `articles/${slug[0]}`)
+            );
+            const pageSnap = await getDocs(pageQ);
+
+            if (!pageSnap.empty) {
+              pageData = pageSnap.docs[0].data();
+
+              if (pageData?.sections) {
+                resolvedSections = getSections(pageData.sections);
+              }
+            }
           }
         } else if (slug.length === 2) {
-          // ✅ /articless/public_articless/the-new-you
-          const [groupName, articlesSlug] = slug;
+          // ✅ /articles/:group/:slug
+          const [groupName, articleslug] = slug;
 
-          const articlesRef = collection(db, "articless");
+          const courseRef = collection(db, "articles");
           const q = query(
-            articlesRef,
+            courseRef,
             where("group", "==", groupName),
-            where("slug", "==", articlesSlug)
+            where("slug", "==", articleslug)
           );
           const snap = await getDocs(q);
 
           if (!snap.empty) {
-            articlesData = snap.docs[0].data();
+            pageData = snap.docs[0].data();
+
+            // ดึง sections จาก pages_slug (ตามระบบเดิม)
+            const pagesSlugRef = doc(db, "pages_slug", "articles");
+            const pagesSlugDoc = await getDoc(pagesSlugRef);
+
+            if (pagesSlugDoc.exists()) {
+              const slugData = pagesSlugDoc.data();
+              if (slugData?.sections) {
+                resolvedSections = getSections(slugData.sections);
+              }
+            }
           }
         }
 
-        if (!articlesData) {
+        if (!pageData) {
           setNotFound(true);
           return;
         }
 
-        setPageData(articlesData);
-
-        // ดึง sections จาก pages_slug
-        const pagesSlugRef = doc(db, "pages_slug", "articles");
-        const pagesSlugDoc = await getDoc(pagesSlugRef);
-
-        if (pagesSlugDoc.exists()) {
-          const slugData = pagesSlugDoc.data();
-          if (slugData?.sections) {
-            const resolvedSections = getSections(slugData.sections);
-            setSections(resolvedSections);
-          }
-        }
+        setPageData(pageData);
+        setSections(resolvedSections);
       } catch (error) {
-        console.error("Error fetching articles:", error);
+        console.error("Error fetching course or page:", error);
         setNotFound(true);
       } finally {
         setLoading(false);
@@ -92,7 +122,7 @@ export default function ArticlePage() {
   if (loading) return <div className="p-4 text-center">Loading...</div>;
   if (notFound) return <ErrorPage statusCode={404} />;
 
-  console.log("sections", sections);
+  console.log("pageData", pageData);
 
   return (
     <div className="min-h-screen p-4">
