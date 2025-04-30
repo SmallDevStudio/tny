@@ -53,6 +53,18 @@ export default function AdminPagesManagement() {
           </li>
           <li
             className={`cursor-pointer border-t border-l border-r rounded-t-xl px-6 pt-2
+                ${
+                  activeTab === "page_groups"
+                    ? "bg-orange-400 text-white"
+                    : "bg-gray-200 text-gray-600"
+                }
+                `}
+            onClick={() => handleActiveTab("page_groups")}
+          >
+            {lang["page_groups"]}
+          </li>
+          <li
+            className={`cursor-pointer border-t border-l border-r rounded-t-xl px-6 pt-2
               ${
                 activeTab === "page_dynamic"
                   ? "bg-orange-400 text-white"
@@ -68,6 +80,7 @@ export default function AdminPagesManagement() {
       {/* Content */}
       <div className="flex border border-gray-200 rounded-lg p-4 shadow-lg">
         {activeTab === "pages" && <AdminPages />}
+        {activeTab === "page_groups" && <AdminPagesDetail />}
         {activeTab === "page_dynamic" && <AdminPagesDynamic />}
       </div>
     </div>

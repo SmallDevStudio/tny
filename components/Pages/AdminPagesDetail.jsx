@@ -12,7 +12,7 @@ import {
 import { useRouter } from "next/router";
 import useLanguage from "@/hooks/useLanguage";
 import { Dialog, Slide } from "@mui/material";
-import PageForm from "@/components/Pages/PageForm";
+import PageGroup from "./PageGroup";
 import { IoClose } from "react-icons/io5";
 import SelectSections from "@/components/Sections/SelectSection";
 import Link from "next/link";
@@ -64,7 +64,6 @@ export default function AdminPagesDetail() {
   const handleCloseForm = () => {
     setSelectedPage(null);
     setOpenForm(false);
-    router.reload();
   };
 
   const handleEditForm = (page) => {
@@ -91,7 +90,6 @@ export default function AdminPagesDetail() {
   const handleCloseSections = () => {
     setSelectedPage(null);
     setOpenSections(false);
-    router.reload();
   };
 
   if (loading) {
@@ -109,7 +107,7 @@ export default function AdminPagesDetail() {
         className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4"
         onClick={handleOpenForm}
       >
-        {lang["create_page"]}
+        {lang["create_page_group"]}
       </button>
       <ul>
         {pages.map((page) => (
@@ -117,9 +115,13 @@ export default function AdminPagesDetail() {
             key={page.id}
             className="flex justify-between bg-gray-100 p-2 mb-2 rounded-md"
           >
-            <span>
-              {t(page.title)} ({page.slug})
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="uppercase font-bold text-orange-500">
+                {page.page}
+              </span>
+              - <span>{t(page.title)}</span>
+              <span>({page.slug})</span>
+            </div>
             <div>
               <button
                 className="bg-green-500 text-white px-3 py-1 rounded-md mx-2"
@@ -166,17 +168,7 @@ export default function AdminPagesDetail() {
         TransitionComponent={Transition}
         keepMounted
       >
-        <div>
-          <div className="flex flex-row p-2 items-center justify-between bg-orange-500 text-white">
-            <h2>{lang["create_page"]}</h2>
-            <IoClose
-              size={25}
-              onClick={handleCloseForm}
-              className="cursor-pointer"
-            />
-          </div>
-          <PageForm onClose={handleCloseForm} page={selectedPage} />
-        </div>
+        <PageGroup onClose={handleCloseForm} page={selectedPage} />
       </Dialog>
 
       <Dialog

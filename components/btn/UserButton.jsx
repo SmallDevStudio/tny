@@ -7,49 +7,53 @@ import UserAvatar from "../utils/UserAvatar";
 import useLanguage from "@/hooks/useLanguage";
 
 export default function UserButton({ user, size }) {
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const router = useRouter();
-    const { lang } = useLanguage();
-    const { data: session } = useSession();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const router = useRouter();
+  const { lang } = useLanguage();
+  const { data: session } = useSession();
 
-    const handleAvatarClick = (event) => {
-        setAnchorEl(event.currentTarget);
-        setMenuOpen(true);
-    };
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setMenuOpen(true);
+  };
 
-    const handleLogout = async () => {
-        await signOut({ callbackUrl: "/signin" });
-    };
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/signin", redirect: true });
+  };
 
-    return (
-        <div className="flex">
-            {user ? (
-                <>
-                <Tooltip title={lang["clickmenu"]} placement="bottom" arrow>
-                    <div className="flex cursor-pointer" onClick={handleAvatarClick}>
-                        <UserAvatar size={size} />
-                    </div>
-                </Tooltip>
-                                                        
-                <Menu
-                    id="basic-menu"
-                    anchorEl={anchorEl}  // ✅ กำหนด anchorEl
-                    keepMounted
-                    open={menuOpen}
-                    onClose={() => setMenuOpen(false)}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right', }}
-                    transformOrigin={{ vertical: 'top', horizontal: 'right', }}
-                >   
-                    {session?.user?.role === "admin" && 
-                    <MenuItem onClick={() => router.push("/admin")}>{lang["admin_console"]}</MenuItem>
-                    }
-                    <Divider />
-                    <MenuItem onClick={() => router.push("/profile")}>{lang["profile"]}</MenuItem>
-                    <MenuItem onClick={handleLogout}>{lang["signout"]}</MenuItem>
-                </Menu>
-                </>
-            ) : null}
-        </div>
-    )
+  return (
+    <div className="flex">
+      {user ? (
+        <>
+          <Tooltip title={lang["clickmenu"]} placement="bottom" arrow>
+            <div className="flex cursor-pointer" onClick={handleAvatarClick}>
+              <UserAvatar size={size} />
+            </div>
+          </Tooltip>
+
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl} // ✅ กำหนด anchorEl
+            keepMounted
+            open={menuOpen}
+            onClose={() => setMenuOpen(false)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            {session?.user?.role === "admin" && (
+              <MenuItem onClick={() => router.push("/admin")}>
+                {lang["admin_console"]}
+              </MenuItem>
+            )}
+            <Divider />
+            <MenuItem onClick={() => router.push("/profile")}>
+              {lang["profile"]}
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>{lang["signout"]}</MenuItem>
+          </Menu>
+        </>
+      ) : null}
+    </div>
+  );
 }

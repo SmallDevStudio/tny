@@ -288,5 +288,8 @@
   "multiple_choice": "มีเพจย่อย",
   "images": "รูปภาพ",
   "select_type": "เลือกประเภท",
-  "select_content": "เลือกเนื้อหา"
+  "select_content": "เลือกเนื้อหา",
+  "page_groups": "หน้าเพจกลุ่ม",
+  "create_page_group": "สร้างกลุ่ม/เพจกลุ่ม",
+  "select_page": "เลือกหน้าเพจ"
 }

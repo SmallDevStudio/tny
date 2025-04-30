@@ -75,8 +75,6 @@ export default function AdminPagesDynamic() {
     fetchData();
   }, []);
 
-  console.log(pages);
-
   const handleOpenSections = (page) => {
     setSelectedPage(page);
     setSections(page.sections);
