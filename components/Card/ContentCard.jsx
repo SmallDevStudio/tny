@@ -11,7 +11,7 @@ export default function ContentCard({ item, pathname }) {
     <div className="bg-gray-100 rounded-lg overflow-hidden shadow-sm flex flex-col h-[400px] w-full cursor-pointer">
       {/* IMAGE/VIDEO THUMBNAIL */}
       <div
-        className="flex relative w-full h-[180px] bg-white
+        className="flex relative w-full h-[210px] bg-white
       hover:scale-105 transition-all duration-500 ease-in-out
       "
         onClick={() => router.push(`/${pathname}/${item?.slug}`)}
