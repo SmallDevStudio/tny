@@ -172,7 +172,10 @@ export default function Layout5({
                 />
               </div>
               <h2 className="text-2xl font-bold">{t(m.title)}</h2>
-              <span className="text-md text-gray-500 text-center">
+              <span
+                className="text-md text-gray-500 text-center"
+                style={{ whiteSpace: "pre-line" }}
+              >
                 {t(m.description)}
               </span>
               {m.url && (

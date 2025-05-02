@@ -42,7 +42,8 @@ export default function Carousel({
   const [autoPlay, setAutoPlay] = useState(true);
   const [autoPlaySpeed, setAutoPlaySpeed] = useState(3000);
   const sliderRef = useRef(null);
-  const router = useRouter;
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,6 +122,8 @@ export default function Carousel({
     slidesToScroll: 1,
   };
 
+  console.log(images);
+
   return (
     <div className="relative w-full">
       <Slider {...settings} className={styles.slider}>
@@ -128,7 +131,7 @@ export default function Carousel({
           <div
             key={item.id}
             className="w-full bg-gray-900"
-            onClick={item.link ? () => router.push(`/${item.link}`) : null}
+            onClick={item?.link ? () => router.push(item.link) : null}
           >
             <Image
               key={item.id}
