@@ -9,12 +9,12 @@ import ReactPlayer from "react-player/youtube";
 
 const sampleData = {
   title: {
-    th: "ทดสอบหัวเรื่อง",
-    en: "Sample title",
+    th: "",
+    en: "",
   },
   description: {
-    th: "คำอธิบายภาษาไทย",
-    en: "English description",
+    th: "",
+    en: "",
   },
   style: {
     gap: 2,
