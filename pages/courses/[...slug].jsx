@@ -122,8 +122,6 @@ export default function CoursesPage() {
   if (loading) return <div className="p-4 text-center">Loading...</div>;
   if (notFound) return <ErrorPage statusCode={404} />;
 
-  console.log("pageData", pageData);
-
   return (
     <div className="min-h-screen p-4">
       <Header

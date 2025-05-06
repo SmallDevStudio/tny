@@ -91,40 +91,43 @@ export default function HeaderCourses({ pageData }) {
       </div>
       <div className="p-2 bg-gray-200 mt-4">
         <div className="max-w-screen-lg mx-auto items-center justify-center">
-          <div className="flex justify-between items-center gap-4">
-            <div className="flex text-orange-500 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+            <div className="flex items-center text-orange-500 gap-2 w-[30px] h-[30px]">
               <Image
                 src="/images/date_icon.png"
                 width={30}
                 height={30}
                 alt="date_icon"
+                className="object-contain"
               />
-              <span className="text-orange-500 text-xl">
+              <span className="text-orange-500 text-sm lg:text-xl">
                 {moment(data?.start_date).format("DD")} -{" "}
                 {moment(data?.end_date).format("ll")}
               </span>
             </div>
-            <div className="flex text-orange-500 gap-2">
+            <div className="flex items-center text-orange-500 gap-2 w-[30px] h-[30px]">
               <Image
                 src="/images/time-icon.png"
                 width={30}
                 height={30}
                 alt="time-icon"
+                className="object-contain"
               />
-              <span className="text-orange-500 text-xl">
+              <span className="text-orange-500 text-sm lg:text-xl">
                 {data?.start_time + ` - ${data?.end_time}`}
               </span>
             </div>
             {data?.location && (
-              <div className="flex text-orange-500 gap-2">
+              <div className="flex items-center text-orange-500 gap-2 w-[30px] h-[30px]">
                 <Image
                   src="/images/place-icon.png"
                   width={30}
                   height={30}
                   alt="place-icon"
+                  className="object-contain"
                 />
                 <span
-                  className="text-orange-500 text-xl cursor-pointer"
+                  className="text-orange-500 text-sm lg:text-xl cursor-pointer"
                   onClick={() => window.open(data?.location_url, "_blank")}
                 >
                   {data?.location}

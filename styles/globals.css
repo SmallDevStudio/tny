@@ -376,6 +376,60 @@ body {
   .sm-hidden {
     display: none;
   }
+  .preview-box table,
+  .preview-box tbody,
+  .preview-box tr,
+  .preview-box td {
+    display: block;
+    width: 100% !important;
+  }
+
+  .preview-box td {
+    border: none !important;
+    margin-bottom: 1rem;
+  }
+
+  .preview-box tr {
+    margin-bottom: 2rem;
+  }
+  .preview-box p,
+  .preview-box span,
+  .preview-box td,
+  .preview-box th,
+  .preview-box li,
+  .preview-box h1,
+  .preview-box h2,
+  .preview-box h3,
+  .preview-box h4,
+  .preview-box h5,
+  .preview-box h6 {
+    font-size: 110% !important;
+  }
+
+  /* เพิ่มเติม: เผื่อ span ที่มี inline style จาก Tiptap */
+  .preview-box span[style*="font-size"] {
+    font-size: 110% !important;
+  }
+
+  /* เพิ่มความแน่นอนให้ตารางไม่แสดงเพี้ยนในมือถือ */
+  .preview-box table,
+  .preview-box tbody,
+  .preview-box tr,
+  .preview-box td {
+    display: block;
+    width: 100% !important;
+  }
+
+  .preview-box td {
+    margin-bottom: 1rem;
+  }
+
+  .preview-box img {
+    max-width: 100%;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+  }
 }
 
 /* ✅ Responsive: เมื่อหน้าจอใหญ่ */
@@ -404,5 +458,26 @@ body {
   .preview-box p {
     font-size: 12px;
     line-height: 1.5;
+  }
+  .preview-box table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    overflow-x: auto;
+    display: block;
+  }
+
+  .preview-box td,
+  .preview-box th {
+    word-wrap: break-word;
+    padding: 8px;
+  }
+
+  /* จัดรูปภาพให้ไม่เกินหน้าจอ */
+  .preview-box img {
+    max-width: 100%;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
   }
 }
