@@ -287,5 +287,8 @@
   "select_content": "Select Content",
   "page_groups": "Page Groups",
   "create_page_group": "Create Page Groups",
-  "select_page": "Select Page"
+  "select_page": "Select Page",
+  "interested": "Interested",
+  "interested_course": "Interested Course",
+  "interested_in_course": "You are interested in this course"
 }

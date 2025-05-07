@@ -291,5 +291,8 @@
   "select_content": "เลือกเนื้อหา",
   "page_groups": "หน้าเพจกลุ่ม",
   "create_page_group": "สร้างกลุ่ม/เพจกลุ่ม",
-  "select_page": "เลือกหน้าเพจ"
+  "select_page": "เลือกหน้าเพจ",
+  "interested_course": "สนใจคอร์ส",
+  "interested": "สนใจ",
+  "interested_in_course": "คุณสนใจคอร์สนี้แล้ว"
 }

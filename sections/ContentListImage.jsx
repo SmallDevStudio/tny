@@ -177,7 +177,7 @@ export default function ContentListImage({
                     width={500}
                     height={500}
                     alt="item"
-                    className="object-contain w-full h-full hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer"
+                    className="object-contain w-full h-[120px] hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer"
                     onClick={() =>
                       window.open(
                         `/${contents}/${item.group}/${item.slug}`,
@@ -201,8 +201,17 @@ export default function ContentListImage({
                     </span>
                   </div>
                 ) : (
-                  <div className="flex gap-4">
-                    <div className="h-4 w-4"></div>
+                  <div className="hidden lg:flex gap-4 opacity-0">
+                    <Image
+                      src="/images/date_icon.png"
+                      width={30}
+                      height={30}
+                      alt="date_icon"
+                    />
+                    <span className="text-orange-500 text-2xl">
+                      {moment(item.start_date).format("DD")} -{" "}
+                      {moment(item.end_date).format("ll")}
+                    </span>
                   </div>
                 )}
                 <p

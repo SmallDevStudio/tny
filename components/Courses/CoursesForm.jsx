@@ -169,6 +169,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
   };
 
   const safeToISOString = (value) => {
+    if (!value) return null;
     if (value instanceof Date) return value.toISOString();
     const date = new Date(value);
     return isNaN(date) ? null : date.toISOString();
@@ -233,10 +234,10 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         gen: form.gen,
         description: { th: form.description.th, en: form.description.en },
         image: image ? image : {},
-        start_date: safeToISOString(form.start_date),
-        end_date: safeToISOString(form.end_date),
-        start_time: form.start_time,
-        end_time: form.end_time,
+        start_date: form.start_date ? safeToISOString(form.start_date) : null,
+        end_date: form.end_date ? safeToISOString(form.end_date) : null,
+        start_time: form.start_time || null,
+        end_time: form.end_time || null,
         group: form.group,
         subgroup: form.subgroup,
         price: form.price,
@@ -508,6 +509,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                 {lang["start_date"]}
               </label>
               <DatePicker
+                isClearable
                 showIcon
                 selected={form.start_date}
                 onChange={(date) => setForm({ ...form, start_date: date })}
@@ -522,6 +524,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                 {lang["end_date"]}
               </label>
               <DatePicker
+                isClearable
                 showIcon
                 selected={form.end_date}
                 onChange={(date) => setForm({ ...form, end_date: date })}
