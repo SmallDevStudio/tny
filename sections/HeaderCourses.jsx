@@ -70,8 +70,7 @@ export default function HeaderCourses({ pageData }) {
     checkInterested();
   }, [userId, data?.id]);
 
-  const showInterested =
-    data?.start_date === null || new Date(data?.start_date) < new Date();
+  const showInterested = data?.start_date === null;
   const noLocation = !data?.location;
 
   const handleInterested = async () => {
@@ -256,7 +255,7 @@ export default function HeaderCourses({ pageData }) {
                   onClick={handleInterested}
                   className={`font-bold py-2 px-4 rounded ${
                     isInterested
-                      ? "bg-gray-300 text-gray-700 hover:bg-gray-400"
+                      ? "bg-blue-500 text-white hover:bg-blue-700"
                       : "bg-orange-500 hover:bg-orange-600 text-white"
                   }`}
                 >
