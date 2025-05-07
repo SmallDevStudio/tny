@@ -209,9 +209,26 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     }
   };
 
+  const getNextOrder = async () => {
+    const q = query(
+      collection(db, "courses"),
+      orderBy("order", "desc"),
+      limit(1)
+    );
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const maxOrder = querySnapshot.docs[0].data().order;
+      return maxOrder + 1;
+    } else {
+      return 1; // ถ้ายังไม่มีข้อมูล
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    const nextOrder = await getNextOrder();
 
     try {
       let newId = code?.docEntry
@@ -251,6 +268,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         content: content,
         active: true,
         slug: slug,
+        order: nextOrder, // ✅ เพิ่มตรงนี้
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         created_by: "",
