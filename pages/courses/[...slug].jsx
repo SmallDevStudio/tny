@@ -13,6 +13,11 @@ import { getSections } from "@/utils/getSections";
 import ErrorPage from "next/error";
 import Header from "@/components/utils/Header";
 import useLanguage from "@/hooks/useLanguage";
+import dynamic from "next/dynamic";
+
+const CustomErrorPage = dynamic(() => import("@/pages/_error/error"), {
+  ssr: false,
+});
 
 export default function CoursesPage() {
   const router = useRouter();
@@ -120,7 +125,7 @@ export default function CoursesPage() {
   }, [slug]);
 
   if (loading) return <div className="p-4 text-center">Loading...</div>;
-  if (notFound) return <ErrorPage statusCode={404} />;
+  if (notFound) return <CustomErrorPage statusCode={404} />;
 
   return (
     <div className="min-h-screen p-4">

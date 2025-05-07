@@ -13,9 +13,11 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
 } from "firebase/firestore";
 import moment from "moment";
 import "moment/locale/th";
+import { useRouter } from "next/router";
 
 moment.locale("th");
 
@@ -29,6 +31,7 @@ const sampleData = {
     en: "English description",
   },
   contents: "courses",
+  path: "public_courses",
   style: {
     gap: 2,
     cols: 2,
@@ -47,10 +50,15 @@ export default function ContentListImage({
   const [title, setTitle] = useState({});
   const [description, setDescription] = useState({});
   const [contents, setContents] = useState("");
+  const [path, setPath] = useState("");
   const [contentsList, setContentsList] = useState([]);
   const [allContents, setAllContents] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [style, setStyle] = useState({});
+
+  const router = useRouter();
+
+  const group = router.query.group;
 
   const { t, lang } = useLanguage();
 
@@ -60,6 +68,7 @@ export default function ContentListImage({
         setTitle(sampleData.title);
         setDescription(sampleData.description);
         setContents(sampleData.contents);
+        setPath(sampleData.path);
         setStyle(sampleData.style);
         return;
       }
@@ -73,12 +82,14 @@ export default function ContentListImage({
           setTitle(data?.title || sampleData.title);
           setDescription(data?.description || sampleData.description);
           setContents(data?.contents || sampleData.contents);
+          setPath(data?.path || sampleData.path);
           setStyle(data?.style || sampleData.style);
         } else {
           // ไม่มี section นี้
           setTitle(sampleData.title);
           setDescription(sampleData.description);
           setContents(sampleData.contents);
+          setPath(sampleData.path);
           setStyle(sampleData.style);
         }
       } catch (err) {
@@ -94,7 +105,11 @@ export default function ContentListImage({
 
     const fetchData = async () => {
       try {
-        const q = query(collection(db, contents), where("active", "!=", false));
+        const q = query(
+          collection(db, contents),
+          where("active", "==", true),
+          orderBy("order", "asc")
+        );
         const snapshot = await getDocs(q);
 
         const data = snapshot.docs.map((doc) => ({
@@ -119,6 +134,8 @@ export default function ContentListImage({
 
     fetchData();
   }, [contents, style?.limited, showAll]);
+
+  console.log("group", group);
 
   const e = (data) => data?.[language] || "";
 
