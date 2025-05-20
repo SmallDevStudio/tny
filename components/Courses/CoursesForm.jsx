@@ -73,6 +73,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
   const [code, setCode] = useState(null);
   const [content, setContent] = useState(null);
   const [participants, setParticipants] = useState([]);
+  const [lastNumber, setLastNumber] = useState(null);
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
@@ -110,10 +111,26 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     }
   }, [course]);
 
-  console.log("course", course);
+  useEffect(() => {
+    const fetchLastNumbers = async () => {
+      const snapshot = await getDocs(collection(db, "courses"));
 
-  const generateUniqueDocEntry = async (baseId) => {
-    let newId = baseId;
+      const maxId = snapshot.docs
+        .map((doc) => {
+          const id = doc.id;
+          const parsed = parseInt(id, 10);
+          return isNaN(parsed) ? 0 : parsed;
+        })
+        .reduce((max, curr) => Math.max(max, curr), 0);
+
+      setLastNumber(maxId + 1);
+    };
+
+    fetchLastNumbers();
+  }, []);
+
+  const generateUniqueDocEntry = async () => {
+    let newId = lastNumber ? lastNumber : 1;
     let docRef = doc(db, "courses", newId.toString());
     let docSnap = await getDoc(docRef);
 
@@ -233,7 +250,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     const nextOrder = await getNextOrder();
 
     try {
-      let newId = course?.id ? course.id : await generateUniqueDocEntry(1); // กำหนดค่าเริ่มต้นที่ 1 ถ้าไม่มี id
+      let newId = course?.id ? course.id : await generateUniqueDocEntry(); // กำหนดค่าเริ่มต้นที่ 1 ถ้าไม่มี id
 
       const slug = generateSlug(form.name.en);
 
@@ -271,7 +288,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         content: content,
         active: true,
         slug: slug,
-        order: nextOrder, // ✅ เพิ่มตรงนี้
+        order: isNewCourse ? nextOrder : course.order, // ✅ เพิ่มตรงนี้
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         created_by: "",
@@ -340,6 +357,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
               subgroup={form?.subgroup}
               isNewCode={isNewCourse}
               data={course}
+              lastNumber={lastNumber}
             />
           </div>
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">

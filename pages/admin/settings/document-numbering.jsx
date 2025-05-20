@@ -80,8 +80,6 @@ export default function DocumentNumbering() {
     }
   }, [data, lastNumber]);
 
-  console.log("lastNumber", lastNumber);
-
   const handleOpenForm = () => {
     setSelectedItem(null);
     setOpenForm(true);

@@ -310,8 +310,6 @@ export default function NumberingForm({ document, onClose, newNumbering }) {
         lastNumber = maxId + 1;
       }
 
-      console.log("lastNumber", lastNumber);
-
       const dataToSave = {
         ...form,
         group: openGroup ? form.group : [],

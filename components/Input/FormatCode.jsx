@@ -9,35 +9,23 @@ export default function FormatCode({
   setCode,
   documentId,
   isNewCode,
+  lastNumber,
 }) {
   const [formattedCode, setFormattedCode] = useState(null);
-  const [codeData, setCodeData] = useState(null);
   const { lang } = useLanguage();
   const { getById } = useDB("numbering");
 
   useEffect(() => {
     const formatCode = async () => {
-      if (data) {
+      if (isNewCode) {
+        const formattedCode = await getFormattedCode(documentId, lastNumber);
+        setFormattedCode(formattedCode);
+      } else {
         const formattedCode = await getFormattedCode(documentId, data.id);
         setFormattedCode(formattedCode);
       }
     };
     formatCode();
-  }, [data]);
-
-  useEffect(() => {
-    if (isNewCode) {
-      const formattedCode = async () => {
-        if (data) {
-          const formattedCode = await getFormattedCode(
-            documentId,
-            data.last_number
-          );
-          setFormattedCode(formattedCode);
-        }
-      };
-      formattedCode();
-    }
   }, []);
 
   const getUpdateCode = () => {
