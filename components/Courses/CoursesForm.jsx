@@ -24,6 +24,8 @@ import {
   deleteDoc,
   query,
   where,
+  orderBy,
+  limit,
 } from "firebase/firestore";
 import dynamic from "next/dynamic";
 import ParticipantsModel from "@/components/modal/ParticipantsModel";
@@ -231,11 +233,12 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     const nextOrder = await getNextOrder();
 
     try {
-      let newId = code?.docEntry
-        ? code.docEntry
-        : await generateUniqueDocEntry(1); // กำหนดค่าเริ่มต้นที่ 1 ถ้าไม่มี id
+      let newId = course?.id ? course.id : await generateUniqueDocEntry(1); // กำหนดค่าเริ่มต้นที่ 1 ถ้าไม่มี id
 
       const slug = generateSlug(form.name.en);
+
+      let docRef = doc(db, "courses", newId.toString());
+      const docSnap = await getDoc(docRef);
 
       const pageSlug = form.group
         ? form.subgroup
@@ -275,23 +278,24 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         updated_by: "",
       };
 
-      const docRef = doc(db, "courses", newId.toString());
-      const docSnap = await getDoc(docRef);
-
       if (isNewCourse) {
         if (docSnap.exists()) {
           newId = await generateUniqueDocEntry(newId);
           data.id = newId;
           data.docEntry = newId;
+
+          // ✅ ต้อง update docRef ด้วย!
+          docRef = doc(db, "courses", newId.toString());
         }
+
         data.created_by = userId;
-        await setDoc(doc(db, "courses", newId.toString()), data);
+        await setDoc(docRef, data);
         await updateLastNumber("courses", newId);
         toast.success(lang["add_course_success"]);
       } else {
         data.updated_at = new Date().toISOString();
         data.updated_by = userId;
-        await updateDoc(docRef, data);
+        await updateDoc(docRef, data); // ✅ docRef ต้องตรงกับ newId ที่สุดท้าย
         toast.success(lang["update_course_success"]);
       }
       handleClear();
@@ -330,6 +334,8 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
             <FormatCode
               setCode={setCode}
               documentId="courses"
+              code={code}
+              docId={course?.id}
               group={form?.group}
               subgroup={form?.subgroup}
               isNewCode={isNewCourse}

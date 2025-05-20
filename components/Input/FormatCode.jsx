@@ -8,8 +8,6 @@ export default function FormatCode({
   code,
   setCode,
   documentId,
-  group,
-  subgroup,
   isNewCode,
 }) {
   const [formattedCode, setFormattedCode] = useState(null);
@@ -18,30 +16,9 @@ export default function FormatCode({
   const { getById } = useDB("numbering");
 
   useEffect(() => {
-    if (isNewCode) {
-      const unsubscribe = getById(documentId, async (document) => {
-        if (document) {
-          setCodeData(document);
-          const formattedCode = await getFormattedCode(
-            document.document,
-            document.last_number
-          );
-          setFormattedCode(formattedCode);
-        }
-      });
-      return () => unsubscribe();
-    }
-  }, [isNewCode]);
-
-  useEffect(() => {
     const formatCode = async () => {
       if (data) {
-        const formattedCode = await getFormattedCode(
-          codeData?.document,
-          data.id,
-          group,
-          subgroup
-        );
+        const formattedCode = await getFormattedCode(documentId, data.id);
         setFormattedCode(formattedCode);
       }
     };
@@ -49,39 +26,39 @@ export default function FormatCode({
   }, [data]);
 
   useEffect(() => {
-    const formatCode = async () => {
-      if (!codeData) return;
+    if (isNewCode) {
+      const formattedCode = async () => {
+        if (data) {
+          const formattedCode = await getFormattedCode(
+            documentId,
+            data.last_number
+          );
+          setFormattedCode(formattedCode);
+        }
+      };
+      formattedCode();
+    }
+  }, []);
 
-      if (group || subgroup) {
-        // ถ้า group หรือ subgroup มีค่า ให้เรียก getFormattedCode ใหม่
-        const newFormattedCode = await getFormattedCode(
-          codeData.document,
-          codeData.last_number,
-          group,
-          subgroup
-        );
-        setFormattedCode(newFormattedCode);
-      } else {
-        // ถ้าไม่มี group และ subgroup ให้กลับไปใช้ค่าเดิม
-        const defaultFormattedCode = await getFormattedCode(
-          codeData.document,
-          codeData.last_number
-        );
-        setFormattedCode(defaultFormattedCode);
-      }
-    };
-
-    formatCode();
-  }, [group, subgroup, codeData]);
-
-  const updateCode = {
-    docEntry: codeData?.start_number + codeData?.last_number - 1,
-    code: formattedCode,
+  const getUpdateCode = () => {
+    if (isNewCode) {
+      const updateCode = {
+        docEntry: data?.start_number + data?.last_number - 1,
+        code: formattedCode,
+      };
+      return updateCode;
+    } else {
+      const updateCode = {
+        docEntry: data?.start_number + data?.last_number - 1,
+        code: formattedCode,
+      };
+      return updateCode;
+    }
   };
 
   useEffect(() => {
     if (formattedCode) {
-      setCode(updateCode);
+      setCode(getUpdateCode);
     }
   }, [formattedCode]);
 
