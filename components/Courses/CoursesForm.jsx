@@ -308,12 +308,12 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         data.created_by = userId;
         await setDoc(docRef, data);
         await updateLastNumber("courses", newId);
-        toast.success(lang["add_course_success"]);
+        toast.success(lang["course_added_successfully"]);
       } else {
         data.updated_at = new Date().toISOString();
         data.updated_by = userId;
         await updateDoc(docRef, data); // ✅ docRef ต้องตรงกับ newId ที่สุดท้าย
-        toast.success(lang["update_course_success"]);
+        toast.success(lang["course_updated_successfully"]);
       }
       handleClear();
     } catch (error) {
