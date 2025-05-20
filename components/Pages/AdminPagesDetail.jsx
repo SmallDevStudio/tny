@@ -100,6 +100,8 @@ export default function AdminPagesDetail() {
     );
   }
 
+  console.log(pages);
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">{lang["management_pages"]}</h1>
@@ -142,7 +144,7 @@ export default function AdminPagesDetail() {
                 Sections
               </button>
               <Link
-                href={`/test-section?page=${page.slug}`}
+                href={`/detail-section?page=${page.page}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-orange-600 text-white px-3 py-1 rounded-md mx-2 inline-block text-center"

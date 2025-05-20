@@ -65,7 +65,7 @@ export default function Layout4({
         setDescription(data?.description || sampleData.description);
         setImage(data?.image || sampleData.image);
         setContents(data?.contents || []);
-        setContentCollection(data?.contentCollection);
+        setContentCollection(data?.contentCollection || "");
         setStyle(data?.style || sampleData.style);
         setType(data?.type || "");
       } else {
@@ -88,7 +88,7 @@ export default function Layout4({
       description,
       image,
       contents,
-      contentCollection,
+      contentCollection: contentCollection ?? null, // ✅ ป้องกัน undefined
       style,
       type,
       component: "layout4",
