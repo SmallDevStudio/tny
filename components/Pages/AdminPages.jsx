@@ -125,7 +125,7 @@ export default function AdminPages() {
                 className="bg-green-500 text-white px-3 py-1 rounded-md mx-2"
                 onClick={() =>
                   router.push(
-                    page.page_type === "page"
+                    page.type === "page"
                       ? `/pages/${page.slug}`
                       : `/${page.slug}`
                   )
