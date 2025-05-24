@@ -17,7 +17,7 @@ export default function CheckoutPage() {
       ))}
       <p className="mt-4 text-lg font-semibold">รวม: ฿{total}</p>
       <button
-        onClick={() => router.push("/payment")}
+        onClick={() => router.push("/checkout/payment")}
         className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
       >
         ดำเนินการชำระเงิน

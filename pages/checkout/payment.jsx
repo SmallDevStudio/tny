@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
+import { useSession } from "next-auth/react";
 import { db } from "@/services/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
@@ -8,8 +9,10 @@ import { v4 as uuidv4 } from "uuid";
 export default function PaymentPage() {
   const router = useRouter();
   const cart = useSelector((state) => state.cart.items);
-  const userId = useSelector((state) => state.user.userId); // หรือ session.user.id
   const [method, setMethod] = useState("bank");
+
+  const { data: session } = useSession();
+  const userId = session?.user?.userId;
 
   const handleSubmit = async () => {
     const paymentRef = await addDoc(collection(db, "payment"), {
@@ -22,7 +25,7 @@ export default function PaymentPage() {
     });
 
     if (method === "bank") {
-      router.push(`/summary?id=${paymentRef.id}`);
+      router.push(`/checkout/summary?id=${paymentRef.id}`);
     } else {
       // Stripe API route
       const res = await fetch("/api/checkout_sessions", {
