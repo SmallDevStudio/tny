@@ -100,6 +100,7 @@ export default function PageForm({ page, onClose }) {
         sections: sections || [],
         content: "",
         template: { base: "default", page: "page" },
+        page_type: "page",
         updatedAt: new Date(),
       };
 

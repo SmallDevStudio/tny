@@ -123,7 +123,13 @@ export default function AdminPages() {
             <div>
               <button
                 className="bg-green-500 text-white px-3 py-1 rounded-md mx-2"
-                onClick={() => router.push(`/${page.slug}`)}
+                onClick={() =>
+                  router.push(
+                    page.page_type === "page"
+                      ? `/pages/${page.slug}`
+                      : `/${page.slug}`
+                  )
+                }
               >
                 View
               </button>
