@@ -20,7 +20,9 @@ export default function Contents({ pageData }) {
   useEffect(() => {
     if (pageData) {
       setContent(pageData.content);
+      return;
     } else {
+      setContent({});
       return;
     }
   }, [pageData]);

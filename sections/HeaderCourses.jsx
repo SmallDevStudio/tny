@@ -194,40 +194,38 @@ export default function HeaderCourses({ pageData }) {
                 : "grid-cols-1 md:grid-cols-3"
             } items-center gap-4`}
           >
-            {!noLocation ||
-              (data?.start_date && (
-                <div className="flex items-center text-orange-500 gap-2">
-                  <Image
-                    src="/images/date_icon.png"
-                    width={30}
-                    height={30}
-                    alt="date_icon"
-                    className="object-contain"
-                  />
-                  <span className="text-orange-500 text-sm lg:text-xl">
-                    {moment(data?.start_date).format("DD")} -{" "}
-                    {moment(data?.end_date).format("ll")}
-                  </span>
-                </div>
-              ))}
+            {!showInterested && data?.start_date && (
+              <div className="flex items-center text-orange-500 gap-2">
+                <Image
+                  src="/images/date_icon.png"
+                  width={30}
+                  height={30}
+                  alt="date_icon"
+                  className="object-contain"
+                />
+                <span className="text-orange-500 text-sm lg:text-xl">
+                  {moment(data?.start_date).format("DD")} -{" "}
+                  {moment(data?.end_date).format("ll")}
+                </span>
+              </div>
+            )}
 
-            {!noLocation ||
-              (data?.start_time && (
-                <div className="flex items-center text-orange-500 gap-2">
-                  <Image
-                    src="/images/time-icon.png"
-                    width={30}
-                    height={30}
-                    alt="time-icon"
-                    className="object-contain"
-                  />
-                  <span className="text-orange-500 text-sm lg:text-xl">
-                    {data?.start_time + ` - ${data?.end_time}`}
-                  </span>
-                </div>
-              ))}
+            {!showInterested && data?.start_time && (
+              <div className="flex items-center text-orange-500 gap-2">
+                <Image
+                  src="/images/time-icon.png"
+                  width={30}
+                  height={30}
+                  alt="time-icon"
+                  className="object-contain"
+                />
+                <span className="text-orange-500 text-sm lg:text-xl">
+                  {data?.start_time + ` - ${data?.end_time}`}
+                </span>
+              </div>
+            )}
 
-            {data?.location && (
+            {!showInterested && data?.location && (
               <div className="flex items-center text-orange-500 gap-2">
                 <Image
                   src="/images/place-icon.png"
