@@ -16,10 +16,16 @@ import { Provider } from "react-redux";
 import { store } from "@/store/store";
 import { trackPageTime, trackClick } from "@/utils/analytics";
 import dynamic from "next/dynamic";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
 const CookieConsent = dynamic(() => import("@/components/CookieConsent"), {
   ssr: false,
 });
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+);
 
 export default function App({
   Component,
@@ -61,7 +67,11 @@ export default function App({
         <Header />
         <ThemeProvider>
           <Provider store={store}>
-            <Component {...pageProps} />
+            {stripePromise && (
+              <Elements stripe={stripePromise}>
+                <Component {...pageProps} />
+              </Elements>
+            )}
             <CookieConsent />
             <ToastContainer position="top-right" autoClose={3000} />
           </Provider>
@@ -77,11 +87,16 @@ export default function App({
       <Header />
       <ThemeProvider>
         <Provider store={store}>
-          <Layout>
-            <Component {...pageProps} />
-            <CookieConsent />
-            <ToastContainer position="top-right" autoClose={3000} />
-          </Layout>
+          {/* ✅ ตรวจสอบว่า stripePromise ถูกโหลดก่อน */}
+          {stripePromise && (
+            <Elements stripe={stripePromise}>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </Elements>
+          )}
+          <CookieConsent />
+          <ToastContainer position="top-right" autoClose={3000} />
         </Provider>
       </ThemeProvider>
     </SessionProvider>
