@@ -124,6 +124,8 @@ export default function CoursesPage() {
     fetchData();
   }, [slug]);
 
+  console.log("pageData:", pageData);
+
   if (loading) return <div className="p-4 text-center">Loading...</div>;
   if (notFound) return <CustomErrorPage statusCode={404} />;
 
