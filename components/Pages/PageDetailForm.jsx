@@ -98,6 +98,8 @@ export default function PageDetailForm({ page, onClose }) {
         ...form,
         sections: sections || [],
         content: "",
+        page: page.page,
+        type: "dynamic_page",
         template: { base: "default", page: "page" },
         updatedAt: new Date(),
       };
@@ -163,6 +165,8 @@ export default function PageDetailForm({ page, onClose }) {
   const handleRemoveCover = () => {
     setFiles(null);
   };
+
+  console.log("page:", page);
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl">

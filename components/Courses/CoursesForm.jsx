@@ -337,7 +337,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
             <button
               type="button"
               className="text-white bg-transparent hover:bg-orange-300 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
-              onClick={onClose}
+              onClick={handleClear}
             >
               <IoClose size={22} />
             </button>

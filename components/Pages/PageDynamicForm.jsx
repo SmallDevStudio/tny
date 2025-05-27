@@ -169,6 +169,9 @@ export default function PageDynamicForm({ page, onClose }) {
     setFiles(null);
   };
 
+  console.log(form);
+  console.log("page", page);
+
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl">
       <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16">

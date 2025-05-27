@@ -18,6 +18,7 @@ import {
 import Swal from "sweetalert2";
 import { IoClose } from "react-icons/io5";
 import { RiDeleteBin5Line, RiPencilLine } from "react-icons/ri";
+import PageGroup from "../Pages/PageGroup";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -172,73 +173,7 @@ export default function SelectForm({ page, value, setValue, type }) {
           },
         }}
       >
-        <div className="flex flex-col">
-          {/* Header */}
-          <div className="flex flex-row items-center justify-between w-full p-2 bg-orange-500 text-white">
-            <h2>จัดการ group</h2>
-            <IoClose onClick={handleCloseDialog} size={24} />
-          </div>
-          {/* Groups */}
-          <div className="flex flex-col w-full px-2 py-1">
-            {group.length > 0
-              ? group.map((item, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-2 items-center gap-2"
-                  >
-                    <span className="text-sm">{t(item.name)}</span>
-                    <div className="flex flex-row items-center gap-2">
-                      <RiPencilLine
-                        className="text-blue-600 hover:text-blue-800"
-                        onClick={() => handleUpdateOption(item)}
-                      />
-                      <RiDeleteBin5Line
-                        className="text-red-600 hover:text-red-800"
-                        onClick={() => handleRemoveOption(item)}
-                      />
-                    </div>
-                  </div>
-                ))
-              : null}
-          </div>
-          {/* form */}
-          <div className="flex flex-col gap-2 p-2">
-            <div>
-              <label htmlFor="th">TH:</label>
-              <input
-                type="text"
-                id="th"
-                name="th"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder={"TH"}
-                value={optionName.th}
-                onChange={(e) =>
-                  setOptionName({ ...optionName, th: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label htmlFor="en">EN:</label>
-              <input
-                type="text"
-                id="en"
-                name="en"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder={"EN"}
-                value={optionName.en}
-                onChange={(e) =>
-                  setOptionName({ ...optionName, en: e.target.value })
-                }
-              />
-            </div>
-            <button
-              className="px-3 py-1 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-              onClick={handleCreateOption}
-            >
-              {lang["save"]}
-            </button>
-          </div>
-        </div>
+        <PageGroup onClose={handleCloseDialog} />
       </Dialog>
     </div>
   );
