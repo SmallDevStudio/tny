@@ -144,7 +144,7 @@ export default function AdminPagesDetail() {
                 Sections
               </button>
               <Link
-                href={`/detail-section?page=${page.page}`}
+                href={`/detail-section?page=${page.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-orange-600 text-white px-3 py-1 rounded-md mx-2 inline-block text-center"

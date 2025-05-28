@@ -6,6 +6,7 @@ import { db } from "@/services/firebase";
 import { doc, getDoc, setDoc, addDoc, collection } from "firebase/firestore";
 import ReactPlayer from "react-player";
 import { useRouter } from "next/router";
+import FormShortHightLight from "./Forms/FormShortHightLight";
 
 const sampleData = {
   title: {
@@ -22,32 +23,44 @@ const sampleData = {
       video: {
         url: "https://www.youtube.com/shorts/hBTxCzXanV0",
         type: "short",
+        title: "ทดสอบหัวเรื่อง",
+        description: "คําอธิบายภาษาไทย",
       },
-      url: "https://www.youtube.com/shorts/hBTxCzXanV0",
+      title: "ทดสอบหัวเรื่อง",
+      description: "คําอธิบายภาษาไทย",
     },
     {
       id: 2,
       video: {
         url: "https://www.youtube.com/shorts/y5NKozzDpOA",
         type: "short",
+        title: "ทดสอบหัวเรื่อง",
+        description: "คําอธิบายภาษาไทย",
       },
-      url: "https://www.youtube.com/shorts/y5NKozzDpOA",
+      title: "ทดสอบหัวเรื่อง",
+      description: "คําอธิบายภาษาไทย",
     },
     {
       id: 3,
       video: {
         url: "https://www.youtube.com/shorts/U5hhH--Z-yo",
         type: "short",
+        title: "ทดสอบหัวเรื่อง",
+        description: "คําอธิบายภาษาไทย",
       },
-      url: "https://www.youtube.com/shorts/U5hhH--Z-yo",
+      title: "ทดสอบหัวเรื่อง",
+      description: "คําอธิบายภาษาไทย",
     },
     {
       id: 4,
       video: {
         url: "https://www.youtube.com/shorts/LT-tEVu_PMc",
         type: "short",
+        title: "ทดสอบหัวเรื่อง",
+        description: "คําอธิบายภาษาไทย",
       },
-      url: "https://www.youtube.com/shorts/LT-tEVu_PMc",
+      title: "ทดสอบหัวเรื่อง",
+      description: "คําอธิบายภาษาไทย",
     },
   ],
   style: {
@@ -87,10 +100,7 @@ export default function ShortHightLight({
   setLanguage,
   setEditMode,
 }) {
-  const [title, setTitle] = useState({});
-  const [description, setDescription] = useState({});
   const [contents, setContents] = useState(sampleData.contents);
-  const [style, setStyle] = useState({});
   const router = useRouter();
 
   const { t, lang } = useLanguage();
@@ -102,9 +112,62 @@ export default function ShortHightLight({
     return shortMatch?.[1] || longMatch?.[1] || shortMatch2?.[1] || "";
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!contentId) {
+        setContents(sampleData.contents);
+        return;
+      }
+
+      try {
+        const sectionRef = doc(db, "sections", contentId);
+        const sectionSnap = await getDoc(sectionRef);
+
+        if (sectionSnap.exists()) {
+          const data = sectionSnap.data();
+          setContents(data?.contents || sampleData.contents);
+        } else {
+          // ไม่มี section นี้
+          setContents(sampleData.contents);
+        }
+      } catch (err) {
+        console.error("โหลด section ผิดพลาด:", err);
+      }
+    };
+
+    fetchData();
+  }, [contentId]);
+
+  const e = (data) => data?.[language] || "";
+
+  const handleSubmit = async () => {
+    const newData = {
+      contents,
+      component: "shortHightLight",
+    };
+
+    try {
+      if (contentId) {
+        // update
+        const sectionRef = doc(db, "sections", contentId);
+        await setDoc(sectionRef, newData, { merge: true });
+        toast.success("อัปเดตข้อมูลเรียบร้อย");
+      } else {
+        // create
+        const docRef = await addDoc(collection(db, "sections"), newData);
+        toast.success("สร้าง section ใหม่เรียบร้อย: " + docRef.id);
+      }
+
+      setEditMode(false);
+    } catch (error) {
+      console.error("เกิดข้อผิดพลาดในการบันทึก:", error);
+      toast.error("บันทึกไม่สำเร็จ");
+    }
+  };
+
   return (
-    <section className="bg-white dark:bg-gray-900 py-6 px-4">
-      <div className="max-w-screen-xl mx-auto flex flex-wrap justify-between gap-6 items-stretch">
+    <section className="bg-white dark:bg-gray-900 py-6 px-4 overflow-x-auto">
+      <div className="max-w-screen-xl mx-auto flex justify-between gap-6 items-stretch ">
         {contents.map((item) => (
           <div
             key={item.id}
@@ -123,6 +186,18 @@ export default function ShortHightLight({
           </div>
         ))}
       </div>
+      {editMode && (
+        <div className="flex justify-center p-4">
+          <FormShortHightLight
+            contents={contents}
+            setContents={setContents}
+            language={language}
+            setLanguage={setLanguage}
+            handleSubmit={handleSubmit}
+            setEditMode={setEditMode}
+          />
+        </div>
+      )}
     </section>
   );
 }

@@ -6,6 +6,7 @@ import { db } from "@/services/firebase";
 import { doc, getDoc, setDoc, addDoc, collection } from "firebase/firestore";
 import ReactPlayer from "react-player";
 import { useRouter } from "next/router";
+import FormFixHightLight from "./Forms/FormFixHightLight";
 
 const sampleData = {
   title: {
@@ -19,55 +20,43 @@ const sampleData = {
   contents: [
     {
       id: 1,
-      video: { url: "https://www.youtube.com/watch?v=X8gIsliON6E" },
-      title: {
-        th: "ทดสอบหัวเรื่อง",
-        en: "Sample title",
+      video: {
+        url: "https://www.youtube.com/watch?v=X8gIsliON6E",
+        title: "ทดสอบหัวเรื่อง",
+        description: "คําอธิบายภาษาไทย",
       },
-      description: {
-        th: "คําอธิบายภาษาไทย",
-        en: "English description",
-      },
-      url: "https://www.youtube.com/watch?v=X8gIsliON6E",
+      title: "ทดสอบหัวเรื่อง",
+      description: "คําอธิบายภาษาไทย",
     },
     {
       id: 2,
-      video: { url: "https://www.youtube.com/watch?v=wdFbQNeGMeE" },
-      title: {
-        th: "ทดสอบหัวเรื่อง",
-        en: "Sample title",
+      video: {
+        url: "https://www.youtube.com/watch?v=wdFbQNeGMeE",
+        title: "ทดสอบหัวเรื่อง",
+        description: "คําอธิบายภาษาไทย",
       },
-      description: {
-        th: "คําอธิบายภาษาไทย",
-        en: "English description",
-      },
-      url: "https://www.youtube.com/watch?v=wdFbQNeGMeE",
+      title: "ทดสอบหัวเรื่อง",
+      description: "คําอธิบายภาษาไทย",
     },
     {
       id: 3,
-      video: { url: "https://www.youtube.com/watch?v=7hHGArlI7g4" },
-      title: {
-        th: "ทดสอบหัวเรื่อง",
-        en: "Sample title",
+      video: {
+        url: "https://www.youtube.com/watch?v=7hHGArlI7g4",
+        title: "ทดสอบหัวเรื่อง",
+        description: "คําอธิบายภาษาไทย",
       },
-      description: {
-        th: "คําอธิบายภาษาไทย",
-        en: "English description",
-      },
-      url: "https://www.youtube.com/watch?v=7hHGArlI7g4",
+      title: "ทดสอบหัวเรื่อง",
+      description: "คําอธิบายภาษาไทย",
     },
     {
       id: 4,
-      video: { url: "https://www.youtube.com/watch?v=U-0WbD3DbZg" },
-      title: {
-        th: "ทดสอบหัวเรื่อง",
-        en: "Sample title",
+      video: {
+        url: "https://www.youtube.com/watch?v=U-0WbD3DbZg",
+        title: "ทดสอบหัวเรื่อง",
+        description: "คําอธิบายภาษาไทย",
       },
-      description: {
-        th: "คําอธิบายภาษาไทย",
-        en: "English description",
-      },
-      url: "https://www.youtube.com/watch?v=U-0WbD3DbZg",
+      title: "ทดสอบหัวเรื่อง",
+      description: "คําอธิบายภาษาไทย",
     },
   ],
   style: {
@@ -119,7 +108,7 @@ export default function FixHightLight({
 }) {
   const [title, setTitle] = useState({});
   const [description, setDescription] = useState({});
-  const [contents, setContents] = useState(sampleData.contents);
+  const [contents, setContents] = useState([]);
   const [style, setStyle] = useState({});
   const [showInfo, setShowInfo] = useState(false);
   const router = useRouter();
@@ -128,6 +117,71 @@ export default function FixHightLight({
 
   const goTo = (url) => {
     if (url) window.open(url, "_blank");
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!contentId) {
+        setTitle(sampleData.title);
+        setDescription(sampleData.description);
+        setContents(sampleData.contents);
+        setStyle(sampleData.style);
+        return;
+      }
+
+      try {
+        const sectionRef = doc(db, "sections", contentId);
+        const sectionSnap = await getDoc(sectionRef);
+
+        if (sectionSnap.exists()) {
+          const data = sectionSnap.data();
+          setTitle(data?.title);
+          setDescription(data?.description);
+          setContents(data?.contents || sampleData.contents);
+          setStyle(data?.style || sampleData.style);
+        } else {
+          // ไม่มี section นี้
+          setTitle(sampleData.title);
+          setDescription(sampleData.description);
+          setContents(sampleData.contents);
+          setStyle(sampleData.style);
+        }
+      } catch (err) {
+        console.error("โหลด section ผิดพลาด:", err);
+      }
+    };
+
+    fetchData();
+  }, [contentId]);
+
+  const e = (data) => data?.[language] || "";
+
+  const handleSubmit = async () => {
+    const newData = {
+      title,
+      description,
+      contents,
+      style,
+      component: "fixHightLight",
+    };
+
+    try {
+      if (contentId) {
+        // update
+        const sectionRef = doc(db, "sections", contentId);
+        await setDoc(sectionRef, newData, { merge: true });
+        toast.success("อัปเดตข้อมูลเรียบร้อย");
+      } else {
+        // create
+        const docRef = await addDoc(collection(db, "sections"), newData);
+        toast.success("สร้าง section ใหม่เรียบร้อย: " + docRef.id);
+      }
+
+      setEditMode(false);
+    } catch (error) {
+      console.error("เกิดข้อผิดพลาดในการบันทึก:", error);
+      toast.error("บันทึกไม่สำเร็จ");
+    }
   };
 
   return (
@@ -143,7 +197,10 @@ export default function FixHightLight({
         </div>
       </div>
 
-      <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row gap-6">
+      <div
+        className="max-w-screen-xl mx-auto flex flex-col md:flex-row gap-6"
+        style={{ maxHeight: "calc(4 * 160px)" }}
+      >
         {/* Main video/image */}
         <div
           className="w-full md:w-[70%] aspect-video rounded-lg overflow-hidden shadow-lg cursor-pointer relative"
@@ -170,43 +227,62 @@ export default function FixHightLight({
               className={`absolute bottom-0 left-0 w-full p-4 transition-all duration-300 opacity-50 bg-white`}
             >
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                {t(contents[0]?.title)}
+                {contents[0]?.title}
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
-                {t(contents[0]?.description)}
+                {contents[0]?.description}
               </p>
             </div>
           )}
         </div>
 
         {/* Side Items */}
-        <div className="w-full md:w-1/4 flex flex-col gap-3">
+        <div
+          className="w-full md:w-1/4 flex md:flex-col flex-row gap-3 md:overflow-y-auto overflow-x-auto"
+          style={{ maxHeight: "540px" }} // 4 วิดีโอ x 130px + margin/padding
+        >
           {contents.slice(1).map((item) => (
             <div
               key={item.id}
-              onClick={() => goTo(item.url)}
-              className="w-full aspect-video rounded-lg overflow-hidden shadow cursor-pointer hover:ring-2 hover:ring-orange-400 transition-all"
+              onClick={() => goTo(item.video?.url || item.url)}
+              className="w-full h-[130px] rounded-lg overflow-hidden shadow cursor-pointer hover:ring-2 hover:ring-orange-400 transition-all"
             >
               {item.video ? (
                 <HoverVideoPlayer url={item.video.url} />
               ) : (
                 <Image
-                  src={item.image.url}
+                  src={item.image?.url}
                   alt="thumbnail"
                   width={1280}
                   height={720}
                   className="w-full h-full object-cover"
                 />
               )}
-              {item.image && (
-                <div className="p-2 bg-white text-sm font-medium truncate text-black">
-                  {t(item.title)}
-                </div>
-              )}
+              <div className="p-2 bg-white text-sm font-medium truncate text-black">
+                {item.title}
+              </div>
             </div>
           ))}
         </div>
       </div>
+      {editMode && (
+        <div className="flex justify-center p-4">
+          <FormFixHightLight
+            title={title}
+            setTitle={setTitle}
+            description={description}
+            setDescription={setDescription}
+            contents={contents}
+            setContents={setContents}
+            style={style}
+            setStyle={setStyle}
+            language={language}
+            setLanguage={setLanguage}
+            handleSubmit={handleSubmit}
+            setEditMode={setEditMode}
+          />
+        </div>
+      )}
     </section>
   );
 }

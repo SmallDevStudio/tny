@@ -11,7 +11,10 @@ import Header from "@/components/utils/Header";
 import Loading from "@/components/utils/Loading";
 import { CiEdit } from "react-icons/ci";
 
-export default function DetailSection() {
+export default function TestSection() {
+  const [title, setTitle] = useState({});
+  const [description, setDescription] = useState({});
+  const [image, setImage] = useState({});
   const [contents, setContents] = useState({});
   const [language, setLanguage] = useState("th");
   const [editMode, setEditMode] = useState("");
@@ -25,13 +28,17 @@ export default function DetailSection() {
 
   const { t, lang } = useLanguage();
 
+  console.log(page);
+  console.log(sections);
+  console.log(pageData);
+
   useEffect(() => {
     if (!page) return; // รอจนกว่าจะได้ค่าจาก query
 
     setLoading(true);
     const fetchData = async () => {
       try {
-        const pageRef = doc(db, "pages_slug", page);
+        const pageRef = doc(db, "pages", page);
         const pageSnap = await getDoc(pageRef);
 
         if (pageSnap.exists()) {
@@ -60,9 +67,6 @@ export default function DetailSection() {
     setEditMode(sectionId);
   };
 
-  console.log("sections", sections);
-  console.log("pageData", pageData);
-
   return (
     <div>
       <Header title={t(pageData.title)} description={t(pageData.description)} />
@@ -72,23 +76,62 @@ export default function DetailSection() {
       </div>
 
       {sections.length > 0 &&
-        sections.map((section) => {
-          const Component = section.component;
-          return (
-            Component && (
-              <div key={section.id} className="group relative transition">
-                <Component
-                  contentId={section.contentId || section.id}
-                  pageData={pageData}
-                  editMode={editMode === section.id}
-                  language={language}
-                  setLanguage={setLanguage}
-                  setEditMode={setEditMode}
-                />
-              </div>
-            )
-          );
-        })}
+        sections.map((section) =>
+          section?.component ? (
+            <div key={section.id} className="group relative transition">
+              {/* เฉพาะ admin เท่านั้นถึงจะแสดงปุ่ม Edit */}
+              {session?.user?.role === "admin" && (
+                <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition">
+                  {editMode !== section.id ? (
+                    <button
+                      onClick={() => handleEdit(section.id)}
+                      className="flex p-2 rounded-full border border-gray-700 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition"
+                    >
+                      <CiEdit size={20} />
+                    </button>
+                  ) : (
+                    <div className="flex flex-row items-center gap-2 bg-white p-2 rounded shadow-md dark:bg-gray-800">
+                      <button
+                        className={`px-3 py-1 rounded-md font-bold transition ${
+                          language === "th"
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-300 dark:bg-gray-600"
+                        }`}
+                        onClick={() => setLanguage("th")}
+                      >
+                        TH
+                      </button>
+                      <button
+                        className={`px-3 py-1 rounded-md font-bold transition ${
+                          language === "en"
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-300 dark:bg-gray-600"
+                        }`}
+                        onClick={() => setLanguage("en")}
+                      >
+                        EN
+                      </button>
+                      <button
+                        onClick={() => setEditMode(null)}
+                        className="text-red-500 hover:text-red-700 transition"
+                      >
+                        <IoClose size={20} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <section.component
+                contentId={section.id}
+                editMode={editMode === section.id}
+                language={language}
+                setLanguage={setLanguage}
+                setEditMode={setEditMode}
+              />
+            </div>
+          ) : null
+        )}
     </div>
   );
 }

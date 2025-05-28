@@ -3,10 +3,20 @@ import axios from "axios";
 export default async function handler(req, res) {
   const { youtubeUrl } = req.body;
 
-  let videoId;
-  const url = new URL(youtubeUrl);
+  if (!youtubeUrl) {
+    return res.status(400).json({ error: "Missing YouTube URL" });
+  }
 
-  if (url.hostname === "www.youtube.com" || url.hostname === "youtube.com") {
+  let videoId;
+  let url;
+
+  try {
+    url = new URL(youtubeUrl);
+  } catch (err) {
+    return res.status(400).json({ error: "Invalid YouTube URL format" });
+  }
+
+  if (url.hostname.includes("youtube.com")) {
     if (url.pathname.startsWith("/shorts/")) {
       videoId = url.pathname.split("/")[2];
     } else {
@@ -17,10 +27,10 @@ export default async function handler(req, res) {
   }
 
   if (!videoId) {
-    res.status(400).json({ error: "Invalid YouTube URL" });
+    return res.status(400).json({ error: "Unable to extract video ID" });
   }
 
-  const API_KEY = process.env.GOOGLE_API_KEY;
+  const API_KEY = "AIzaSyBwRCYI8ik7cND_LnqJYwlbpXTaQLKHGrE";
   const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoId}&key=${API_KEY}`;
 
   try {
@@ -34,28 +44,24 @@ export default async function handler(req, res) {
     const { title, description, thumbnails, channelTitle, publishedAt } =
       videoData.snippet;
     const { duration, dimension, definition } = videoData.contentDetails;
-    const durationMinutes = parseInt(duration.slice(2, duration.length - 1));
-    const videoId = videoData.id;
     const thumbnailUrl = thumbnails.high.url;
-    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const fullUrl = `https://www.youtube.com/watch?v=${videoData.id}`;
 
-    res
-      .status(200)
-      .json({
-        title,
-        description,
-        thumbnailUrl,
-        videoUrl,
-        duration,
-        durationMinutes,
-        videoId,
-        channelTitle,
-        publishedAt,
-        dimension,
-        definition,
-        thumbnails,
-      });
+    res.status(200).json({
+      title,
+      description,
+      thumbnailUrl,
+      url: fullUrl,
+      duration,
+      videoId: videoData.id,
+      channelTitle,
+      publishedAt,
+      dimension,
+      definition,
+      thumbnails,
+    });
   } catch (error) {
+    console.error("YouTube API error:", error?.response?.data || error.message);
     res.status(500).json({ error: "Failed to fetch video data" });
   }
 }
