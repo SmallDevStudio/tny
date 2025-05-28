@@ -101,6 +101,7 @@ export default function AdminPagesDetail() {
   }
 
   console.log(pages);
+  console.log("selectedPage", selectedPage);
 
   return (
     <div className="container mx-auto p-4">
@@ -192,7 +193,7 @@ export default function AdminPagesDetail() {
           <SelectSections
             sections={selectedPage?.sections || []}
             onClose={handleCloseSections}
-            page={selectedPage?.slug || "home"}
+            page={selectedPage?.id || "home"}
           />
         </div>
       </Dialog>

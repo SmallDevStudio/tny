@@ -28,9 +28,7 @@ export default function TestSection() {
 
   const { t, lang } = useLanguage();
 
-  console.log(page);
-  console.log(sections);
-  console.log(pageData);
+  console.log("sections", sections);
 
   useEffect(() => {
     if (!page) return; // รอจนกว่าจะได้ค่าจาก query

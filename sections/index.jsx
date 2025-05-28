@@ -17,6 +17,7 @@ import HeaderCourses from "./HeaderCourses";
 import Contents from "./Contents";
 import FooterCourses from "./FooterCourses";
 import HeaderTeam from "./HeaderTeam";
+import Customs from "./Customs";
 
 export const Sections = [
   {
@@ -188,6 +189,16 @@ export const Sections = [
     },
     thumbnail: "/images/sections/previews/contents.png",
     component: Contents,
+    group: "content",
+  },
+  {
+    name: "customs",
+    description: {
+      en: "show content",
+      th: "แสดงเนื้อหา",
+    },
+    thumbnail: "/images/sections/previews/contents.png",
+    component: Customs,
     group: "content",
   },
   {
