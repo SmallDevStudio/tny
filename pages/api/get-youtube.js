@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Unable to extract video ID" });
   }
 
-  const API_KEY = "AIzaSyBwRCYI8ik7cND_LnqJYwlbpXTaQLKHGrE";
+  const API_KEY = process.env.GOOGLE_API_KEY;
   const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoId}&key=${API_KEY}`;
 
   try {
