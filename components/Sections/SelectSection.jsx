@@ -33,8 +33,6 @@ export default function SelectSections({ page, sections, onClose }) {
   const { lang } = useLanguage();
   const { update } = useDB("pages");
 
-  console.log("page", page);
-
   useEffect(() => {
     if (sections && sections.length > 0) {
       const withIds = sections.map((sec) => ({
@@ -54,6 +52,8 @@ export default function SelectSections({ page, sections, onClose }) {
       {
         id: nanoid(), // ✅ id สำหรับจัดเรียง
         component: section.name, // ✅ ประเภทของ section
+        contentId: null,
+        thumbnail: section.thumbnail,
       },
     ]);
   };
@@ -143,19 +143,39 @@ export default function SelectSections({ page, sections, onClose }) {
               items={selectedSections.map((sec) => sec.id)} // <-- ensure unique id
               strategy={verticalListSortingStrategy}
             >
-              <div className="w-full gap-2">
-                {selectedSections.length > 0 &&
-                  selectedSections.map((sec) => (
-                    <SortableItem key={sec.id} id={sec.id}>
-                      <div
-                        className="flex border border-gray-200 rounded-lg bg-gray-100 p-4 items-center cursor-move"
-                        onContextMenu={(e) => handleContextMenu(e, sec.id)}
-                      >
-                        {sec.component}
-                      </div>
-                    </SortableItem>
-                  ))}
-              </div>
+              {selectedSections.length > 0 && (
+                <div className="flex flex-col items-center w-full gap-4 border border-gray-400 p-2 rounded-md">
+                  {selectedSections.map((sec) => {
+                    const matchedSection = Sections.find(
+                      (s) => s.name === sec.component
+                    );
+
+                    return (
+                      <SortableItem key={sec.id} id={sec.id}>
+                        <div
+                          className="group flex flex-col cursor-move relative"
+                          onContextMenu={(e) => handleContextMenu(e, sec.id)}
+                        >
+                          {matchedSection?.thumbnail && (
+                            <Image
+                              src={matchedSection.thumbnail}
+                              alt={sec.component}
+                              width={300}
+                              height={300}
+                              className="object-cover rounded-md"
+                            />
+                          )}
+
+                          {/* text แสดงเฉพาะตอน hover */}
+                          <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            {sec.component}
+                          </div>
+                        </div>
+                      </SortableItem>
+                    );
+                  })}
+                </div>
+              )}
             </SortableContext>
           </DndContext>
         </div>
