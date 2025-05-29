@@ -24,6 +24,10 @@
   --hover-bg: rgba(255, 255, 255, 0.2);
 }
 
+.preview-box {
+  font-family: "Prompt", sans-serif !important;
+}
+
 .preview-box h1 {
   font-size: 32px;
 }
@@ -257,6 +261,10 @@ body {
   .content {
     padding-top: 50px;
     transition: all 0.3s ease-in-out;
+  }
+
+  .preview-box {
+    font-family: "Prompt", sans-serif !important;
   }
 
   .preview-box h1 {
