@@ -298,7 +298,13 @@ export default function Menu() {
               }}
               className="relative border border-gray-300 px-4 py-2 rounded-md bg-white cursor-pointer dark:bg-gray-700 hover:bg-orange-100 dark:hover:bg-gray-600"
             >
-              {t(item.title)}
+              <div className="flex flex-col">
+                {t(item.title)}
+                <span className="text-xs text-gray-400">
+                  <span className="mr-1">{item.slug || item.url}</span>(
+                  {item.type === "dynamic_page" ? "เพจย่อย" : "เพจหลัก"})
+                </span>
+              </div>
               <div className="absolute -top-2 -right-2 cursor-pointer text-red-500">
                 <IoClose onClick={() => handleRemoveFromPreview(item.id)} />
               </div>
@@ -369,7 +375,13 @@ export default function Menu() {
               className="flex flex-row items-center border border-gray-400 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
               onClick={() => handleAddToPreview(page)}
             >
-              {t(page.title)}
+              <div className="flex flex-col">
+                {t(page.title)}
+                <span className="text-xs text-gray-400">
+                  <span className="mr-1">{page.slug}</span>(
+                  {page.type === "dynamic_page" ? "เพจย่อย" : "เพจหลัก"})
+                </span>
+              </div>
             </div>
           ))}
         </div>
@@ -387,7 +399,13 @@ export default function Menu() {
                   className="flex flex-row items-center border border-gray-400 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => handleAddToPreview(page)}
                 >
-                  {t(page.title)}
+                  <div className="flex flex-col">
+                    {t(page.title)}
+                    <span className="text-xs text-gray-400">
+                      <span className="mr-1">{page.url}</span>
+                      (custom)
+                    </span>
+                  </div>
                   <div className="flex items-center gap-2 ml-auto">
                     <FaEdit
                       size={16}
