@@ -27,10 +27,10 @@ export default function Menu() {
   const [filteredPages, setFilteredPages] = useState([]);
   const [previewMenu, setPreviewMenu] = useState([]);
   const [customMenu, setCustomMenu] = useState([]);
-  const [selectedCustomMenu, setSelectedCustomMenu] = useState(null);
   const [filteredCustomMenu, setFilteredCustomMenu] = useState([]);
   const [openMenuItemsForm, setOpenMenuItemsForm] = useState(null);
   const [style, setStyle] = useState({ position: "horizontal" });
+  const [isMenuLoaded, setIsMenuLoaded] = useState(false);
   const { lang, t } = useLanguage();
 
   useEffect(() => {
@@ -65,36 +65,49 @@ export default function Menu() {
   }, []);
 
   useEffect(() => {
-    const updated = pages.filter(
-      (p) => !previewMenu.find((item) => item.id === p.id)
+    setFilteredPages(
+      pages.filter((p) => !previewMenu.some((i) => i.id === p.id))
     );
-    setFilteredPages(updated);
   }, [pages, previewMenu]);
 
   useEffect(() => {
-    if (menu.length > 0) {
+    setFilteredCustomMenu(
+      customMenu.filter((c) => !previewMenu.some((i) => i.id === c.id))
+    );
+  }, [customMenu, previewMenu]);
+
+  useEffect(() => {
+    if (
+      !isMenuLoaded &&
+      menu.length > 0 &&
+      (pages.length > 0 || customMenu.length > 0)
+    ) {
       const saved = menu[0];
 
-      // เชื่อมเมนูที่ save ไว้กับ pages เพื่อดึงข้อมูล id และ slug กลับมา
       const mergedPreview = saved.items.map((item, index) => {
-        const matchedPage = pages.find((p) => "/" + p.slug === item.url);
+        const matchedPage = pages.find((p) => p.id === item.id);
+        const matchedCustom = customMenu.find((c) => c.id === item.id);
+
         return {
           ...item,
-          id: matchedPage?.id || index.toString(), // ถ้าไม่มีให้ใช้ index เป็น fallback id
+          id:
+            matchedPage?.id || matchedCustom?.id || item.id || index.toString(),
+          title: matchedPage?.title || matchedCustom?.title || item.title,
           slug: matchedPage?.slug || item.url?.replace("/", ""),
         };
       });
 
       setPreviewMenu(mergedPreview);
       setStyle(saved.style || { position: "horizontal" });
+      setIsMenuLoaded(true); // ✅ ไม่โหลดซ้ำอีก
     }
-  }, [menu, pages]); // ✅ ให้ทำงานใหม่เมื่อ menu หรือ pages ถูกโหลด
+  }, [menu, pages, customMenu, isMenuLoaded]);
 
   const handleAddToPreview = (item) => {
     if (!previewMenu.find((i) => i.id === item.id)) {
       setPreviewMenu([...previewMenu, item]);
 
-      // ถ้าเป็น custom menu (ไม่มี slug)
+      // หากเป็น custom (ไม่มี slug)
       if (!item.slug) {
         setCustomMenu((prev) => prev.filter((c) => c.id !== item.id));
       } else {
@@ -104,7 +117,7 @@ export default function Menu() {
   };
 
   const handleRemoveFromPreview = (pageId) => {
-    const targetId = String(pageId); // เผื่อ id มีชนิดต่างกัน เช่น number vs string
+    const targetId = String(pageId);
     const removedItem = previewMenu.find((p) => String(p.id) === targetId);
 
     if (!removedItem) {
@@ -112,14 +125,21 @@ export default function Menu() {
       return;
     }
 
-    // ✅ อัปเดต previewMenu โดยกรองออก
     setPreviewMenu((prev) => prev.filter((p) => String(p.id) !== targetId));
 
-    // ✅ คืนรายการกลับไปยัง filteredPages ถ้าไม่ซ้ำ
-    if (!removedItem.slug) {
-      setCustomMenu((prev) => [...prev, removedItem]);
+    // คืนกลับ custom หรือ pages
+    if (removedItem.slug) {
+      // เป็น pages
+      setPages((prev) => {
+        const isDuplicate = prev.some((p) => String(p.id) === targetId);
+        return isDuplicate ? prev : [...prev, removedItem];
+      });
     } else {
-      setPages((prev) => [...prev, removedItem]);
+      // เป็น custom
+      setCustomMenu((prev) => {
+        const isDuplicate = prev.some((c) => String(c.id) === targetId);
+        return isDuplicate ? prev : [...prev, removedItem];
+      });
     }
   };
 
@@ -354,14 +374,14 @@ export default function Menu() {
           ))}
         </div>
         {/* Custom Menu */}
-        {customMenu.length > 0 && (
+        {filteredCustomMenu.length > 0 && (
           <div className="pb-4">
             <div className="px-4 pb-4">
               <h5 className="font-bold">Custom Menu</h5>
               <Divider />
             </div>
             <div className="grid grid-cols-1 gap-2 px-4 lg:grid-cols-4">
-              {customMenu.map((page) => (
+              {filteredCustomMenu.map((page) => (
                 <div
                   key={page.id}
                   className="flex flex-row items-center border border-gray-400 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
