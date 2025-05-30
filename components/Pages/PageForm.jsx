@@ -39,7 +39,8 @@ export default function PageForm({ page, onClose }) {
   useEffect(() => {
     if (!page && form.name !== "") {
       const newSlug = generateSlug(form.name);
-      setForm((prev) => ({ ...prev, slug: newSlug }));
+      const pageSlug = "pages/" + newSlug;
+      setForm((prev) => ({ ...prev, slug: pageSlug }));
     }
   }, [form?.name]);
 

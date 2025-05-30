@@ -123,13 +123,7 @@ export default function AdminPages() {
             <div>
               <button
                 className="bg-green-500 text-white px-3 py-1 rounded-md mx-2"
-                onClick={() =>
-                  router.push(
-                    page.type === "page"
-                      ? `/pages/${page.slug}`
-                      : `/${page.slug}`
-                  )
-                }
+                onClick={() => router.push(`/${page.slug}`)}
               >
                 View
               </button>
@@ -146,7 +140,7 @@ export default function AdminPages() {
                 Sections
               </button>
               <Link
-                href={`/test-section?page=${page.slug}`}
+                href={`/test-section?page=${page.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-orange-600 text-white px-3 py-1 rounded-md mx-2 inline-block text-center"
