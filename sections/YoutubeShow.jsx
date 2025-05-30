@@ -40,6 +40,7 @@ export default function YoutubeShow({
   language,
   setLanguage,
   setEditMode, // ให้ parent ส่งมาด้วย
+  youtube,
 }) {
   const [title, setTitle] = useState({});
   const [description, setDescription] = useState({});
@@ -134,7 +135,7 @@ export default function YoutubeShow({
               }}
             >
               <ReactPlayer
-                url={item.url}
+                url={youtube ? youtube : item.url}
                 controls
                 width="100%"
                 height="100%"

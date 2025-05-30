@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import ReactPlayer from "react-player/youtube";
 
 const ClientOnlyContent = dynamic(
   () => import("@/components/utils/ClientOnlyContent"),

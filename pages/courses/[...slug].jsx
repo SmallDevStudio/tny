@@ -137,10 +137,11 @@ export default function CoursesPage() {
         const Component = section.component;
         return (
           Component && (
-            <div key={section.id}>
+            <div key={section.id} className="">
               <Component
                 contentId={section.contentId || section.id}
                 pageData={pageData}
+                youtube={pageData.youtube_url}
               />
             </div>
           )
