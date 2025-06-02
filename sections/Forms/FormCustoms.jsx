@@ -24,8 +24,11 @@ export default function FormCustoms({
     setTiptapContent({});
   };
 
-  const handleContentChange = (content, lang) => {
-    setContents((prev) => ({ ...prev, [lang]: content }));
+  const handleContentChange = (newContent) => {
+    setContents((prevContent) => ({
+      ...prevContent,
+      [language]: newContent, // ✅ อัปเดตค่าของภาษาที่เลือกเท่านั้น
+    }));
   };
 
   return (
@@ -58,7 +61,7 @@ export default function FormCustoms({
           </div>
           <TiptapEditor
             content={contents[language]}
-            onChange={handleContentChange}
+            onChange={(content) => handleContentChange(content)}
           />
         </div>
 
