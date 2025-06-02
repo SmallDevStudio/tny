@@ -31,6 +31,8 @@ export default function Customs({
   const router = useRouter();
   const { t, lang } = useLanguage();
 
+  const e = (data) => data?.[language] || "";
+
   useEffect(() => {
     const fetchData = async () => {
       if (!contentId) {
@@ -88,7 +90,7 @@ export default function Customs({
     <div>
       {contents && (
         <div className="max-w-screen-xl mx-auto px-4 py-6 mb-4">
-          <ClientOnlyContent className="preview-box" html={contents} />
+          <ClientOnlyContent className="preview-box" html={t(contents)} />
         </div>
       )}
 

@@ -92,9 +92,8 @@ export default function PageForm({ page, onClose }) {
       return;
     }
 
-    const pageRef = doc(db, "pages", form.slug);
-
     if (page && isEditing) {
+      const pageRef = doc(db, "pages", form.id);
       const data = {
         ...form,
         multiple: form.multiple ?? false, // ✅ เพิ่มตรงนี้เพื่อกัน undefined
@@ -130,6 +129,7 @@ export default function PageForm({ page, onClose }) {
 
     const data = {
       ...form,
+      slug: `pages/${form.name}`,
       sections: [],
       content: "",
       template: { base: "default", page: "page" },
@@ -139,7 +139,7 @@ export default function PageForm({ page, onClose }) {
     };
 
     try {
-      await setDoc(pageRef, data);
+      await collection(db, "pages").add(data);
       toast.success(lang["page_added_successfully"]);
       handleClearForm();
       onClose();

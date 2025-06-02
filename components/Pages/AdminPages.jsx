@@ -198,7 +198,7 @@ export default function AdminPages() {
           <SelectSections
             sections={selectedPage?.sections || []}
             onClose={handleCloseSections}
-            page={selectedPage?.slug || "home"}
+            page={selectedPage?.id || "home"}
           />
         </div>
       </Dialog>
