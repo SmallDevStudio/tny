@@ -206,7 +206,7 @@ export default function PageGroup({ page, onClose, data }) {
       description: { en: "", th: "" },
       slug: "",
       sections: [],
-      type: "page_dynamic",
+      type: "dynamic_page",
     });
     setOpenForm(false);
     setIsEdit(false);
