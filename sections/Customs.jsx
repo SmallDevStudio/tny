@@ -105,6 +105,9 @@ export default function Customs({
           contents={contents}
           setContents={setContents}
           handleSubmit={handleSubmit}
+          language={language}
+          setLanguage={setLanguage}
+          setEditMode={setEditMode}
         />
       )}
     </div>
