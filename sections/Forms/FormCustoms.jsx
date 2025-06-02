@@ -28,9 +28,6 @@ export default function FormCustoms({
     setContents((prev) => ({ ...prev, [lang]: content }));
   };
 
-  console.log("contents", contents);
-  console.log("language", language);
-
   return (
     <div className="w-full">
       {/* Edit Mode */}
