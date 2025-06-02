@@ -11,7 +11,7 @@ import { Tooltip } from "@mui/material";
 export default function Footer() {
   const [app, setApp] = useState({});
   const [company, setCompany] = useState({});
-  const { lang } = useLanguage();
+  const { t, lang } = useLanguage();
 
   useEffect(() => {
     async function fetchData() {
@@ -54,6 +54,10 @@ export default function Footer() {
 
         <p className="mb-4 font-light text-sm lg:text-lg text-gray-500 dark:text-gray-400">
           {lang["contact_desc"]}
+        </p>
+
+        <p className="mb-4 font-light text-sm lg:text-lg text-gray-800 dark:text-gray-400">
+          {t(company?.address)}
         </p>
 
         <div className="flex-row items-center self-center text-sm mb-6 lg:text-xl">
