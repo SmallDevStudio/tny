@@ -16,7 +16,10 @@ const ClientOnlyContent = dynamic(
 );
 
 const sampleData = {
-  contents: "<p>เนื้อหา....</p>",
+  contents: {
+    th: "<p>เนื้อหา....</p>",
+    en: "<p>Contents...</p>",
+  },
 };
 
 moment.locale("th");
@@ -27,7 +30,10 @@ export default function Customs({
   setLanguage,
   setEditMode, // ให้ parent ส่งมาด้วย
 }) {
-  const [contents, setContents] = useState("");
+  const [contents, setContents] = useState({
+    th: "<p>เนื้อหา....</p>",
+    en: "<p>Contents...</p>",
+  });
   const router = useRouter();
   const { t, lang } = useLanguage();
 

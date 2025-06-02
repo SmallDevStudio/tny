@@ -21,6 +21,11 @@ export default function FormCustoms({
   const handleClear = () => {
     setLanguage("th");
     setEditMode(false);
+    setTiptapContent({});
+  };
+
+  const handleContentChange = (content, lang) => {
+    setContents((prev) => ({ ...prev, [lang]: content }));
   };
 
   return (
@@ -29,7 +34,32 @@ export default function FormCustoms({
       <div className="flex flex-col border border-gray-300 rounded-md p-4 gap-2 shadow-lg">
         {/* Editor */}
         <div className=" w-full">
-          <TiptapEditor content={contents} onChange={setContents} />
+          <div className="flex flex-row items-center justify-end gap-2 w-full">
+            <button
+              className={`px-4 py-1 rounded-md font-bold transition ${
+                language === "th"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300 dark:bg-gray-700"
+              }`}
+              onClick={() => setLanguage("th")}
+            >
+              TH
+            </button>
+            <button
+              className={`px-4 py-1 rounded-md font-bold transition ${
+                language === "en"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300 dark:bg-gray-700"
+              }`}
+              onClick={() => setLanguage("en")}
+            >
+              EN
+            </button>
+          </div>
+          <TiptapEditor
+            content={contents[language]}
+            onChange={handleContentChange}
+          />
         </div>
 
         {/* Save Button */}
