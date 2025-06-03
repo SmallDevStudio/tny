@@ -44,6 +44,13 @@ const TiptapEditor = dynamic(() => import("@/components/Tiptap/TiptapEditor"), {
   ssr: false,
 });
 
+const sampleData = {
+  content: {
+    th: "<p>เนื้อหา....</p>",
+    en: "<p>Contents...</p>",
+  },
+};
+
 export default function CoursesForm({ onClose, course, isNewCourse }) {
   const { t, lang } = useLanguage();
   const { data: session } = useSession();
@@ -71,10 +78,11 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
   const [image, setImage] = useState(null);
   const [tags, setTags] = useState([]);
   const [code, setCode] = useState(null);
-  const [content, setContent] = useState(null);
+  const [content, setContent] = useState({ th: "", en: "" });
   const [participants, setParticipants] = useState([]);
   const [lastNumber, setLastNumber] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [language, setLanguage] = useState("th");
 
   useEffect(() => {
     if (course) {
@@ -104,7 +112,10 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         docEntry: course.docEntry,
         code: course.code,
       });
-      setContent(course.content);
+      setContent({
+        th: course?.content?.th || sampleData.content.th,
+        en: course?.content?.en || sampleData.content.en,
+      });
       setParticipants(course.participants);
     } else if (isNewCourse) {
       setTags([]);
@@ -322,6 +333,17 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const e = (data) => {
+    return data?.[language] || "";
+  };
+
+  const handleContentChange = (newContent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      [language]: newContent, // ✅ อัปเดตค่าของภาษาที่เลือกเท่านั้น
+    }));
   };
 
   if (loading) return <Loading />;
@@ -742,11 +764,33 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
             </div>
           </div>
         </div>
-        <div className="px-4">
-          <label htmlFor="content">{lang["content"]}</label>
+        {/* Editor */}
+        <div className="px-4 w-full">
+          <div className="flex flex-row items-center justify-end gap-2 w-full">
+            <button
+              className={`px-4 py-1 rounded-md font-bold transition ${
+                language === "th"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300 dark:bg-gray-700"
+              }`}
+              onClick={() => setLanguage("th")}
+            >
+              TH
+            </button>
+            <button
+              className={`px-4 py-1 rounded-md font-bold transition ${
+                language === "en"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300 dark:bg-gray-700"
+              }`}
+              onClick={() => setLanguage("en")}
+            >
+              EN
+            </button>
+          </div>
           <TiptapEditor
-            content={content}
-            onChange={(newContent) => setContent(newContent)}
+            content={content[language]}
+            onChange={(contents) => handleContentChange(contents)}
           />
         </div>
         <div className="flex flex-row items-center justify-center gap-2 p-4 w-full">

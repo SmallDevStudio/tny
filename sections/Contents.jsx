@@ -31,7 +31,7 @@ export default function Contents({ pageData }) {
     content && (
       <div className="px-4 py-6 mb-4">
         <div className="mx-auto max-w-screen-sm lg:max-w-screen-lg">
-          <ClientOnlyContent className="preview-box" html={content} />
+          <ClientOnlyContent className="preview-box" html={t(content)} />
         </div>
       </div>
     )

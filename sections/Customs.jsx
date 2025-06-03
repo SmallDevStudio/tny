@@ -90,8 +90,6 @@ export default function Customs({
     }
   };
 
-  console.log("contents", contents);
-
   return (
     <div>
       {contents && (
