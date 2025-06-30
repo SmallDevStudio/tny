@@ -37,7 +37,7 @@ import "react-clock/dist/Clock.css";
 import th from "date-fns/locale/th";
 registerLocale("th", th);
 import { CiCalendar } from "react-icons/ci";
-
+import { RiDeleteBin5Line } from "react-icons/ri";
 import { FiUsers } from "react-icons/fi";
 import { FaPlusSquare } from "react-icons/fa";
 const TiptapEditor = dynamic(() => import("@/components/Tiptap/TiptapEditor"), {
@@ -60,10 +60,6 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     gen: 0,
     description: { th: "", en: "" },
     cover: "",
-    start_date: new Date(),
-    end_date: new Date(),
-    start_time: "",
-    end_time: "",
     group: "",
     subgroup: "",
     price: "",
@@ -72,6 +68,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     youtube_url: "",
     registration_url: "",
     download_url: "",
+    schedule_type: "single",
   });
   const [loading, setLoading] = useState(false);
   const [cover, setCover] = useState(null);
@@ -83,6 +80,14 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
   const [lastNumber, setLastNumber] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [language, setLanguage] = useState("th");
+  const [schedules, setSchedules] = useState([
+    {
+      start_date: new Date(),
+      end_date: new Date(),
+      start_time: "",
+      end_time: "",
+    },
+  ]);
 
   useEffect(() => {
     if (course) {
@@ -91,12 +96,6 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         gen: course.gen || 0,
         description: course.description || { th: "", en: "" },
         cover: course.cover || {},
-        start_date: course.start_date
-          ? new Date(course.start_date)
-          : new Date(),
-        end_date: course.end_date ? new Date(course.end_date) : new Date(),
-        start_time: course.start_time || "",
-        end_time: course.end_time || "",
         group: course.group || "",
         subgroup: course.subgroup || "",
         price: course.price || "",
@@ -105,6 +104,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         youtube_url: course.youtube_url || "",
         registration_url: course.registration_url || "",
         download_url: course.download_url || "",
+        schedule_type: course.schedule_type || "single",
       });
       setImage(course.image || {});
       setTags(course.tags || []);
@@ -117,6 +117,18 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         en: course?.content?.en || sampleData.content.en,
       });
       setParticipants(course.participants);
+      setSchedules(
+        course.schedules
+          ? course.schedules
+          : [
+              {
+                start_date: new Date(),
+                end_date: new Date(),
+                start_time: "",
+                end_time: "",
+              },
+            ]
+      );
     } else if (isNewCourse) {
       setTags([]);
     }
@@ -159,10 +171,6 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
       name: { th: "", en: "" },
       gen: 0,
       description: { th: "", en: "" },
-      start_date: new Date(),
-      end_date: new Date(),
-      start_time: "",
-      end_time: "",
       group: "",
       subgroup: "",
       price: "",
@@ -176,7 +184,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     setCode(null);
     setCover(null);
     setImage({});
-    setContent(null);
+    setContent({ th: "", en: "" });
     setParticipants([]);
     onClose();
   };
@@ -205,12 +213,29 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     return isNaN(date) ? null : date.toISOString();
   };
 
-  const timeStringToDate = (timeStr) => {
+  const normalizeTime = (timeStr) => {
     if (!timeStr) return null;
-    const [hours, minutes] = timeStr.split(":");
+    if (timeStr.includes(".")) {
+      // แปลง 9.30 เป็น 09:30
+      const [h, m] = timeStr.split(".");
+      const hour = h.padStart(2, "0");
+      const minute = m.padEnd(2, "0");
+      return `${hour}:${minute}`;
+    }
+    if (timeStr.includes(":")) {
+      const [h, m] = timeStr.split(":");
+      return `${h.padStart(2, "0")}:${m.padEnd(2, "0")}`;
+    }
+    return timeStr;
+  };
+
+  const timeStringToDate = (timeStr) => {
+    const normalized = normalizeTime(timeStr);
+    if (!normalized) return null;
+    const [hours, minutes] = normalized.split(":").map(Number);
     const date = new Date();
-    date.setHours(Number(hours));
-    date.setMinutes(Number(minutes));
+    date.setHours(hours);
+    date.setMinutes(minutes);
     date.setSeconds(0);
     date.setMilliseconds(0);
     return date;
@@ -274,6 +299,20 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
           : `courses/${form.group}/${slug}`
         : `courses/${slug}`;
 
+      if (schedules.length > 1) {
+        setForm((prev) => ({ ...prev, schedule_type: "multiple" }));
+      }
+
+      const schedulesData = schedules.map((schedule) => ({
+        ...schedule,
+        start_date: safeToISOString(schedule.start_date),
+        end_date: safeToISOString(schedule.end_date),
+        start_time: schedule.start_time
+          ? normalizeTime(schedule.start_time)
+          : null,
+        end_time: schedule.end_time ? normalizeTime(schedule.end_time) : null,
+      }));
+
       const data = {
         id: newId,
         code: code ? code.code : null,
@@ -282,10 +321,8 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         gen: form.gen,
         description: { th: form.description.th, en: form.description.en },
         image: image ? image : {},
-        start_date: form.start_date ? safeToISOString(form.start_date) : null,
-        end_date: form.end_date ? safeToISOString(form.end_date) : null,
-        start_time: form.start_time || null,
-        end_time: form.end_time || null,
+        schedule_type: form.schedule_type ? form.schedule_type : "single",
+        schedules: schedulesData,
         group: form.group,
         subgroup: form.subgroup,
         price: form.price,
@@ -323,7 +360,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
       } else {
         data.updated_at = new Date().toISOString();
         data.updated_by = userId;
-        await updateDoc(docRef, data); // ✅ docRef ต้องตรงกับ newId ที่สุดท้าย
+        await updateDoc(docRef, data, { merge: true }); // ✅ docRef ต้องตรงกับ newId ที่สุดท้าย
         toast.success(lang["course_updated_successfully"]);
       }
       handleClear();
@@ -344,6 +381,28 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
       ...prevContent,
       [language]: newContent, // ✅ อัปเดตค่าของภาษาที่เลือกเท่านั้น
     }));
+  };
+
+  const addNewSchedule = () => {
+    setSchedules([
+      ...schedules,
+      {
+        start_date: new Date(),
+        end_date: new Date(),
+        start_time: "",
+        end_time: "",
+      },
+    ]);
+  };
+
+  const updateSchedule = (index, key, value) => {
+    const updated = [...schedules];
+    updated[index][key] = value;
+    setSchedules(updated);
+  };
+
+  const removeSchedule = (index) => {
+    setSchedules((prev) => prev.filter((_, i) => i !== index));
   };
 
   if (loading) return <Loading />;
@@ -567,61 +626,94 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
               />
             </div>
           </div>
-          <div className="flex flex-row gap-2">
-            <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["start_date"]}
-              </label>
-              <DatePicker
-                isClearable
-                showIcon
-                selected={form.start_date}
-                onChange={(date) => setForm({ ...form, start_date: date })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                minDate={new Date()}
-                icon={<CiCalendar />}
-                dateFormat={"dd/MM/yyyy"}
-              />
+
+          {/* Schedules */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-4">
+              <h3 className="text-lg font-semibold">กำหนดการ</h3>
+              <button onClick={addNewSchedule}>
+                <FaPlusSquare
+                  size={20}
+                  className="text-orange-600 hover:text-orange-700"
+                />
+              </button>
             </div>
-            <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["end_date"]}
-              </label>
-              <DatePicker
-                isClearable
-                showIcon
-                selected={form.end_date}
-                onChange={(date) => setForm({ ...form, end_date: date })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                minDate={form.start_date}
-                icon={<CiCalendar />}
-                dateFormat={"dd/MM/yyyy"}
-              />
-            </div>
-            <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["start_time"]}
-              </label>
-              <TimePicker
-                value={form.start_time}
-                onChange={(value) => setForm({ ...form, start_time: value })}
-                format="HH:mm"
-                disableClock
-              />
-            </div>
-            <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["end_time"]}
-              </label>
-              <TimePicker
-                value={form.end_time}
-                onChange={(value) => setForm({ ...form, end_time: value })}
-                className="rounded-xl"
-                format="HH:mm"
-                disableClock
-              />
-            </div>
+            {schedules &&
+              schedules.map((item, index) => (
+                <div key={index} className="flex gap-4 items-center">
+                  <div className="flex flex-col">
+                    <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
+                      {lang["start_date"]}
+                    </label>
+                    <DatePicker
+                      isClearable
+                      showIcon
+                      selected={item.start_date}
+                      onChange={(date) =>
+                        updateSchedule(index, "start_date", date)
+                      }
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      minDate={new Date()}
+                      icon={<CiCalendar />}
+                      dateFormat={"dd/MM/yyyy"}
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
+                      {lang["end_date"]}
+                    </label>
+                    <DatePicker
+                      isClearable
+                      showIcon
+                      selected={item.end_date}
+                      onChange={(date) =>
+                        updateSchedule(index, "end_date", date)
+                      }
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      minDate={new Date()}
+                      icon={<CiCalendar />}
+                      dateFormat={"dd/MM/yyyy"}
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
+                      {lang["start_time"]}
+                    </label>
+                    <TimePicker
+                      value={timeStringToDate(item.start_time)}
+                      onChange={(time) =>
+                        updateSchedule(index, "start_time", time)
+                      }
+                      format="HH:mm"
+                      disableClock
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
+                      {lang["end_time"]}
+                    </label>
+                    <TimePicker
+                      value={timeStringToDate(item.end_time)}
+                      onChange={(time) =>
+                        updateSchedule(index, "end_time", time)
+                      }
+                      format="HH:mm"
+                      disableClock
+                    />
+                  </div>
+                  <div className="flex mt-4 ml-5">
+                    <button
+                      className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600"
+                      onClick={() => removeSchedule(index)}
+                    >
+                      <RiDeleteBin5Line size={22} />
+                    </button>
+                  </div>
+                </div>
+              ))}
           </div>
+
           <div className="flex flex-row gap-2">
             <div className="w-1/2">
               <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">

@@ -71,7 +71,7 @@ export default function HeaderCourses({ pageData }) {
     checkInterested();
   }, [userId, data?.id]);
 
-  const showInterested = data?.start_date === null;
+  const showInterested = data?.schedules.length < 0;
   const noLocation = !data?.location;
 
   const handleInterested = async () => {
@@ -195,7 +195,7 @@ export default function HeaderCourses({ pageData }) {
                 : "grid-cols-1 md:grid-cols-3"
             } items-center gap-4`}
           >
-            {!showInterested && data?.start_date && (
+            {!showInterested && data?.schedules?.length > 0 && (
               <div className="flex items-center text-orange-500 gap-2">
                 <Image
                   src="/images/date_icon.png"
@@ -204,14 +204,25 @@ export default function HeaderCourses({ pageData }) {
                   alt="date_icon"
                   className="object-contain"
                 />
-                <span className="text-orange-500 text-sm lg:text-xl">
-                  {moment(data?.start_date).format("DD")} -{" "}
-                  {moment(data?.end_date).format("ll")}
-                </span>
+                {data?.schedules?.length > 1 ? (
+                  <select name="schedules" id="schedules">
+                    {data?.schedules?.map((schedule, index) => (
+                      <option key={index} value={index}>
+                        {moment(schedule?.start_date).format("DD") +
+                          ` - ${moment(schedule?.end_date).format("ll")}`}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="text-orange-500 text-sm lg:text-xl">
+                    {moment(data?.schedules[0]?.start_date).format("DD")} -{" "}
+                    {moment(data?.schedules[0]?.end_date).format("ll")}
+                  </span>
+                )}
               </div>
             )}
 
-            {!showInterested && data?.start_time && (
+            {!showInterested && data?.schedules?.length > 0 && (
               <div className="flex items-center text-orange-500 gap-2">
                 <Image
                   src="/images/time-icon.png"
@@ -220,9 +231,20 @@ export default function HeaderCourses({ pageData }) {
                   alt="time-icon"
                   className="object-contain"
                 />
-                <span className="text-orange-500 text-sm lg:text-xl">
-                  {data?.start_time + ` - ${data?.end_time}`}
-                </span>
+                {data?.schedules?.length > 1 ? (
+                  <select name="schedules" id="schedules">
+                    {data?.schedules?.map((schedule, index) => (
+                      <option key={index} value={index}>
+                        {schedule?.start_time + ` - ${schedule?.end_time}`}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="text-orange-500 text-sm lg:text-xl">
+                    {data?.schedules[0]?.start_time} -{" "}
+                    {data?.schedules[0]?.end_time}
+                  </span>
+                )}
               </div>
             )}
 
