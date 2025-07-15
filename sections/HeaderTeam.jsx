@@ -26,17 +26,7 @@ export default function HeaderTeam({ pageData }) {
         <p className="font-light text-gray-500 sm:text-xl dark:text-gray-400">
           {t(pageData?.position)}
         </p>
-        <div className="flex mt-4 space-x-6">
-          <ul className="flex flex-wrap justify-center items-center text-gray-500 dark:text-white gap-8">
-            {Social.map((item, index) => (
-              <li key={index}>
-                <Link href="" target="_blank" rel="noopener noreferrer">
-                  {item.icon}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+
         <div className="flex tracking-tight mx-auto mt-8">
           {t(pageData?.bio)}
         </div>

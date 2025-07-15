@@ -122,13 +122,15 @@ export default function Header() {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden text-gray-700 dark:text-gray-50">
-            <SearchButton size={28} />
-            <button
-              className="lg:hidden text-gray-700 dark:text-gray-50 ml-2"
-              onClick={() => setDialogOpen(true)}
-            >
-              <IoMenu size={28} />
-            </button>
+            <div className="flex items-center gap-2">
+              <SearchButton size={28} />
+              <button
+                className="lg:hidden text-gray-700 dark:text-gray-50 ml-2"
+                onClick={() => setDialogOpen(true)}
+              >
+                <IoMenu size={28} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -172,8 +174,9 @@ export default function Header() {
               )}
             </div>
 
-            <div className="flex px-4 py-2">
+            <div className="flex justify-between px-4 py-2">
               <UserButton user={session?.user} size={40} />
+              <LangButton />
             </div>
 
             {/* รายการเมนู (Mobile) */}
