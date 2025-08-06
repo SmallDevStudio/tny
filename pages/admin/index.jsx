@@ -1,19 +1,22 @@
 import { useState } from "react";
 import axios from "axios";
+import PageAnalyticsChart from "@/components/Dashboard/PageAnalyticsChart";
 
 export async function getStaticProps() {
-    return {
-        props: {
-            title: "Dashboard",
-            description: "จัดการคอร์สเรียนและผู้ใช้ผ่านระบบแอดมินของ The New You Academy"
-        }
-    };
+  return {
+    props: {
+      title: "Dashboard",
+      description:
+        "จัดการคอร์สเรียนและผู้ใช้ผ่านระบบแอดมินของ The New You Academy",
+    },
+  };
 }
 
 export default function Admin() {
-    return (
-        <div>
-            <span>Admin</span>
-        </div>
-    )
+  return (
+    <div>
+      <span>Admin</span>
+      <PageAnalyticsChart />
+    </div>
+  );
 }

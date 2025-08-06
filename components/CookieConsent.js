@@ -7,13 +7,13 @@ const CookieConsent = () => {
       const css = document.createElement("link");
       css.rel = "stylesheet";
       css.href =
-        "https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css";
+        "https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css";
       document.head.appendChild(css);
 
       // โหลด JS และเริ่ม initialise
       const script = document.createElement("script");
       script.src =
-        "https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js";
+        "https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js";
       script.onload = () => {
         window.cookieconsent.initialise({
           palette: {
@@ -47,7 +47,7 @@ const CookieConsent = () => {
     const loadTrackingScripts = () => {
       if (!window.gtag) {
         const script = document.createElement("script");
-        script.src = `https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX`;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=G-07K64S7ZJ3`;
         script.async = true;
         document.head.appendChild(script);
 

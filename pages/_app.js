@@ -14,7 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { SessionProvider } from "next-auth/react";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
-import { trackPageTime, trackClick } from "@/utils/analytics";
+import { trackPageTime, trackClick, trackPageView } from "@/utils/analytics";
 import dynamic from "next/dynamic";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -31,6 +31,7 @@ export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }) {
+  const [consentGiven, setConsentGiven] = useState(false);
   const router = useRouter();
   const isAdminRoute = router.pathname.startsWith("/admin");
   const isErrorPage = router.pathname.startsWith("/error");
@@ -55,6 +56,14 @@ export default function App({
   }, []);
 
   useEffect(() => {
+    const consent = localStorage.getItem("cookie_consent");
+    if (consent) {
+      setConsentGiven(true);
+      trackPageView(); // เรียก track เมื่อได้ consent แล้ว
+    }
+  }, []);
+
+  useEffect(() => {
     const handleClick = (e) => trackClick(e.target.outerHTML);
     document.addEventListener("click", handleClick);
     trackPageTime();
@@ -72,7 +81,12 @@ export default function App({
                 <Component {...pageProps} />
               </Elements>
             )}
-            <CookieConsent />
+            <CookieConsent
+              onAccept={() => {
+                setConsentGiven(true);
+                trackPageView(); // เรียกเมื่อผู้ใช้กดยอมรับ
+              }}
+            />
             <ToastContainer position="top-right" autoClose={3000} />
           </Provider>
         </ThemeProvider>
@@ -95,7 +109,12 @@ export default function App({
               </Layout>
             </Elements>
           )}
-          <CookieConsent />
+          <CookieConsent
+            onAccept={() => {
+              setConsentGiven(true);
+              trackPageView(); // เรียกเมื่อผู้ใช้กดยอมรับ
+            }}
+          />
           <ToastContainer position="top-right" autoClose={3000} />
         </Provider>
       </ThemeProvider>
