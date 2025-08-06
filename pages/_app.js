@@ -56,17 +56,10 @@ export default function App({
   }, []);
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie_consent");
-    if (consent) {
-      setConsentGiven(true);
-      trackPageView(); // เรียก track เมื่อได้ consent แล้ว
-    }
-  }, []);
-
-  useEffect(() => {
     const handleClick = (e) => trackClick(e.target.outerHTML);
     document.addEventListener("click", handleClick);
     trackPageTime();
+    trackPageView();
     return () => document.removeEventListener("click", handleClick);
   }, []);
 
@@ -81,12 +74,7 @@ export default function App({
                 <Component {...pageProps} />
               </Elements>
             )}
-            <CookieConsent
-              onAccept={() => {
-                setConsentGiven(true);
-                trackPageView(); // เรียกเมื่อผู้ใช้กดยอมรับ
-              }}
-            />
+            <CookieConsent />
             <ToastContainer position="top-right" autoClose={3000} />
           </Provider>
         </ThemeProvider>
@@ -109,12 +97,7 @@ export default function App({
               </Layout>
             </Elements>
           )}
-          <CookieConsent
-            onAccept={() => {
-              setConsentGiven(true);
-              trackPageView(); // เรียกเมื่อผู้ใช้กดยอมรับ
-            }}
-          />
+          <CookieConsent />
           <ToastContainer position="top-right" autoClose={3000} />
         </Provider>
       </ThemeProvider>
