@@ -24,6 +24,7 @@ import { FaRegFolder, FaWpforms } from "react-icons/fa6";
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { MdOutlinePayment } from "react-icons/md";
 import { AiOutlineDashboard } from "react-icons/ai";
+import { RiCoupon3Line } from "react-icons/ri";
 
 const menuItems = [
   {
@@ -99,6 +100,11 @@ const menuItems = [
     title: { en: "Chat", th: "แชท" },
     icon: <IoChatbubbleEllipsesOutline />,
     href: "/admin/chat",
+  },
+  {
+    title: { en: "Coupons", th: "คูปอง" },
+    icon: <RiCoupon3Line />,
+    href: "/admin/coupons",
   },
   {
     title: { en: "Payments", th: "การชําระเงิน" },

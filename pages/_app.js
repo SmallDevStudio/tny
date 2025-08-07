@@ -13,11 +13,13 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SessionProvider } from "next-auth/react";
 import { Provider } from "react-redux";
-import { store } from "@/store/store";
+import store from "@/store/store";
 import { trackPageTime, trackClick, trackPageView } from "@/utils/analytics";
 import dynamic from "next/dynamic";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { setCartItems } from "@/store/slices/cartSlice";
+import TagManager from "react-gtm-module";
 
 const CookieConsent = dynamic(() => import("@/components/CookieConsent"), {
   ssr: false,
@@ -56,11 +58,37 @@ export default function App({
   }, []);
 
   useEffect(() => {
+    const tagManagerArgs = {
+      gtmId: "GTM-WQXH48SP",
+    };
+    TagManager.initialize(tagManagerArgs);
+  }, []);
+
+  useEffect(() => {
     const handleClick = (e) => trackClick(e.target.outerHTML);
     document.addEventListener("click", handleClick);
     trackPageTime();
     trackPageView();
     return () => document.removeEventListener("click", handleClick);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        store.dispatch(setCartItems(parsedCart.items)); // ✅ ตรงกับ shape ใหม่
+      }
+
+      const unsubscribe = store.subscribe(() => {
+        const state = store.getState();
+        localStorage.setItem("cart", JSON.stringify(state.cart));
+      });
+
+      return () => unsubscribe();
+    } catch (err) {
+      console.error("Failed to load or save cart", err);
+    }
   }, []);
 
   if (isErrorPage || isSigninPage || isRegisterPage || isLoading || isPolicy) {

@@ -2,13 +2,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  items: [], // [{ courseId, title, price, image, quantity }]
+  items: [],
 };
 
 const cartSlice = createSlice({
   name: "cart",
-  initialState,
+  initialState, // ✅ ใช้ object
   reducers: {
+    setCartItems: (state, action) => {
+      state.items = action.payload;
+    },
     addToCart(state, action) {
       const existing = state.items.find(
         (item) => item.courseId === action.payload.courseId
@@ -32,7 +35,6 @@ const cartSlice = createSlice({
         if (item.quantity > 1) {
           item.quantity -= 1;
         } else {
-          // ถ้าจำนวนเหลือ 1 แล้วลดอีก ให้ลบออกเลย
           state.items = state.items.filter(
             (item) => item.courseId !== action.payload.courseId
           );
@@ -45,6 +47,11 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart, decreaseQuantity, clearCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  decreaseQuantity,
+  clearCart,
+  setCartItems,
+} = cartSlice.actions;
 export default cartSlice.reducer;

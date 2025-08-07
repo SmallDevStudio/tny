@@ -21,6 +21,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import ReactPlayer from "react-player/youtube";
+import CourseActions from "@/components/Cart/CourseActions";
 
 const ClientOnlyContent = dynamic(
   () => import("@/components/utils/ClientOnlyContent"),
@@ -168,22 +169,26 @@ export default function HeaderCourses({ pageData }) {
               {Number(data?.price).toLocaleString("th-TH")} ฿
             </p>
           )}
-          {data?.registration_url && (
-            <div className="flex gap-4 mb-4">
+
+          <div className="flex items-center gap-4 mb-4">
+            {data?.registration_url && (
               <button
                 onClick={() => window.open(data?.registration_url, "_blank")}
                 className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded"
               >
                 {lang["register_now"]}
               </button>
+            )}
+            {data?.download_url && (
               <button
                 onClick={() => window.open(data?.download_url, "_blank")}
                 className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded"
               >
                 {lang["download_now"]}
               </button>
-            </div>
-          )}
+            )}
+            <CourseActions course={data} />
+          </div>
         </div>
       </div>
       <div className="p-2 bg-gray-200 mt-4">
