@@ -83,7 +83,8 @@
     "swr": "^2.3.0",
     "tiptap-extension-font-size": "^1.2.0",
     "tiptap-extension-resize-image": "^1.2.1",
-    "ua-parser-js": "^2.0.4"
+    "ua-parser-js": "^2.0.4",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

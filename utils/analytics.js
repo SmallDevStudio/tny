@@ -4,11 +4,12 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { getSession } from "next-auth/react";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { UAParser } from "ua-parser-js";
+import { v4 as uuidv4 } from "uuid";
 
 const getSessionId = () => {
   let id = localStorage.getItem("session_id");
   if (!id) {
-    id = crypto.randomUUID();
+    id = uuidv4();
     localStorage.setItem("session_id", id);
   }
   return id;
