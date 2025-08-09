@@ -40,6 +40,7 @@ import { CiCalendar } from "react-icons/ci";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { FiUsers } from "react-icons/fi";
 import { FaPlusSquare } from "react-icons/fa";
+import ColorPicker from "../Input/ColorPicker";
 const TiptapEditor = dynamic(() => import("@/components/Tiptap/TiptapEditor"), {
   ssr: false,
 });
@@ -73,6 +74,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
   const [loading, setLoading] = useState(false);
   const [cover, setCover] = useState(null);
   const [image, setImage] = useState(null);
+  const [imageEng, setImageEng] = useState(null);
   const [tags, setTags] = useState([]);
   const [code, setCode] = useState(null);
   const [content, setContent] = useState({ th: "", en: "" });
@@ -88,6 +90,11 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
       end_time: "",
     },
   ]);
+  const [button, setButton] = useState({
+    color: "#000000",
+    text: { th: "", en: "" },
+    url: "",
+  });
 
   useEffect(() => {
     if (course) {
@@ -129,6 +136,12 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
               },
             ]
       );
+      setImageEng(course.imageEng || {});
+      setButton({
+        color: course.button?.color || "#000000",
+        text: course.button?.text || { th: "", en: "" },
+        url: course.button?.url || "",
+      });
     } else if (isNewCourse) {
       setTags([]);
     }
@@ -184,8 +197,11 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     setCode(null);
     setCover(null);
     setImage({});
+    setImageEng({});
     setContent({ th: "", en: "" });
     setParticipants([]);
+    setSchedules([]);
+    setButton({ color: "#000000", text: { th: "", en: "" }, url: "" });
     onClose();
   };
 
@@ -195,7 +211,16 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
 
   const handleRemoveImage = (image) => {
     deleteFile(image.file_id);
-    setThumbnail(null);
+    setImage(null);
+  };
+
+  const handleUploadImageEng = (file) => {
+    setImageEng(file[0]);
+  };
+
+  const handleRemoveImageEng = (image) => {
+    deleteFile(image.file_id);
+    setImageEng(null);
   };
 
   const generateSlug = (text) => {
@@ -321,6 +346,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         gen: form.gen,
         description: { th: form.description.th, en: form.description.en },
         image: image ? image : {},
+        imageEng: imageEng ? imageEng : {},
         schedule_type: form.schedule_type ? form.schedule_type : "single",
         schedules: schedulesData,
         group: form.group,
@@ -332,6 +358,11 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         registration_url: form.registration_url,
         download_url: form.download_url,
         participants: participants ? participants : [],
+        button: {
+          color: button.color,
+          text: { th: button.text.th, en: button.text.en },
+          url: button.url,
+        },
         tags: tags,
         content: content,
         active: true,
@@ -442,40 +473,79 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
             />
           </div>
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["image"]}
-              </label>
-              {/* Image */}
-              {image?.url && (
-                <div className="relative w-full max-w-[300px] rounded-lg overflow-hidden">
-                  <Image
-                    src={image?.url}
-                    alt="mockup"
-                    width={500}
-                    height={500}
-                    className="w-full h-full object-contain rounded-lg"
-                    priority
-                  />
-                  <div className="absolute top-0 right-1">
-                    <Tooltip title={lang["remove"]} arrow>
-                      <button
-                        type="button"
-                        className="bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                        onClick={() => handleRemoveImage(image)}
-                      >
-                        <IoClose size={10} />
-                      </button>
-                    </Tooltip>
+            <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
+                  {lang["imageTh"]}
+                </label>
+                {/* Image */}
+                {image?.url && (
+                  <div className="relative w-full max-w-[300px] rounded-lg overflow-hidden">
+                    <Image
+                      src={image?.url}
+                      alt="mockup"
+                      width={500}
+                      height={500}
+                      className="w-full h-full object-contain rounded-lg"
+                      priority
+                    />
+                    <div className="absolute top-0 right-1">
+                      <Tooltip title={lang["remove"]} arrow>
+                        <button
+                          type="button"
+                          className="bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          onClick={() => handleRemoveImage(image)}
+                        >
+                          <IoClose size={10} />
+                        </button>
+                      </Tooltip>
+                    </div>
                   </div>
-                </div>
-              )}
-              <UploadImage
-                onUpload={(file) => handleUploadImage(file)}
-                folder="courses"
-                size={20}
-                userId={userId}
-              />
+                )}
+                <UploadImage
+                  onUpload={(file) => handleUploadImage(file)}
+                  folder="courses"
+                  size={20}
+                  userId={userId}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
+                  {lang["imageEng"]}
+                </label>
+                {/* Image */}
+                {imageEng?.url && (
+                  <div className="relative w-full max-w-[300px] rounded-lg overflow-hidden">
+                    <Image
+                      src={imageEng?.url}
+                      alt="mockup"
+                      width={500}
+                      height={500}
+                      className="w-full h-full object-contain rounded-lg"
+                      priority
+                    />
+                    <div className="absolute top-0 right-1">
+                      <Tooltip title={lang["remove"]} arrow>
+                        <button
+                          type="button"
+                          className="bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          onClick={() => handleRemoveImageEng(image)}
+                        >
+                          <IoClose size={10} />
+                        </button>
+                      </Tooltip>
+                    </div>
+                  </div>
+                )}
+                <UploadImage
+                  onUpload={(file) => handleUploadImageEng(file)}
+                  folder="courses"
+                  size={20}
+                  userId={userId}
+                />
+              </div>
             </div>
           </div>
           <div className="">
@@ -852,6 +922,75 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                 }
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 placeholder={lang["download_url_placeholder"]}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
+            <div className="flex flex-col">
+              <label htmlFor="buttonColor">{lang["button_color"]}</label>
+              <div className="flex items-center gap-2">
+                <ColorPicker
+                  value={button.color || "#000000"}
+                  onChange={(color) => setButton({ ...button, color: color })}
+                  size={40}
+                />
+                <input
+                  type="text"
+                  id="buttonColor"
+                  name="buttonColor"
+                  value={button.color}
+                  onChange={(e) =>
+                    setButton({ ...button, color: e.target.value })
+                  }
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  placeholder={lang["button_color_placeholder"]}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="bottonText">{lang["button_text"]}</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  id="button.text.th"
+                  name="button.text.th"
+                  value={button.text.th}
+                  onChange={(e) =>
+                    setButton({
+                      ...button,
+                      text: { ...button.text, th: e.target.value },
+                    })
+                  }
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  placeholder={lang["button_text_placeholder"] + " (th)"}
+                />
+                <input
+                  type="text"
+                  id="button.text.en"
+                  name="button.text.en"
+                  value={button.text.en}
+                  onChange={(e) =>
+                    setButton({
+                      ...button,
+                      text: { ...button.text, en: e.target.value },
+                    })
+                  }
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  placeholder={lang["button_text_placeholder"] + " (en)"}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="buttonUrl">{lang["button_url"]}</label>
+              <input
+                type="text"
+                id="button.url"
+                name="button.url"
+                value={button.url}
+                onChange={(e) => setButton({ ...button, url: e.target.value })}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                placeholder={lang["button_url_placeholder"]}
               />
             </div>
           </div>

@@ -15,6 +15,7 @@ import { Breadcrumbs, Divider } from "@mui/material";
 import Link from "next/link";
 import moment from "moment";
 import "moment/locale/th";
+import "moment/locale/en-gb";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
@@ -22,13 +23,12 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import ReactPlayer from "react-player/youtube";
 import CourseActions from "@/components/Cart/CourseActions";
+import PaymentButton from "@/components/btn/PaymentButton";
 
 const ClientOnlyContent = dynamic(
   () => import("@/components/utils/ClientOnlyContent"),
   { ssr: false }
 );
-
-moment.locale("th");
 
 export default function HeaderCourses({ pageData }) {
   const [data, setData] = useState(null);
@@ -37,7 +37,7 @@ export default function HeaderCourses({ pageData }) {
   const userId = session?.user?.userId;
 
   const router = useRouter();
-  const { t, lang } = useLanguage();
+  const { t, lang, selectedLang } = useLanguage();
 
   useEffect(() => {
     if (status === "loading") return;
@@ -134,13 +134,23 @@ export default function HeaderCourses({ pageData }) {
   return (
     <div className="bg-white dark:bg-gray-800">
       <div className="max-w-screen-lg mx-auto px-4">
-        <Image
-          src={data?.image?.url}
-          alt={data?.name?.en}
-          width={700}
-          height={700}
-          style={{ width: "100%", height: "auto" }}
-        />
+        {selectedLang === "th" ? (
+          <Image
+            src={data?.image ? data?.image.url : data?.imageEng.url}
+            alt={data?.name?.en}
+            width={700}
+            height={700}
+            style={{ width: "100%", height: "auto" }}
+          />
+        ) : (
+          <Image
+            src={data?.imageEng ? data?.imageEng.url : data?.image?.url}
+            alt={data?.name?.en}
+            width={700}
+            height={700}
+            style={{ width: "100%", height: "auto" }}
+          />
+        )}
         <Breadcrumbs
           aria-label="breadcrumb"
           className="my-2 text-xs text-gray-500 dark:text-gray-400"
@@ -213,15 +223,53 @@ export default function HeaderCourses({ pageData }) {
                   <select name="schedules" id="schedules">
                     {data?.schedules?.map((schedule, index) => (
                       <option key={index} value={index}>
-                        {moment(schedule?.start_date).format("DD") +
-                          ` - ${moment(schedule?.end_date).format("ll")}`}
+                        <span>
+                          {selectedLang === "en" ? (
+                            <span>
+                              {moment(schedule?.start_date)
+                                .locale("en")
+                                .format("DD")}
+
+                              {` - ${moment(schedule?.end_date)
+                                .locale("en")
+                                .format("ll")}`}
+                            </span>
+                          ) : (
+                            <span>
+                              {moment(schedule?.start_date)
+                                .locale("th")
+                                .format("DD")}
+                              {` - ${moment(schedule?.end_date)
+                                .locale("th")
+                                .format("ll")}`}
+                            </span>
+                          )}
+                        </span>
                       </option>
                     ))}
                   </select>
                 ) : (
                   <span className="text-orange-500 text-sm lg:text-xl">
-                    {moment(data?.schedules[0]?.start_date).format("DD")} -{" "}
-                    {moment(data?.schedules[0]?.end_date).format("ll")}
+                    {selectedLang === "en" ? (
+                      <span>
+                        {moment(data?.schedules[0]?.start_date)
+                          .locale("en")
+                          .format("DD")}
+
+                        {` - ${moment(data?.schedules[0]?.end_date)
+                          .locale("en")
+                          .format("DD MMMM YYYY")}`}
+                      </span>
+                    ) : (
+                      <span>
+                        {moment(data?.schedules[0]?.start_date)
+                          .locale("th")
+                          .format("DD")}
+                        {` - ${moment(data?.schedules[0]?.end_date)
+                          .locale("th")
+                          .format("ll")}`}
+                      </span>
+                    )}
                   </span>
                 )}
               </div>

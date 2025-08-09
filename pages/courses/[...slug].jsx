@@ -14,6 +14,7 @@ import ErrorPage from "next/error";
 import Header from "@/components/utils/Header";
 import useLanguage from "@/hooks/useLanguage";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 const CustomErrorPage = dynamic(() => import("@/pages/_error/error"), {
   ssr: false,
@@ -28,7 +29,7 @@ export default function CoursesPage() {
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { t, lang } = useLanguage();
+  const { t, lang, selectedLang } = useLanguage();
 
   useEffect(() => {
     if (!slug) return; // wait router ready
@@ -124,6 +125,8 @@ export default function CoursesPage() {
     fetchData();
   }, [slug]);
 
+  console.log("pageData", pageData);
+
   if (loading) return <div className="p-4 text-center">Loading...</div>;
   if (notFound) return <CustomErrorPage statusCode={404} />;
 
@@ -147,6 +150,22 @@ export default function CoursesPage() {
           )
         );
       })}
+      {pageData?.button?.text && (
+        <div className="my-2 text-center">
+          <Link href={pageData.button.link}>
+            <button
+              className="px-4 py-2 text-white"
+              style={{
+                backgroundColor: pageData.button.color || "#000000",
+              }}
+            >
+              {selectedLang === "th"
+                ? pageData.button.text.th
+                : pageData.button.text.en}
+            </button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

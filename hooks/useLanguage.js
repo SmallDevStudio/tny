@@ -12,6 +12,7 @@ export const translate = (data, lang = defaultLang) => {
 export default function useLanguage() {
   const [language, setLanguage] = useState(defaultLang);
   const [langData, setLangData] = useState(th); // ค่าเริ่มต้นเป็นภาษาไทย
+  const [selectedLang, setSelectedLang] = useState(defaultLang);
 
   // อ็อบเจ็กต์เก็บภาษา
   const languages = { th, en };
@@ -20,6 +21,7 @@ export default function useLanguage() {
     const storedLang = localStorage.getItem("language") || defaultLang;
     setLanguage(storedLang);
     setLangData(languages[storedLang]); // อัปเดต JSON ตามภาษา
+    setSelectedLang(storedLang);
   }, []);
 
   // เปลี่ยนภาษาและรีโหลดหน้า
@@ -41,5 +43,5 @@ export default function useLanguage() {
     return data?.[language] || data?.[defaultLang] || "";
   };
 
-  return { language, lang: langData || {}, changeLanguage, t };
+  return { language, lang: langData || {}, changeLanguage, t, selectedLang };
 }

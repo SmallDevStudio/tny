@@ -49,11 +49,11 @@ export default function Footer() {
           href="#"
           className="flex justify-center items-center text-2xl mt-2 font-semibold text-orange-500 dark:text-white"
         >
-          {company?.name?.en}
+          {t(company?.name)}
         </Link>
 
         <p className="mb-4 font-light text-sm lg:text-lg text-gray-500 dark:text-gray-400">
-          {lang["contact_desc"]}
+          {t(app?.shortDescription)}
         </p>
 
         <p className="mb-4 font-light text-sm lg:text-lg text-gray-800 dark:text-gray-400">
@@ -62,20 +62,27 @@ export default function Footer() {
 
         <div className="flex-row items-center self-center text-sm mb-6 lg:text-xl">
           <span className="mr-2">
-            โทร :{" "}
-            <Link
-              href={`tel:${company?.phone}`}
-              className="hover:text-orange-500"
-            >
-              {company?.phone}
-            </Link>
+            <span className="">{lang["phone"]}: </span>
+            {company?.phone?.length > 0
+              ? company.phone.map((phone, index) => (
+                  <span key={index}>
+                    <Link
+                      href={`tel:${phone}`}
+                      className="text-orange-500 hover:text-orange-700"
+                    >
+                      {phone}
+                    </Link>
+                    {index < company.phone.length - 1 ? ", " : ""}
+                  </span>
+                ))
+              : null}
           </span>
           |
           <span className="ml-2">
             Email:{" "}
             <Link
               href={`mailto:${company?.email}`}
-              className="hover:text-orange-500"
+              className="text-orange-500 hover:text-orange-700"
             >
               {company?.email}
             </Link>

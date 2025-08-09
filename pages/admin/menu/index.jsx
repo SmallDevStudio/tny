@@ -21,7 +21,7 @@ export default function Menu() {
   const [items, setItems] = useState([]);
   const [itemForm, setItemForm] = useState({
     title: { th: "", en: "" },
-    url: "",
+    slug: "",
   });
   const [pages, setPages] = useState([]);
   const [filteredPages, setFilteredPages] = useState([]);
@@ -485,9 +485,9 @@ export default function Menu() {
                 type="text"
                 id="url"
                 className="border border-gray-400 rounded-xl p-1"
-                value={itemForm.url}
+                value={itemForm.slug || ""}
                 onChange={(e) =>
-                  setItemForm({ ...itemForm, url: e.target.value })
+                  setItemForm({ ...itemForm, slug: e.target.value })
                 }
                 placeholder="URL"
               />

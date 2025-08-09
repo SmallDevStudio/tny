@@ -3,9 +3,14 @@ import useDB from "@/hooks/useDB";
 import { Tooltip } from "@mui/material";
 import { toast } from "react-toastify";
 import { Social } from "../utils/SocialMedia";
+import useLanguage from "@/hooks/useLanguage";
 
 export default function ApphtmlForm() {
   const [app, setApp] = useState(null);
+  const [shrotDescription, setShortDescription] = useState({
+    th: "",
+    en: "",
+  });
   const [descriptions, setDescriptions] = useState({});
   const [checkedInputs, setCheckedInputs] = useState({});
   const [social, setSocial] = useState({
@@ -18,6 +23,7 @@ export default function ApphtmlForm() {
   });
 
   const { subscribe, getById, update } = useDB("appdata");
+  const { lang } = useLanguage();
 
   useEffect(() => {
     const unsubscribe = getById("app", (appData) => {
@@ -38,6 +44,10 @@ export default function ApphtmlForm() {
           twitterUrl: appData?.social?.twitterUrl ? true : false,
           tiktokUrl: appData?.social?.tiktokUrl ? true : false,
         });
+        setShortDescription({
+          th: appData?.shortDescription?.th || "",
+          en: appData?.shortDescription?.en || "",
+        });
         setDescriptions({
           th: appData?.descriptions?.th,
           en: appData?.descriptions?.en,
@@ -52,6 +62,10 @@ export default function ApphtmlForm() {
   const handleSubmit = async () => {
     const data = {
       name: app?.name,
+      shortDescription: {
+        th: shrotDescription.th,
+        en: shrotDescription.en,
+      },
       descriptions: {
         th: descriptions.th,
         en: descriptions.en,
@@ -65,8 +79,6 @@ export default function ApphtmlForm() {
         tiktokUrl: social.tiktokUrl || null, // ✅ เพิ่ม tiktokUrl ด้วย
       },
     };
-
-    console.log("submit data:", data);
 
     try {
       await update("app", data);
@@ -122,6 +134,61 @@ export default function ApphtmlForm() {
             />
           </div>
         </Tooltip>
+        <div className="w-full">
+          <label
+            htmlFor="shortDescription"
+            className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            {lang["shortDescription"]}:
+          </label>
+          <div className="flex flex-col items-center gap-2 sm:flex-row ">
+            <Tooltip
+              title={lang["shortDescription_placeholder"] + " " + lang["Th"]}
+              placement={"top-start"}
+              arrow
+            >
+              <input
+                type="text"
+                name="shortDescription_th"
+                id="shortDescription_th"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder={
+                  lang["shortDescription_placeholder"] + " " + lang["Th"]
+                }
+                onChange={(e) =>
+                  setShortDescription({
+                    ...shrotDescription,
+                    th: e.target.value,
+                  })
+                }
+                value={shrotDescription?.th}
+              />
+            </Tooltip>
+
+            <Tooltip
+              title={lang["shortDescription_placeholder"] + " " + lang["En"]}
+              placement={"top-start"}
+              arrow
+            >
+              <input
+                type="text"
+                name="shortDescription_en"
+                id="shortDescription_en"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder={
+                  lang["shortDescription_placeholder"] + " " + lang["En"]
+                }
+                onChange={(e) =>
+                  setShortDescription({
+                    ...shrotDescription,
+                    en: e.target.value,
+                  })
+                }
+                value={shrotDescription?.en}
+              />
+            </Tooltip>
+          </div>
+        </div>
         <div className="w-full">
           <label
             htmlFor="description"

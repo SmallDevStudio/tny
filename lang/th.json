@@ -319,5 +319,21 @@
   "remove_option": "ลบตัวเลือก",
   "multiple": "เลือกได้หลายตัวเลือก",
   "form_updated_successfully": "อัพเดตฟอร์มสําเร็จ",
-  "form_added_successfully": "เพิ่มฟอร์มสําเร็จ"
+  "form_added_successfully": "เพิ่มฟอร์มสําเร็จ",
+  "imageEng": "รูปภาพ (ภาษาอังกฤษ)",
+  "imageTh": "รูปภาพ (ภาษาไทย)",
+  "button_color": "สีปุ่ม",
+  "button_text": "ข้อความปุ่ม",
+  "button_url": "URL ปุ่ม",
+  "button": "ปุ่ม",
+  "button_text_placeholder": "กรอกข้อความปุ่ม",
+  "button_url_placeholder": "กรอก URL ปุ่ม",
+  "button_color_placeholder": "กรอกสีปุ่ม เช่น #FF5733",
+  "shortDescription": "คำอธิบายสั้น",
+  "shortDescription_placeholder": "กรอกคำอธิบายสั้น",
+  "Th": "ภาษาไทย",
+  "En": "ภาษาอังกฤษ",
+  "add_cart": "เพิ่มลงในตะกร้า",
+  "buy_now": "ซื้อเลย",
+  "payment": "การชำระเงิน"
 }
