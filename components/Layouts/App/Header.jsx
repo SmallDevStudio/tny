@@ -21,6 +21,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "@/services/firebase";
+import useDB from "@/hooks/useDB";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="right" ref={ref} {...props} />;
@@ -31,9 +32,12 @@ export default function Header() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeMenuItem, setActiveMenuItem] = useState("home");
   const { theme, toggleTheme } = useTheme();
+  const [isUsePayment, setIsUsePayment] = useState(false);
+
   const { data: session, status } = useSession();
   const router = useRouter();
   const { t, lang } = useLanguage();
+  const { subscribe, getById, update } = useDB("appdata");
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -54,6 +58,15 @@ export default function Header() {
 
     setActiveMenuItem(matchedItem?.url || "home"); // ใช้ url เป็น key แทน
   }, [router.asPath, menuItems]);
+
+  useEffect(() => {
+    const unsubscribe = getById("app", (appData) => {
+      if (appData) {
+        setIsUsePayment(appData.isUsePayment);
+      }
+    });
+    return () => unsubscribe(); // ✅ หยุดฟังเมื่อ component unmount
+  }, []);
 
   if (status === "loading") return null;
 
@@ -104,7 +117,12 @@ export default function Header() {
             )}
             <SearchButton size={24} />
             <LangButton />
-            <CartButton size={24} />
+            {isUsePayment && (
+              <Tooltip title={lang["cart"]} placement="bottom">
+                <CartButton size={24} />
+              </Tooltip>
+            )}
+
             <Tooltip title="Change Theme" placement="bottom">
               <button
                 className="text-gray-700 dark:text-gray-50"

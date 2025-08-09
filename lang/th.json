@@ -335,5 +335,25 @@
   "En": "ภาษาอังกฤษ",
   "add_cart": "เพิ่มลงในตะกร้า",
   "buy_now": "ซื้อเลย",
-  "payment": "การชำระเงิน"
+  "payment": "การชำระเงิน",
+  "payment_success": "การชำระเงินสำเร็จ",
+  "payment_error": "เกิดข้อผิดพลาดในการชำระเงิน",
+  "payment_cancel": "การชำระเงินถูกยกเลิก",
+  "payment_pending": "การชำระเงินอยู่ระหว่างดำเนินการ",
+  "payment_complete": "การชำระเงินเสร็จสมบูรณ์",
+  "payment_processing": "การชำระเงินกำลังดำเนินการ",
+  "payment_declined": "การชำระเงินถูกปฏิเสธ",
+  "payment_failed": "การชำระเงินล้มเหลว",
+  "payment_cancelled": "การชำระเงินถูกยกเลิก",
+  "payment_refunded": "การชำระเงินคืน",
+  "payment_reversed": "การชำระเงินถูกย้อนกลับ",
+  "payment_charged": "การชำระเงินถูกเรียกเก็บ",
+  "payment_voided": "การชำระเงินถูกยกเลิก",
+
+  "updated": "อัพเดต",
+  "user_updated_successfully": "อัพเดตผู้ใช้สําเร็จ",
+  "user_updated_error": "เกิดข้อผิดพลาดในการอัพเดตผู้ใช้",
+  "address_placeholder": "กรอกที่อยู่",
+  "phone_placeholder": "กรอกหมายเลขโทรศัพท์",
+  "province": "จังหวัด"
 }

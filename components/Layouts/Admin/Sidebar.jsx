@@ -16,7 +16,11 @@ import { MdOutlinePermContactCalendar } from "react-icons/md";
 import { TbSection } from "react-icons/tb";
 import { RiTeamLine } from "react-icons/ri";
 import { LuPaintbrush } from "react-icons/lu";
-import { MdOutlineArticle, MdOutlinePolicy } from "react-icons/md";
+import {
+  MdOutlineArticle,
+  MdOutlinePolicy,
+  MdOnlinePrediction,
+} from "react-icons/md";
 import { FaYoutube } from "react-icons/fa";
 import { IoNewspaperOutline } from "react-icons/io5";
 import { GrArticle } from "react-icons/gr";
@@ -55,6 +59,11 @@ const menuItems = [
     title: { en: "Courses", th: "คอร์ส" },
     icon: <RiArticleLine />,
     href: "/admin/courses",
+  },
+  {
+    title: { en: "Online Courses", th: "คอร์สออนไลน์" },
+    icon: <MdOnlinePrediction />,
+    href: "/admin/courses/online-courses",
   },
   {
     title: { en: "Blog", th: "บล็อก" },

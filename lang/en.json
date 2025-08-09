@@ -330,5 +330,25 @@
   "En": "English",
   "add_cart": "Add to Cart",
   "buy_now": "Buy Now",
-  "payment": "Payment"
+  "payment": "Payment",
+  "payment_success": "Payment Success",
+  "payment_error": "Payment Error",
+  "payment_cancel": "Payment Cancel",
+  "payment_pending": "Payment Pending",
+  "payment_complete": "Payment Complete",
+  "payment_processing": "Payment Processing",
+  "payment_declined": "Payment Declined",
+  "payment_failed": "Payment Failed",
+  "payment_cancelled": "Payment Cancelled",
+  "payment_refunded": "Payment Refunded",
+  "payment_reversed": "Payment Reversed",
+  "payment_charged": "Payment Charged",
+  "payment_voided": "Payment Voided",
+
+  "updated": "Updated",
+  "user_updated_successfully": "User updated successfully",
+  "user_updated_error": "User updated error",
+  "address_placeholder": "Please type address",
+  "phone_placeholder": "Please type phone number",
+  "province": "Province"
 }

@@ -30,8 +30,6 @@ export default function CartButton({ size = 24 }) {
     0
   );
 
-  console.log("Cart items:", items);
-
   // ปิด dropdown เมื่อคลิกนอก element
   useEffect(() => {
     const handleClickOutside = (event) => {
