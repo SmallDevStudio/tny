@@ -70,6 +70,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     registration_url: "",
     download_url: "",
     schedule_type: "single",
+    useButton: false,
   });
   const [loading, setLoading] = useState(false);
   const [cover, setCover] = useState(null);
@@ -91,7 +92,6 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     },
   ]);
   const [button, setButton] = useState({
-    useButton: false,
     color: "#000000",
     textColor: "#ffffff",
     text: { th: "", en: "" },
@@ -114,6 +114,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         registration_url: course.registration_url || "",
         download_url: course.download_url || "",
         schedule_type: course.schedule_type || "single",
+        useButton: course.useButton || false,
       });
       setImage(course.image || {});
       setTags(course.tags || []);
@@ -140,8 +141,8 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
       );
       setImageEng(course.imageEng || {});
       setButton({
-        useButton: course.button?.useButton || false,
         color: course.button?.color || "#000000",
+        textColor: course.button?.textColor || "#ffffff",
         text: course.button?.text || { th: "", en: "" },
         url: course.button?.url || "",
       });
@@ -195,6 +196,8 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
       youtube_url: "",
       registration_url: "",
       download_url: "",
+      schedule_type: "single",
+      useButton: false,
     });
     setTags([]);
     setCode(null);
@@ -205,7 +208,6 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     setParticipants([]);
     setSchedules([]);
     setButton({
-      useButton: false,
       color: "#000000",
       textColor: "#ffffff",
       text: { th: "", en: "" },
@@ -367,13 +369,8 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         registration_url: form.registration_url,
         download_url: form.download_url,
         participants: participants ? participants : [],
-        button: {
-          useButton: button.useButton ? true : false,
-          color: button.color,
-          textColor: button.textColor,
-          text: { th: button.text.th, en: button.text.en },
-          url: button.url,
-        },
+        useButton: form.useButton,
+        button: button || {},
         tags: tags,
         content: content,
         active: true,
@@ -402,6 +399,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
       } else {
         data.updated_at = new Date().toISOString();
         data.updated_by = userId;
+        console.log(data);
         await updateDoc(docRef, data, { merge: true }); // ✅ docRef ต้องตรงกับ newId ที่สุดท้าย
         toast.success(lang["course_updated_successfully"]);
       }
@@ -448,6 +446,8 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
   };
 
   if (loading) return <Loading />;
+
+  console.log(form);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
@@ -993,9 +993,9 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
                       type="text"
                       id="buttonColor"
                       name="buttonColor"
-                      value={button.color}
+                      value={button.textColor}
                       onChange={(e) =>
-                        setButton({ ...button, color: e.target.value })
+                        setButton({ ...button, textColor: e.target.value })
                       }
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder={lang["button_color_placeholder"]}

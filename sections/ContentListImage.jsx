@@ -135,8 +135,6 @@ export default function ContentListImage({
     fetchData();
   }, [contents, style?.limited, showAll]);
 
-  console.log("group", group);
-
   const e = (data) => data?.[language] || "";
 
   const handleSubmit = async () => {

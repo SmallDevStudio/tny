@@ -125,6 +125,8 @@ export default function CoursesOnlinePage() {
     fetchData();
   }, [slug]);
 
+  console.log("pageData", pageData);
+
   if (loading) return <div className="p-4 text-center">Loading...</div>;
   if (notFound) return <CustomErrorPage statusCode={404} />;
 
@@ -148,22 +150,6 @@ export default function CoursesOnlinePage() {
           )
         );
       })}
-      {pageData?.button?.text && (
-        <div className="my-2 text-center">
-          <Link href={pageData.button.link}>
-            <button
-              className="px-4 py-2 text-white"
-              style={{
-                backgroundColor: pageData.button.color || "#000000",
-              }}
-            >
-              {selectedLang === "th"
-                ? pageData.button.text.th
-                : pageData.button.text.en}
-            </button>
-          </Link>
-        </div>
-      )}
     </div>
   );
 }

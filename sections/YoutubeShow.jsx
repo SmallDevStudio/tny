@@ -5,7 +5,10 @@ import FormYoutubeShow from "./Forms/FormYoutubeShow";
 import { toast } from "react-toastify";
 import { db } from "@/services/firebase";
 import { doc, getDoc, setDoc, addDoc, collection } from "firebase/firestore";
-import ReactPlayer from "react-player/youtube";
+import dynamic from "next/dynamic";
+const ReactPlayer = dynamic(() => import("react-player/youtube"), {
+  ssr: false,
+});
 
 const sampleData = {
   title: {
@@ -73,6 +76,18 @@ export default function YoutubeShow({
     fetchData();
   }, [contentId]); // ✅ ต้องมี dependency contentId
 
+  useEffect(() => {
+    const originalWarn = console.warn;
+    console.warn = (...args) => {
+      if (typeof args[0] === "string" && args[0].includes("ReactPlayer"))
+        return;
+      originalWarn(...args);
+    };
+    return () => {
+      console.warn = originalWarn;
+    };
+  }, []);
+
   const e = (data) => data?.[language] || "";
 
   const handleSubmit = async () => {
@@ -102,6 +117,10 @@ export default function YoutubeShow({
       toast.error("บันทึกไม่สำเร็จ");
     }
   };
+
+  const isValidYoutube = (url) =>
+    /^https?:\/\/(www\.)?youtube\.com\/watch\?v=/.test(url) ||
+    /^https?:\/\/youtu\.be\//.test(url);
 
   return (
     <section class="bg-white dark:bg-gray-800 w-full">
@@ -134,13 +153,14 @@ export default function YoutubeShow({
                 aspectRatio: "16/9",
               }}
             >
-              <ReactPlayer
-                url={youtube ? youtube : item.url}
-                controls
-                width="100%"
-                height="100%"
-                style={{ borderRadius: "8px", overflow: "hidden" }}
-              />
+              {isValidYoutube(youtube || item.url) && (
+                <ReactPlayer
+                  url={youtube || item.url}
+                  controls
+                  width="100%"
+                  height="100%"
+                />
+              )}
             </div>
           ))}
       </div>

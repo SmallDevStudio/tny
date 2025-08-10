@@ -32,12 +32,14 @@ export default function ButtonSession({
 
   const { lang, t, selectedLang } = useLanguage();
 
+  console.log("pageData", pageData);
+
   return (
-    pageData?.button?.useButton && (
-      <div className="my-2 text-center">
-        <Link href={pageData.button.link} target="_blank">
+    pageData?.useButton && (
+      <div className=" text-center">
+        <Link href={pageData.button.url} target="_blank">
           <button
-            className="px-4 py-2 text-white"
+            className="px-4 py-2 text-white rounded-lg"
             style={{
               backgroundColor: pageData.button.color || "#000000",
             }}
