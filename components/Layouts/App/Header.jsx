@@ -22,6 +22,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/services/firebase";
 import useDB from "@/hooks/useDB";
+import { signOut } from "next-auth/react";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="right" ref={ref} {...props} />;
@@ -72,6 +73,11 @@ export default function Header() {
     });
     return () => unsubscribe(); // ✅ หยุดฟังเมื่อ component unmount
   }, []);
+
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: "/" });
+    setDialogOpen(false);
+  };
 
   if (status === "loading") return null;
 
@@ -166,19 +172,22 @@ export default function Header() {
         >
           <div className="h-full w-full bg-white dark:bg-gray-800 flex flex-col">
             {/* Header ของ Mobile Menu */}
-            <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
+            <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 w-full">
               <span className="text-xl font-semibold dark:text-white">
-                Menu
+                {lang["menu"]}
               </span>
-              <button
-                className="text-gray-700 dark:text-gray-50"
-                onClick={() => setDialogOpen(false)}
-              >
-                <IoClose size={28} />
-              </button>
+              <div className="flex items-center gap-2">
+                <LangButton />
+                <button
+                  className="text-gray-700 dark:text-gray-50"
+                  onClick={() => setDialogOpen(false)}
+                >
+                  <IoClose size={28} />
+                </button>
+              </div>
             </div>
-            <div className="flex px-4 py-2">
-              {!session && (
+            <div className="flex justify-center items-center px-4 py-2 w-full">
+              {!session ? (
                 <div className="flex gap-2">
                   <button
                     className="text-black dark:text-white hover:text-orange-500"
@@ -194,12 +203,25 @@ export default function Header() {
                     Register
                   </button>
                 </div>
+              ) : (
+                <div className="flex items-center px-4 py-2 gap-4">
+                  <Image
+                    src={session?.user?.image || "/default-avatar.png"}
+                    alt={session?.user?.name}
+                    width={100}
+                    height={100}
+                    className="rounded-full"
+                  />
+                  <div className="flex flex-col">
+                    <p className="text-md text-gray-700 font-bold dark:text-gray-50">
+                      {session?.user?.name}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {session?.user?.email}
+                    </p>
+                  </div>
+                </div>
               )}
-            </div>
-
-            <div className="flex justify-between px-4 py-2">
-              <UserButton user={session?.user} size={40} />
-              <LangButton />
             </div>
 
             {/* รายการเมนู (Mobile) */}
@@ -218,6 +240,37 @@ export default function Header() {
                   {t(item.title)}
                 </Link>
               ))}
+
+              {session && (
+                <div className="">
+                  <Divider sx={{ mb: 2 }} />
+                  <ul
+                    className={`flex flex-col gap-4 text-gray-700 dark:text-gray-50`}
+                  >
+                    {session?.user?.role === "admin" && (
+                      <li
+                        onClick={() => {
+                          router.push("/admin");
+                          setDialogOpen(false);
+                        }}
+                      >
+                        {lang["admin_console"]}
+                      </li>
+                    )}
+                    <li
+                      onClick={() => {
+                        router.push("/profile");
+                        setDialogOpen(false);
+                      }}
+                    >
+                      {lang["profile"]}
+                    </li>
+                    <li>{lang["history-order"]}</li>
+                    <li>{lang["courses"]}</li>
+                    <li onClick={handleSignOut}>{lang["signout"]}</li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </Dialog>
