@@ -18,6 +18,7 @@ import Contents from "./Contents";
 import FooterCourses from "./FooterCourses";
 import HeaderTeam from "./HeaderTeam";
 import Customs from "./Customs";
+import ButtonSession from "./Button";
 
 export const Sections = [
   {
@@ -220,5 +221,15 @@ export const Sections = [
     thumbnail: "/images/sections/previews/headerTeam.png",
     component: HeaderTeam,
     group: "team",
+  },
+  {
+    name: "button",
+    description: {
+      en: "show button",
+      th: "แสดงปุ่ม",
+    },
+    thumbnail: "/images/sections/previews/button.png",
+    component: ButtonSession,
+    group: "elements",
   },
 ];

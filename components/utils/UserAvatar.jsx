@@ -1,14 +1,16 @@
- import { Avatar } from "@mui/material";
+import { Avatar } from "@mui/material";
+import Image from "next/image";
 
 export default function UserAvatar({ user, size }) {
-    return (
-        <Avatar
-            alt={user?.name}
-            src={user?.picture}
-            sx={{ 
-                width: size, 
-                height: size 
-            }}
-        />
-    );
+  console.log(user);
+
+  return (
+    <Image
+      src={user?.image || "/default-avatar.png"}
+      alt={user.name}
+      width={size}
+      height={size}
+      className="rounded-full"
+    />
+  );
 }

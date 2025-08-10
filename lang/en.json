@@ -318,6 +318,7 @@
   "imageEng": "Image (English)",
   "imageTh": "Image (Thai)",
   "button_color": "Button Color",
+  "button_text_color": "Button Text Color",
   "button_text": "Button Text",
   "button_url": "Button URL",
   "button": "Button",
@@ -350,5 +351,8 @@
   "user_updated_error": "User updated error",
   "address_placeholder": "Please type address",
   "phone_placeholder": "Please type phone number",
-  "province": "Province"
+  "province": "Province",
+  "use_button": "Use Button",
+
+  "history-order": "History Order"
 }

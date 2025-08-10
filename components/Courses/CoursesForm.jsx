@@ -91,7 +91,9 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     },
   ]);
   const [button, setButton] = useState({
+    useButton: false,
     color: "#000000",
+    textColor: "#ffffff",
     text: { th: "", en: "" },
     url: "",
   });
@@ -138,6 +140,7 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
       );
       setImageEng(course.imageEng || {});
       setButton({
+        useButton: course.button?.useButton || false,
         color: course.button?.color || "#000000",
         text: course.button?.text || { th: "", en: "" },
         url: course.button?.url || "",
@@ -201,7 +204,13 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
     setContent({ th: "", en: "" });
     setParticipants([]);
     setSchedules([]);
-    setButton({ color: "#000000", text: { th: "", en: "" }, url: "" });
+    setButton({
+      useButton: false,
+      color: "#000000",
+      textColor: "#ffffff",
+      text: { th: "", en: "" },
+      url: "",
+    });
     onClose();
   };
 
@@ -359,7 +368,9 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
         download_url: form.download_url,
         participants: participants ? participants : [],
         button: {
+          useButton: button.useButton ? true : false,
           color: button.color,
+          textColor: button.textColor,
           text: { th: button.text.th, en: button.text.en },
           url: button.url,
         },
@@ -926,73 +937,121 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
-            <div className="flex flex-col">
-              <label htmlFor="buttonColor">{lang["button_color"]}</label>
-              <div className="flex items-center gap-2">
-                <ColorPicker
-                  value={button.color || "#000000"}
-                  onChange={(color) => setButton({ ...button, color: color })}
-                  size={40}
-                />
-                <input
-                  type="text"
-                  id="buttonColor"
-                  name="buttonColor"
-                  value={button.color}
-                  onChange={(e) =>
-                    setButton({ ...button, color: e.target.value })
-                  }
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                  placeholder={lang["button_color_placeholder"]}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="bottonText">{lang["button_text"]}</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  id="button.text.th"
-                  name="button.text.th"
-                  value={button.text.th}
-                  onChange={(e) =>
-                    setButton({
-                      ...button,
-                      text: { ...button.text, th: e.target.value },
-                    })
-                  }
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                  placeholder={lang["button_text_placeholder"] + " (th)"}
-                />
-                <input
-                  type="text"
-                  id="button.text.en"
-                  name="button.text.en"
-                  value={button.text.en}
-                  onChange={(e) =>
-                    setButton({
-                      ...button,
-                      text: { ...button.text, en: e.target.value },
-                    })
-                  }
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                  placeholder={lang["button_text_placeholder"] + " (en)"}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="buttonUrl">{lang["button_url"]}</label>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
               <input
-                type="text"
-                id="button.url"
-                name="button.url"
-                value={button.url}
-                onChange={(e) => setButton({ ...button, url: e.target.value })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder={lang["button_url_placeholder"]}
+                type="checkbox"
+                id="useButton"
+                name="useButton"
+                checked={form.useButton}
+                onChange={(e) =>
+                  setForm({ ...form, useButton: e.target.checked })
+                }
+                className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
+              <label htmlFor="useButton">{lang["use_button"]}</label>
             </div>
+            {form.useButton && (
+              <div className="grid grid-cols-1 gap-2 lg:grid-cols-4">
+                <div className="flex flex-col">
+                  <label htmlFor="buttonColor">{lang["button_color"]}</label>
+                  <div className="flex items-center gap-2">
+                    <ColorPicker
+                      value={button.color || "#000000"}
+                      onChange={(color) =>
+                        setButton({ ...button, color: color })
+                      }
+                      size={40}
+                    />
+                    <input
+                      type="text"
+                      id="buttonColor"
+                      name="buttonColor"
+                      value={button.color}
+                      onChange={(e) =>
+                        setButton({ ...button, color: e.target.value })
+                      }
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      placeholder={lang["button_color_placeholder"]}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label htmlFor="buttonTextColor">
+                    {lang["button_text_color"]}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <ColorPicker
+                      value={button.textColor || "#ffffff"}
+                      onChange={(color) =>
+                        setButton({ ...button, textColor: color })
+                      }
+                      size={40}
+                    />
+                    <input
+                      type="text"
+                      id="buttonColor"
+                      name="buttonColor"
+                      value={button.color}
+                      onChange={(e) =>
+                        setButton({ ...button, color: e.target.value })
+                      }
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      placeholder={lang["button_color_placeholder"]}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label htmlFor="bottonText">{lang["button_text"]}</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      id="button.text.th"
+                      name="button.text.th"
+                      value={button.text.th}
+                      onChange={(e) =>
+                        setButton({
+                          ...button,
+                          text: { ...button.text, th: e.target.value },
+                        })
+                      }
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      placeholder={lang["button_text_placeholder"] + " (th)"}
+                    />
+                    <input
+                      type="text"
+                      id="button.text.en"
+                      name="button.text.en"
+                      value={button.text.en}
+                      onChange={(e) =>
+                        setButton({
+                          ...button,
+                          text: { ...button.text, en: e.target.value },
+                        })
+                      }
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      placeholder={lang["button_text_placeholder"] + " (en)"}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="buttonUrl">{lang["button_url"]}</label>
+                  <input
+                    type="text"
+                    id="button.url"
+                    name="button.url"
+                    value={button.url}
+                    onChange={(e) =>
+                      setButton({ ...button, url: e.target.value })
+                    }
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                    placeholder={lang["button_url_placeholder"]}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
         {/* Editor */}

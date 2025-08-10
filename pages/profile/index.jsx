@@ -9,6 +9,7 @@ import {
   setDoc,
   where,
   getDocs,
+  getDoc,
   onSnapshot,
   query,
 } from "firebase/firestore";
@@ -17,7 +18,7 @@ import useLanguage from "@/hooks/useLanguage";
 import Header from "@/components/utils/Header";
 import Loading from "@/components/utils/Loading";
 import { Dialog, Slide } from "@mui/material";
-import UploadImage from "@/components/btn/UploadImage";
+import Upload from "@/components/utils/Upload";
 import { MdEdit } from "react-icons/md";
 import { toast } from "react-toastify";
 import provinceData from "@/services/province.json";
@@ -33,7 +34,11 @@ export default function Profile() {
   const [selectedAmphure, setSelectedAmphure] = useState("");
   const [zipOptions, setZipOptions] = useState([]);
   const [selectedZip, setSelectedZip] = useState("");
-  const [hasFetched, setHasFetched] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [isUploaded, setIsUploaded] = useState(false);
+
+  const [hasFetchedUser, setHasFetchedUser] = useState(false);
+  const [hasFetchedDetail, setHasFetchedDetail] = useState(false);
 
   const { data: session, status } = useSession();
   const { subscribe, getById, update } = useDB("profile");
@@ -41,24 +46,53 @@ export default function Profile() {
 
   const userId = session?.user?.userId;
 
+  // ✅ ดึง user ข้อมูลหลัก
   useEffect(() => {
-    if (status !== "authenticated") return;
-    if (!userId) return;
-    if (hasFetched) return; // ดึงแล้วไม่ต้องดึงซ้ำ
+    if (status !== "authenticated" || !userId || hasFetchedUser) return;
 
     const fetchUser = async () => {
-      const q = query(collection(db, "users"), where("userId", "==", userId));
-      const querySnapshot = await getDocs(q);
-      const fetchedUser = querySnapshot.docs[0]?.data();
-      if (fetchedUser) {
-        setUser(fetchedUser);
-        setSelectedProvince(fetchedUser.provinceId || "");
-        setSelectedAmphure(fetchedUser.amphureId || "");
-        setHasFetched(true); // ✅ กันดึงซ้ำ
+      try {
+        const q = query(collection(db, "users"), where("userId", "==", userId));
+        const querySnapshot = await getDocs(q);
+        const fetchedUser = querySnapshot.docs[0]?.data();
+        if (fetchedUser) {
+          setUser(fetchedUser);
+          setHasFetchedUser(true);
+        }
+      } catch (err) {
+        console.error("Error fetching user:", err);
       }
     };
+
     fetchUser();
-  }, [status, userId, hasFetched]);
+  }, [status, userId, hasFetchedUser]);
+
+  // ✅ ดึงรายละเอียดเพิ่มเติม หลังจากมี user.uid แล้ว
+  useEffect(() => {
+    if (!user.uid || hasFetchedDetail) return;
+
+    const fetchDetail = async () => {
+      try {
+        const q = query(
+          collection(db, "profile"),
+          where("uid", "==", user.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const fetchedDetail = querySnapshot.docs[0]?.data();
+        if (fetchedDetail) {
+          setPhone(fetchedDetail.phone || "");
+          setSelectedProvince(fetchedDetail.province || "");
+          setSelectedAmphure(fetchedDetail.amphure || "");
+          setSelectedZip(fetchedDetail.zipcode || "");
+        }
+        setHasFetchedDetail(true);
+      } catch (err) {
+        console.error("Error fetching detail:", err);
+      }
+    };
+
+    fetchDetail();
+  }, [user.uid, hasFetchedDetail]);
 
   // provinces เป็น array ทั้งหมด
   const provinces = provinceData;
@@ -96,14 +130,79 @@ export default function Profile() {
 
   const handleUpdate = async () => {
     try {
-      const data = {
+      if (!user.uid) {
+        toast.error("User UID not found");
+        return;
+      }
+
+      // หา province และ amphure จาก JSON
+      const provinceObj = provinces.find(
+        (p) => p.id === Number(selectedProvince)
+      );
+      const amphureObj = provinceObj?.amphure.find(
+        (a) => a.id === Number(selectedAmphure)
+      );
+
+      // สร้างโครงสร้างข้อมูลที่ต้องการเก็บ
+      const dataToSave = {
         uid: user.uid,
-        phone: phone,
-        provinceId: selectedProvince,
-        amphureId: selectedAmphure,
-        zipcode: selectedZip,
+        phone: user.phone || "",
+        address: user.address || "",
+        provinceId: provinceObj
+          ? {
+              id: provinceObj.id,
+              name: {
+                th: provinceObj.name_th,
+                en: provinceObj.name_en,
+              },
+            }
+          : null,
+        amphureId: amphureObj
+          ? {
+              id: amphureObj.id,
+              name: {
+                th: amphureObj.name_th,
+                en: amphureObj.name_en,
+              },
+            }
+          : null,
+        zipcode: selectedZip.zipcode || "",
+        updatedAt: new Date().toISOString(),
       };
-      await updateDoc(doc(db, "users_details", user.uid), user);
+
+      if (isUploaded) {
+        const userData = {
+          ...user,
+          image: user.image || "",
+        };
+
+        const userRef = doc(db, "users", user.uid);
+        userData.updatedAt = new Date().toISOString();
+        await updateDoc(userRef, userData, { merge: true });
+        setIsUploaded(false);
+      }
+
+      // อ้างอิง doc
+      const docRef = doc(db, "users_details", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        // ถ้าไม่มี doc ให้สร้างใหม่
+        await setDoc(docRef, dataToSave);
+      } else {
+        const existingData = docSnap.data();
+        if (!existingData.address) {
+          // ถ้า address ยังไม่มี ให้ใส่
+          await updateDoc(docRef, {
+            ...dataToSave,
+            createdAt: existingData.createdAt || new Date().toISOString(),
+          });
+        } else {
+          // ถ้ามีแล้ว ให้ update เฉพาะ field ที่ต้องการ
+          await updateDoc(docRef, dataToSave);
+        }
+      }
+
       toast.success(lang["user_updated_successfully"]);
     } catch (error) {
       console.error(error);
@@ -111,10 +210,23 @@ export default function Profile() {
     }
   };
 
-  if (!session || !user) return <Loading />;
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
 
-  console.log(user);
-  console.log(selectedProvince, selectedAmphure, zipOptions, selectedZip);
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleUpload = (image) => {
+    setUser((prev) => ({
+      ...prev,
+      image,
+    }));
+    setIsUploaded(true);
+  };
+
+  if (!session || !user) return <Loading />;
 
   return (
     <div className="container mx-auto p-4">
@@ -127,7 +239,10 @@ export default function Profile() {
             height={150}
             className="rounded-full"
           />
-          <div className="absolute bottom-0 right-4 bg-white rounded-full p-1 shadow">
+          <div
+            className="absolute bottom-0 right-4 bg-white rounded-full p-1 shadow"
+            onClick={handleClickOpen}
+          >
             <MdEdit />
           </div>
         </div>
@@ -241,6 +356,18 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        TransitionComponent={Transition}
+      >
+        <Upload
+          handleCloseForm={handleClose}
+          setFiles={handleUpload}
+          folder={"users"}
+          userId={userId}
+        />
+      </Dialog>
     </div>
   );
 }

@@ -125,8 +125,6 @@ export default function CoursesPage() {
     fetchData();
   }, [slug]);
 
-  console.log("pageData", pageData);
-
   if (loading) return <div className="p-4 text-center">Loading...</div>;
   if (notFound) return <CustomErrorPage statusCode={404} />;
 
@@ -150,9 +148,9 @@ export default function CoursesPage() {
           )
         );
       })}
-      {pageData?.button?.text && (
+      {pageData?.button?.useButton && (
         <div className="my-2 text-center">
-          <Link href={pageData.button.link}>
+          <Link href={pageData.button.link} target="_blank">
             <button
               className="px-4 py-2 text-white"
               style={{

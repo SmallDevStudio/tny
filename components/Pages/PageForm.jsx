@@ -13,6 +13,9 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  updateDoc,
+  query,
+  where,
   doc,
   deleteDoc,
 } from "firebase/firestore";
@@ -47,6 +50,7 @@ export default function PageForm({ page, onClose }) {
   useEffect(() => {
     if (page) {
       setForm({
+        id: page.id,
         name: page.name,
         title: page.title,
         description: page.description,
@@ -85,6 +89,8 @@ export default function PageForm({ page, onClose }) {
     setForm((prev) => ({ ...prev, slug: value }));
   };
 
+  console.log(form);
+
   const handleSubmitPage = async () => {
     if (!form.slug) {
       setError(lang["slug_required"]);
@@ -92,11 +98,12 @@ export default function PageForm({ page, onClose }) {
       return;
     }
 
-    if (page && isEditing) {
-      const pageRef = doc(db, "pages", form.id);
+    // ✅ UPDATE
+    if (isEditing && form.id) {
+      const pageRef = doc(db, "pages", form.id); // ใช้ id จริง
       const data = {
         ...form,
-        multiple: form.multiple ?? false, // ✅ เพิ่มตรงนี้เพื่อกัน undefined
+        multiple: form.multiple ?? false,
         sections: sections || [],
         content: "",
         template: { base: "default", page: "page" },
@@ -105,22 +112,22 @@ export default function PageForm({ page, onClose }) {
       };
 
       try {
-        await setDoc(pageRef, data, { merge: true }); // ✅ merge ให้เพิ่ม field multiple ได้
-        toast.success(
-          lang["page_updated_successfully"] || "อัปเดตหน้าเรียบร้อย"
-        );
+        await updateDoc(pageRef, data, { merge: true });
+        toast.success(lang["page_updated_successfully"]);
         handleClearForm();
         router.push("/admin/pages");
       } catch (error) {
         console.error("Error updating page:", error);
         toast.error(lang["something_went_wrong"]);
       }
-
       return;
     }
 
-    // ✅ ถ้าเป็นการสร้างใหม่
+    // ✅ CREATE
+    const newId = generateSlug(form.name); // สร้าง id จาก slug ที่ปลอดภัย
+    const pageRef = doc(db, "pages", newId);
     const pageSnap = await getDoc(pageRef);
+
     if (pageSnap.exists()) {
       setError(lang["slug_already_exists"]);
       toast.error(lang["slug_already_exists"]);
@@ -129,7 +136,7 @@ export default function PageForm({ page, onClose }) {
 
     const data = {
       ...form,
-      slug: `pages/${form.name}`,
+      slug: newId, // เก็บ slug เป็น string ปกติ
       sections: [],
       content: "",
       template: { base: "default", page: "page" },
@@ -139,7 +146,7 @@ export default function PageForm({ page, onClose }) {
     };
 
     try {
-      await collection(db, "pages").add(data);
+      await setDoc(pageRef, data);
       toast.success(lang["page_added_successfully"]);
       handleClearForm();
       onClose();

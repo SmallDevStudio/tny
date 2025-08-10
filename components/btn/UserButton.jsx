@@ -6,12 +6,13 @@ import { signOut } from "next-auth/react";
 import UserAvatar from "../utils/UserAvatar";
 import useLanguage from "@/hooks/useLanguage";
 
-export default function UserButton({ user, size }) {
+export default function UserButton({ size }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const router = useRouter();
   const { lang } = useLanguage();
   const { data: session } = useSession();
+  const user = session?.user;
 
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -28,7 +29,7 @@ export default function UserButton({ user, size }) {
         <>
           <Tooltip title={lang["clickmenu"]} placement="bottom" arrow>
             <div className="flex cursor-pointer" onClick={handleAvatarClick}>
-              <UserAvatar size={size} />
+              <UserAvatar size={size} user={user} />
             </div>
           </Tooltip>
 
@@ -50,6 +51,9 @@ export default function UserButton({ user, size }) {
             <MenuItem onClick={() => router.push("/profile")}>
               {lang["profile"]}
             </MenuItem>
+            <MenuItem>{lang["history-order"]}</MenuItem>
+            <MenuItem>{lang["courses"]}</MenuItem>
+            <Divider />
             <MenuItem onClick={handleLogout}>{lang["signout"]}</MenuItem>
           </Menu>
         </>

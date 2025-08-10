@@ -51,12 +51,17 @@ export default function Header() {
     const currentPath = router.asPath;
     const items = menuItems[0]?.items || [];
 
-    const matchedItem = items.find(
-      (item) =>
-        currentPath === item.url || currentPath.startsWith(item.url + "/")
-    );
+    const matchedItem = items
+      .filter(
+        (item) =>
+          currentPath === item.url ||
+          currentPath.startsWith(item.url + "/") ||
+          currentPath.startsWith(item.url + "?") ||
+          currentPath.startsWith(item.url + "#")
+      )
+      .sort((a, b) => b.url.length - a.url.length)[0]; // match ที่ url ยาวสุด
 
-    setActiveMenuItem(matchedItem?.url || "home"); // ใช้ url เป็น key แทน
+    setActiveMenuItem(matchedItem?.url || "home");
   }, [router.asPath, menuItems]);
 
   useEffect(() => {
