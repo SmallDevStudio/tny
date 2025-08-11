@@ -16,6 +16,7 @@ import { useState, useRef, useEffect } from "react";
 export default function CheckoutPage() {
   const cart = useSelector((state) => state.cart.items);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { t } = useLanguage();
 

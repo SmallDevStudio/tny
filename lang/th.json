@@ -359,5 +359,19 @@
   "province": "จังหวัด",
   "use_button": "ใช้ปุ่ม",
 
-  "history-order": "ประวัติการสั่งซื้อ"
+  "history-order": "ประวัติการสั่งซื้อ",
+  "preview_url": "ลิงก์แสดงตัวอย่าง",
+  "preview_url_placeholder": "กรอกลิงก์แสดงตัวอย่าง",
+  "create_course_online": "สร้างคอร์สออนไลน์",
+  "edit_course_online": "แก้ไขคอร์สออนไลน์",
+  "privacy_updated_successfully": "อัพเดตนโยบายความเป็นส่วนตัวสําเร็จ",
+  "privacy_updated_error": "เกิดข้อผิดพลาดในการอัพเดตนโยบายความเป็นส่วนตัว",
+  "privacy": "นโยบายความเป็นส่วนตัว",
+  "privacy_desc": "นโยบายความเป็นส่วนตัว",
+  "privacy_placeholder": "กรอกนโยบายความเป็นส่วนตัว",
+  "terms_updated_successfully": "อัพเดตเงื่อนไขสําเร็จ",
+  "terms_updated_error": "เกิดข้อผิดพลาดในการอัพเดตเงื่อนไข",
+  "terms": "เงื่อนไข",
+  "terms_desc": "เงื่อนไขและเงื่อนไข",
+  "privacy-policy": "นโยบายความเป็นส่วนตัว"
 }

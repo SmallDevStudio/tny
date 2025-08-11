@@ -354,5 +354,19 @@
   "province": "Province",
   "use_button": "Use Button",
 
-  "history-order": "History Order"
+  "history-order": "History Order",
+  "preview_url": "Preview URL",
+  "preview_url_placeholder": "Please type preview URL",
+  "create_course_online": "Create Course Online",
+  "edit_course_online": "Edit Course Online",
+  "privacy_updated_successfully": "Privacy updated successfully",
+  "privacy_updated_error": "Privacy updated error",
+  "privacy": "Privacy",
+  "privacy_desc": "Privacy Policy",
+  "privacy_placeholder": "Please type privacy policy",
+  "terms_updated_successfully": "Terms updated successfully",
+  "terms_updated_error": "Terms updated error",
+  "terms": "Terms",
+  "terms_desc": "Terms and Conditions",
+  "privacy-policy": "Privacy Policy"
 }

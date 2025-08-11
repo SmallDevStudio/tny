@@ -58,62 +58,38 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
   const userId = session?.user?.userId;
   const [form, setForm] = useState({
     name: { th: "", en: "" },
-    gen: 0,
     description: { th: "", en: "" },
-    cover: "",
     group: "",
     subgroup: "",
     price: "",
-    location: "",
-    location_url: "",
-    youtube_url: "",
-    registration_url: "",
-    download_url: "",
-    schedule_type: "single",
+    preview_url: "",
   });
   const [loading, setLoading] = useState(false);
-  const [cover, setCover] = useState(null);
   const [image, setImage] = useState(null);
   const [imageEng, setImageEng] = useState(null);
   const [tags, setTags] = useState([]);
-  const [code, setCode] = useState(null);
+  const [code, setCode] = useState({
+    docEntry: null,
+    code: null,
+  });
   const [content, setContent] = useState({ th: "", en: "" });
   const [participants, setParticipants] = useState([]);
   const [lastNumber, setLastNumber] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [language, setLanguage] = useState("th");
-  const [schedules, setSchedules] = useState([
-    {
-      start_date: new Date(),
-      end_date: new Date(),
-      start_time: "",
-      end_time: "",
-    },
-  ]);
-  const [button, setButton] = useState({
-    color: "#000000",
-    text: { th: "", en: "" },
-    url: "",
-  });
 
   useEffect(() => {
     if (course) {
       setForm({
         name: course.name || { th: "", en: "" },
-        gen: course.gen || 0,
         description: course.description || { th: "", en: "" },
-        cover: course.cover || {},
         group: course.group || "",
         subgroup: course.subgroup || "",
         price: course.price || "",
-        location: course.location || "",
-        location_url: course.location_url || "",
-        youtube_url: course.youtube_url || "",
-        registration_url: course.registration_url || "",
-        download_url: course.download_url || "",
-        schedule_type: course.schedule_type || "single",
+        preview_url: course.preview_url || "",
       });
       setImage(course.image || {});
+      setImageEng(course.imageEng || {});
       setTags(course.tags || []);
       setCode({
         docEntry: course.docEntry,
@@ -124,32 +100,25 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
         en: course?.content?.en || sampleData.content.en,
       });
       setParticipants(course.participants);
-      setSchedules(
-        course.schedules
-          ? course.schedules
-          : [
-              {
-                start_date: new Date(),
-                end_date: new Date(),
-                start_time: "",
-                end_time: "",
-              },
-            ]
-      );
-      setImageEng(course.imageEng || {});
-      setButton({
-        color: course.button?.color || "#000000",
-        text: course.button?.text || { th: "", en: "" },
-        url: course.button?.url || "",
-      });
     } else if (isNewCourse) {
       setTags([]);
     }
   }, [course]);
 
   useEffect(() => {
+    if (lastNumber) {
+      const code = "OC" + String(lastNumber).padStart(4, "0");
+      setCode((prevCode) => ({
+        ...prevCode,
+        docEntry: lastNumber,
+        code: code,
+      }));
+    }
+  }, [lastNumber]);
+
+  useEffect(() => {
     const fetchLastNumbers = async () => {
-      const snapshot = await getDocs(collection(db, "courses"));
+      const snapshot = await getDocs(collection(db, "online-courses"));
 
       const maxId = snapshot.docs
         .map((doc) => {
@@ -167,41 +136,36 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
 
   const generateUniqueDocEntry = async () => {
     let newId = lastNumber ? lastNumber : 1;
-    let docRef = doc(db, "courses", newId.toString());
+    let docRef = doc(db, "online-courses", newId.toString());
     let docSnap = await getDoc(docRef);
 
     while (docSnap.exists()) {
       newId += 1;
-      docRef = doc(db, "courses", newId.toString());
+      docRef = doc(db, "online-courses", newId.toString());
       docSnap = await getDoc(docRef);
     }
 
     return newId;
   };
 
+  console.log("lastNumber", lastNumber);
+  console.log("code", code);
+
   const handleClear = () => {
     setForm({
       name: { th: "", en: "" },
-      gen: 0,
       description: { th: "", en: "" },
       group: "",
       subgroup: "",
       price: "",
-      location: "",
-      location_url: "",
-      youtube_url: "",
-      registration_url: "",
-      download_url: "",
+      preview_url: "",
     });
     setTags([]);
     setCode(null);
-    setCover(null);
     setImage({});
     setImageEng({});
     setContent({ th: "", en: "" });
     setParticipants([]);
-    setSchedules([]);
-    setButton({ color: "#000000", text: { th: "", en: "" }, url: "" });
     onClose();
   };
 
@@ -238,34 +202,6 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
     return isNaN(date) ? null : date.toISOString();
   };
 
-  const normalizeTime = (timeStr) => {
-    if (!timeStr) return null;
-    if (timeStr.includes(".")) {
-      // แปลง 9.30 เป็น 09:30
-      const [h, m] = timeStr.split(".");
-      const hour = h.padStart(2, "0");
-      const minute = m.padEnd(2, "0");
-      return `${hour}:${minute}`;
-    }
-    if (timeStr.includes(":")) {
-      const [h, m] = timeStr.split(":");
-      return `${h.padStart(2, "0")}:${m.padEnd(2, "0")}`;
-    }
-    return timeStr;
-  };
-
-  const timeStringToDate = (timeStr) => {
-    const normalized = normalizeTime(timeStr);
-    if (!normalized) return null;
-    const [hours, minutes] = normalized.split(":").map(Number);
-    const date = new Date();
-    date.setHours(hours);
-    date.setMinutes(minutes);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
-    return date;
-  };
-
   const handleParticipants = (participants) => {
     setParticipants((prev) => [...prev, participants]);
   };
@@ -291,7 +227,7 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
 
   const getNextOrder = async () => {
     const q = query(
-      collection(db, "courses"),
+      collection(db, "online-courses"),
       orderBy("order", "desc"),
       limit(1)
     );
@@ -318,51 +254,19 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
       let docRef = doc(db, "courses", newId.toString());
       const docSnap = await getDoc(docRef);
 
-      const pageSlug = form.group
-        ? form.subgroup
-          ? `courses/${form.group}/${form.subgroup}/${slug}`
-          : `courses/${form.group}/${slug}`
-        : `courses/${slug}`;
-
-      if (schedules.length > 1) {
-        setForm((prev) => ({ ...prev, schedule_type: "multiple" }));
-      }
-
-      const schedulesData = schedules.map((schedule) => ({
-        ...schedule,
-        start_date: safeToISOString(schedule.start_date),
-        end_date: safeToISOString(schedule.end_date),
-        start_time: schedule.start_time
-          ? normalizeTime(schedule.start_time)
-          : null,
-        end_time: schedule.end_time ? normalizeTime(schedule.end_time) : null,
-      }));
-
       const data = {
         id: newId,
         code: code ? code.code : null,
         docEntry: newId,
         name: { th: form.name.th, en: form.name.en },
-        gen: form.gen,
         description: { th: form.description.th, en: form.description.en },
         image: image ? image : {},
         imageEng: imageEng ? imageEng : {},
-        schedule_type: form.schedule_type ? form.schedule_type : "single",
-        schedules: schedulesData,
         group: form.group,
         subgroup: form.subgroup,
         price: form.price,
-        location: form.location,
-        location_url: form.location_url,
-        youtube_url: form.youtube_url,
-        registration_url: form.registration_url,
-        download_url: form.download_url,
+        preview_url: form.preview_url,
         participants: participants ? participants : [],
-        button: {
-          color: button.color,
-          text: { th: button.text.th, en: button.text.en },
-          url: button.url,
-        },
         tags: tags,
         content: content,
         active: true,
@@ -381,12 +285,11 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
           data.docEntry = newId;
 
           // ✅ ต้อง update docRef ด้วย!
-          docRef = doc(db, "courses", newId.toString());
+          docRef = doc(db, "online-courses", newId.toString());
         }
 
         data.created_by = userId;
         await setDoc(docRef, data);
-        await updateLastNumber("courses", newId);
         toast.success(lang["course_added_successfully"]);
       } else {
         data.updated_at = new Date().toISOString();
@@ -414,28 +317,6 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
     }));
   };
 
-  const addNewSchedule = () => {
-    setSchedules([
-      ...schedules,
-      {
-        start_date: new Date(),
-        end_date: new Date(),
-        start_time: "",
-        end_time: "",
-      },
-    ]);
-  };
-
-  const updateSchedule = (index, key, value) => {
-    const updated = [...schedules];
-    updated[index][key] = value;
-    setSchedules(updated);
-  };
-
-  const removeSchedule = (index) => {
-    setSchedules((prev) => prev.filter((_, i) => i !== index));
-  };
-
   if (loading) return <Loading />;
 
   return (
@@ -443,7 +324,7 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
       <div className="flex flex-col w-full h-full">
         <div className="flex flex-row px-4 py-2 items-center justify-between bg-orange-500 w-full">
           <h1 className="text-2xl font-semibold text-white">
-            {course ? lang["edit_course"] : lang["create_course"]}
+            {course ? lang["edit_course_online"] : lang["create_course_online"]}
           </h1>
           <Tooltip title={lang["close"]} placement="bottom">
             <button
@@ -460,16 +341,13 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
             <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
               {lang["code"]}
             </label>
-            <FormatCode
-              setCode={setCode}
-              documentId="courses"
-              code={code}
-              docId={course?.id}
-              group={form?.group}
-              subgroup={form?.subgroup}
-              isNewCode={isNewCourse}
-              data={course}
-              lastNumber={lastNumber}
+            <input
+              name="code"
+              id="code"
+              value={code?.code}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="Code"
+              disabled
             />
           </div>
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
@@ -588,19 +466,6 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
           </div>
 
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["gen"]}
-              </label>
-              <input
-                type="text"
-                id="gen"
-                name="gen"
-                value={form?.gen}
-                onChange={(e) => setForm({ ...form, gen: e.target.value })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-1/4 p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-              />
-            </div>
             <div className="flex flex-col gp-2">
               <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
                 {lang["participants"]}
@@ -697,93 +562,6 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
             </div>
           </div>
 
-          {/* Schedules */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-4">
-              <h3 className="text-lg font-semibold">กำหนดการ</h3>
-              <button onClick={addNewSchedule}>
-                <FaPlusSquare
-                  size={20}
-                  className="text-orange-600 hover:text-orange-700"
-                />
-              </button>
-            </div>
-            {schedules &&
-              schedules.map((item, index) => (
-                <div key={index} className="flex gap-4 items-center">
-                  <div className="flex flex-col">
-                    <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                      {lang["start_date"]}
-                    </label>
-                    <DatePicker
-                      isClearable
-                      showIcon
-                      selected={item.start_date}
-                      onChange={(date) =>
-                        updateSchedule(index, "start_date", date)
-                      }
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                      minDate={new Date()}
-                      icon={<CiCalendar />}
-                      dateFormat={"dd/MM/yyyy"}
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                      {lang["end_date"]}
-                    </label>
-                    <DatePicker
-                      isClearable
-                      showIcon
-                      selected={item.end_date}
-                      onChange={(date) =>
-                        updateSchedule(index, "end_date", date)
-                      }
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                      minDate={new Date()}
-                      icon={<CiCalendar />}
-                      dateFormat={"dd/MM/yyyy"}
-                    />
-                  </div>
-
-                  <div className="flex flex-col">
-                    <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                      {lang["start_time"]}
-                    </label>
-                    <TimePicker
-                      value={timeStringToDate(item.start_time)}
-                      onChange={(time) =>
-                        updateSchedule(index, "start_time", time)
-                      }
-                      format="HH:mm"
-                      disableClock
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                      {lang["end_time"]}
-                    </label>
-                    <TimePicker
-                      value={timeStringToDate(item.end_time)}
-                      onChange={(time) =>
-                        updateSchedule(index, "end_time", time)
-                      }
-                      format="HH:mm"
-                      disableClock
-                    />
-                  </div>
-                  <div className="flex mt-4 ml-5">
-                    <button
-                      className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600"
-                      onClick={() => removeSchedule(index)}
-                    >
-                      <RiDeleteBin5Line size={22} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-          </div>
-
           <div className="flex flex-row gap-2">
             <div className="w-1/2">
               <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
@@ -836,161 +614,23 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
             </label>
             <Tags tags={tags} setTags={setTags} />
           </div>
-          <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["location"]}
-              </label>
-
-              <input
-                type="text"
-                id="location"
-                name="location"
-                value={form.location}
-                onChange={(e) => setForm({ ...form, location: e.target.value })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder={lang["location_placeholder"]}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["location_url"]}
-              </label>
-
-              <input
-                type="text"
-                id="location_url"
-                name="location_url"
-                value={form.location_url}
-                onChange={(e) =>
-                  setForm({ ...form, location_url: e.target.value })
-                }
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder={lang["location_url_placeholder"]}
-              />
-            </div>
-          </div>
 
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
             <div>
               <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["youtube_url"]}
+                {lang["preview_url"]}
               </label>
 
               <input
                 type="text"
-                id="youtube_url"
-                name="youtube_url"
-                value={form.youtube_url}
+                id="preview_url"
+                name="preview_url"
+                value={form.preview_url}
                 onChange={(e) =>
-                  setForm({ ...form, youtube_url: e.target.value })
+                  setForm({ ...form, preview_url: e.target.value })
                 }
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder={lang["youtube_url_placeholder"]}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["registration_url"]}
-              </label>
-
-              <input
-                type="text"
-                id="registration_url"
-                name="registration_url"
-                value={form.registration_url}
-                onChange={(e) =>
-                  setForm({ ...form, registration_url: e.target.value })
-                }
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder={lang["registration_url_placeholder"]}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["download_url"]}
-              </label>
-
-              <input
-                type="text"
-                id="download_url"
-                name="download_url"
-                value={form.download_url}
-                onChange={(e) =>
-                  setForm({ ...form, download_url: e.target.value })
-                }
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder={lang["download_url_placeholder"]}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
-            <div className="flex flex-col">
-              <label htmlFor="buttonColor">{lang["button_color"]}</label>
-              <div className="flex items-center gap-2">
-                <ColorPicker
-                  value={button.color || "#000000"}
-                  onChange={(color) => setButton({ ...button, color: color })}
-                  size={40}
-                />
-                <input
-                  type="text"
-                  id="buttonColor"
-                  name="buttonColor"
-                  value={button.color}
-                  onChange={(e) =>
-                    setButton({ ...button, color: e.target.value })
-                  }
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                  placeholder={lang["button_color_placeholder"]}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="bottonText">{lang["button_text"]}</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  id="button.text.th"
-                  name="button.text.th"
-                  value={button.text.th}
-                  onChange={(e) =>
-                    setButton({
-                      ...button,
-                      text: { ...button.text, th: e.target.value },
-                    })
-                  }
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                  placeholder={lang["button_text_placeholder"] + " (th)"}
-                />
-                <input
-                  type="text"
-                  id="button.text.en"
-                  name="button.text.en"
-                  value={button.text.en}
-                  onChange={(e) =>
-                    setButton({
-                      ...button,
-                      text: { ...button.text, en: e.target.value },
-                    })
-                  }
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                  placeholder={lang["button_text_placeholder"] + " (en)"}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="buttonUrl">{lang["button_url"]}</label>
-              <input
-                type="text"
-                id="button.url"
-                name="button.url"
-                value={button.url}
-                onChange={(e) => setButton({ ...button, url: e.target.value })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder={lang["button_url_placeholder"]}
+                placeholder={lang["preview_url_placeholder"]}
               />
             </div>
           </div>
