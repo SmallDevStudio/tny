@@ -399,7 +399,6 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
       } else {
         data.updated_at = new Date().toISOString();
         data.updated_by = userId;
-        console.log(data);
         await updateDoc(docRef, data, { merge: true }); // ✅ docRef ต้องตรงกับ newId ที่สุดท้าย
         toast.success(lang["course_updated_successfully"]);
       }

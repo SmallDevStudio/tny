@@ -89,8 +89,6 @@ export default function PageForm({ page, onClose }) {
     setForm((prev) => ({ ...prev, slug: value }));
   };
 
-  console.log(form);
-
   const handleSubmitPage = async () => {
     if (!form.slug) {
       setError(lang["slug_required"]);
@@ -136,7 +134,7 @@ export default function PageForm({ page, onClose }) {
 
     const data = {
       ...form,
-      slug: newId, // เก็บ slug เป็น string ปกติ
+      slug: `pages/${newId}`,
       sections: [],
       content: "",
       template: { base: "default", page: "page" },

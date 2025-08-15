@@ -29,6 +29,7 @@ import {
 } from "firebase/firestore";
 import dynamic from "next/dynamic";
 import ParticipantsModel from "@/components/modal/ParticipantsModel";
+import Video from "./Video";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TimePicker from "react-time-picker";
@@ -36,6 +37,7 @@ import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import th from "date-fns/locale/th";
 registerLocale("th", th);
+import { Slide, Dialog } from "@mui/material";
 import { CiCalendar } from "react-icons/ci";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { FiUsers } from "react-icons/fi";
@@ -51,6 +53,10 @@ const sampleData = {
     en: "<p>Contents...</p>",
   },
 };
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
   const { t, lang } = useLanguage();
@@ -76,6 +82,13 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
   const [participants, setParticipants] = useState([]);
   const [lastNumber, setLastNumber] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [video, setVideo] = useState([
+    {
+      title: { th: "", en: "" },
+      description: { th: "", en: "" },
+      video: {},
+    },
+  ]);
   const [language, setLanguage] = useState("th");
 
   useEffect(() => {
@@ -100,6 +113,7 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
         en: course?.content?.en || sampleData.content.en,
       });
       setParticipants(course.participants);
+      setVideo(course.video || []);
     } else if (isNewCourse) {
       setTags([]);
     }
@@ -148,9 +162,6 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
     return newId;
   };
 
-  console.log("lastNumber", lastNumber);
-  console.log("code", code);
-
   const handleClear = () => {
     setForm({
       name: { th: "", en: "" },
@@ -166,6 +177,7 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
     setImageEng({});
     setContent({ th: "", en: "" });
     setParticipants([]);
+    setVideo([]);
     onClose();
   };
 
@@ -260,6 +272,7 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
         docEntry: newId,
         name: { th: form.name.th, en: form.name.en },
         description: { th: form.description.th, en: form.description.en },
+        video: video ? video : [],
         image: image ? image : {},
         imageEng: imageEng ? imageEng : {},
         group: form.group,
@@ -663,6 +676,10 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
             content={content[language]}
             onChange={(contents) => handleContentChange(contents)}
           />
+        </div>
+        {/* Video Section */}
+        <div className="p-4 mt-4">
+          <span>{lang["video"]}</span>
         </div>
         <div className="flex flex-row items-center justify-center gap-2 p-4 w-full">
           <button
