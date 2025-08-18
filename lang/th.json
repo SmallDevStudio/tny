@@ -374,5 +374,13 @@
   "terms": "เงื่อนไข",
   "terms_desc": "เงื่อนไขและเงื่อนไข",
   "privacy-policy": "นโยบายความเป็นส่วนตัว",
-  "video": "วิดีโอ"
+  "video": "วิดีโอ",
+  "video_management": "จัดการวิดีโอ",
+  "add_video": "เพิ่มวิดีโอ",
+  "remove_video": "ลบวิดีโอ",
+  "video_url": "ลิงก์วิดีโอ",
+  "video_url_placeholder": "กรอกลิงก์วิดีโอ",
+  "upload_video": "อัพโหลดวิดีโอ",
+  "title_placeholder": "กรอกหัวข้อ",
+  "no_video": "ไม่มีวิดีโอ"
 }

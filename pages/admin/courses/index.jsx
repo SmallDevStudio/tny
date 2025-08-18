@@ -23,6 +23,7 @@ import {
   deleteDoc,
   query,
   where,
+  onSnapshot,
 } from "firebase/firestore";
 
 moment.locale("th");
@@ -86,13 +87,13 @@ export default function AdminCourses() {
     setOpenForm(true);
   };
 
-  const handleUpdateActive = async (active, id) => {
+  const handleUpdateActive = async (id, currentActive) => {
     try {
-      await update(id, { active: !active }); // Toggle active status
-      toast.success(lang["course_updated_successfully"]); // Show success toast message
+      await update(id.toString(), { active: !currentActive }); // Toggle active
+      toast.success(lang["course_updated_successfully"]);
     } catch (error) {
       console.error(error);
-      toast.error(lang["update_failed"]); // Show error toast message
+      toast.error(lang["update_failed"]);
     }
   };
 
@@ -199,16 +200,18 @@ export default function AdminCourses() {
       headerName: "Active",
       width: 80,
       flex: 0.5,
-      headerAlign: "center", // ✅ จัดหัวข้อไปตรงกลาง
-      align: "center", // ✅ จัดเนื้อหาไปตรงกลาง
+      headerAlign: "center",
+      align: "center",
       renderCell: (params) => (
         <span
           className={`px-2 py-1 rounded-lg cursor-pointer ${
-            params.value ? "bg-green-500 text-white" : "bg-red-500 text-white"
+            params.row.active
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
           }`}
-          onClick={() => handleUpdateActive(params.row.id)}
+          onClick={() => handleUpdateActive(params.row.id, params.row.active)}
         >
-          {params.value ? lang["active"] : lang["inactive"]}
+          {params.row.active ? lang["active"] : lang["inactive"]}
         </span>
       ),
     },

@@ -1,118 +1,118 @@
-import React, { useState, useEffect } from "react";
+// components/VideoUpload.js
+import { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
-import {
-  uploadFileToCloudinary,
-  deleteFileOnServer,
-} from "@/hooks/useCloudinary";
-import {
-  CLOUDINARY_CLOUD_NAME,
-  CLOUDINARY_UPLOAD_PRESET,
-} from "@/utils/config";
+import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
 import { HiUpload } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
-import { LinearProgress } from "@mui/material";
-import { toast } from "react-toastify";
+import { Divider, LinearProgress } from "@mui/material";
+import useVideo from "@/hooks/useVideo";
 
-export default function VideoUpload({ onUploaded, folder = "" }) {
+export default function VideoUpload({
+  onClose,
+  onProcess,
+  folder,
+  newUpload,
+  multiple,
+}) {
   const [uploadingFiles, setUploadingFiles] = useState([]);
   const [totalProgress, setTotalProgress] = useState(0);
+  const { uploadVideo } = useVideo();
+  const { data: session } = useSession();
+  const userId = session?.user?.userId;
+
+  useEffect(() => {
+    if (newUpload) {
+      setUploadingFiles([]);
+      setTotalProgress(0);
+    }
+  }, [newUpload]);
 
   const onDrop = async (acceptedFiles) => {
-    if (!acceptedFiles || acceptedFiles.length === 0) return;
-
-    const files = Array.from(acceptedFiles);
-    setUploadingFiles(files.map((f) => ({ name: f.name, progress: 0 })));
-
-    let totalSize = files.reduce((s, f) => s + f.size, 0);
+    let totalSize = acceptedFiles.reduce((sum, f) => sum + f.size, 0);
     let totalUploaded = 0;
 
-    const results = [];
+    const uploaded = [];
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      try {
-        const res = await uploadFileToCloudinary(
-          file,
-          process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
-            CLOUDINARY_CLOUD_NAME,
-          process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
-            CLOUDINARY_UPLOAD_PRESET,
-          folder,
-          (progress) => {
-            // update per-file
-            setUploadingFiles((prev) =>
-              prev.map((p, idx) => (idx === i ? { ...p, progress } : p))
-            );
+    for (let i = 0; i < acceptedFiles.length; i++) {
+      const file = acceptedFiles[i];
+      console.log("fileUpload", file);
+      setUploadingFiles((prev) => [...prev, { name: file.name, progress: 0 }]);
 
-            // update total
-            const uploadedForThisFile = (file.size * progress) / 100;
-            const uploadedSoFar =
-              files.slice(0, i).reduce((acc, f) => acc + f.size, 0) +
-              uploadedForThisFile;
-            setTotalProgress((uploadedSoFar / totalSize) * 100);
-          }
+      const data = await uploadVideo(file, folder, userId, (progress) => {
+        totalUploaded += (file.size * progress) / 100;
+        setTotalProgress((totalUploaded / totalSize) * 100);
+
+        setUploadingFiles((prev) =>
+          prev.map((f, idx) => (idx === i ? { ...f, progress } : f))
         );
+      });
 
-        results.push(res);
-      } catch (err) {
-        console.error("Upload error:", err);
-        toast.error("Upload failed: " + err.message);
-      }
+      if (data) uploaded.push(data);
     }
 
-    setUploadingFiles([]);
-    setTotalProgress(0);
-
-    if (results.length > 0 && typeof onUploaded === "function")
-      onUploaded(results);
+    onProcess(uploaded);
+    toast.success("อัปโหลดไฟล์สำเร็จ");
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    multiple: true,
+    multiple,
   });
 
-  const handleDelete = async (publicId) => {
-    try {
-      await deleteFileOnServer(publicId);
-      toast.success("Deleted successfully");
-    } catch (err) {
-      console.error(err);
-      toast.error("Delete failed");
-    }
-  };
-
   return (
-    <div className="p-4 w-full max-w-2xl">
+    <div className="flex flex-col w-[500px] p-4">
+      <div className="flex flex-row items-center justify-between w-full">
+        <span className="text-xl font-bold text-orange-500">อัพโหลดไฟล์</span>
+        <IoClose size={25} onClick={onClose} className="cursor-pointer" />
+      </div>
+
       <div
         {...getRootProps()}
-        className={`p-6 border-2 border-dashed rounded text-center ${
-          isDragActive ? "bg-gray-100" : ""
+        className={`flex flex-col justify-center p-2 w-full h-[300px] ${
+          isDragActive
+            ? "border-2 border-dashed border-gray-200 bg-[#F5F5F5]"
+            : "bg-white"
         }`}
       >
         <input {...getInputProps()} />
-        <HiUpload size={36} />
-        <p className="mt-2">ลากและวางไฟล์ที่นี่ หรือ คลิกเพื่อเลือกไฟล์</p>
+        <HiUpload size={40} />
+        {isDragActive ? (
+          <span>วางไฟล์ที่นี่</span>
+        ) : (
+          <span>
+            ลากและวางไฟล์ หรือ{" "}
+            <span className="text-orange-500 font-bold cursor-pointer">
+              เลือกไฟล์
+            </span>
+          </span>
+        )}
       </div>
 
-      {uploadingFiles.map((f, idx) => (
-        <div key={idx} className="mt-3">
-          <div className="flex justify-between">
-            <div>{f.name}</div>
-            <div>{f.progress.toFixed(2)}%</div>
-          </div>
-          <LinearProgress variant="determinate" value={f.progress} />
+      {uploadingFiles.map((file, index) => (
+        <div key={index} className="flex flex-col mt-2">
+          <span className="text-sm">
+            {file.name} - {file.progress.toFixed(2)}%
+          </span>
+          <LinearProgress variant="determinate" value={file.progress} />
         </div>
       ))}
 
-      {totalProgress > 0 && (
-        <div className="mt-3">
-          <div className="mb-1">
-            Total progress: {totalProgress.toFixed(2)}%
-          </div>
-          <LinearProgress variant="determinate" value={totalProgress} />
-        </div>
-      )}
+      <LinearProgress
+        variant="determinate"
+        value={totalProgress}
+        className="mt-2"
+      />
+      <Divider className="my-2" />
+
+      <div className="flex flex-row items-center justify-end gap-4 mt-4 w-full">
+        <button
+          className="bg-orange-500 text-white font-bold p-2 rounded-xl"
+          onClick={onClose}
+        >
+          ปิด
+        </button>
+      </div>
     </div>
   );
 }

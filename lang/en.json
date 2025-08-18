@@ -369,5 +369,13 @@
   "terms": "Terms",
   "terms_desc": "Terms and Conditions",
   "privacy-policy": "Privacy Policy",
-  "video": "Video"
+  "video": "Video",
+  "video_management": "Video Management",
+  "add_video": "Add Video",
+  "remove_video": "Remove Video",
+  "video_url": "Video URL",
+  "video_url_placeholder": "Please type video URL",
+  "upload_video": "Upload Video",
+  "title_placeholder": "Please type title",
+  "no_video": "No Video"
 }

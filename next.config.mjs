@@ -40,7 +40,7 @@ const nextConfig = {
         hostname: "lh3.googleusercontent.com",
       },
     ],
-    domains: ["res.cloudinary.com"],
+    domains: ["res.cloudinary.com", "storage.googleapis.com"],
   },
 };
 

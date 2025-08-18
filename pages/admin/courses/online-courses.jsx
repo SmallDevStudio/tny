@@ -23,6 +23,7 @@ import {
   deleteDoc,
   query,
   where,
+  onSnapshot,
 } from "firebase/firestore";
 
 moment.locale("th");
@@ -37,25 +38,33 @@ export default function AdminCoursesOnline() {
   const [filterCourses, setFilterCourses] = useState([]);
   const [search, setSearch] = useState("");
   const [openForm, setOpenForm] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [openVideoModal, setOpenVideoModal] = useState(false);
+
   const { lang, t } = useLanguage();
-  const { subscribe, getAll, add, update, remove } = useDB("courses-online");
+  const { subscribe, getAll, add, update, remove } = useDB("online-courses");
 
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = subscribe((coursesData) => {
-      if (coursesData) {
-        const sorted = coursesData.sort(
-          (a, b) => (a.order ?? 9999) - (b.order ?? 9999)
-        );
-        setCourses(sorted);
-        setFilterCourses(sorted);
-      }
+    const q = query(collection(db, "online-courses"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const coursesData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const sorted = coursesData.sort(
+        (a, b) => (a.order ?? 9999) - (b.order ?? 9999)
+      );
+
+      setCourses(sorted);
+      setFilterCourses(sorted);
     });
 
     return () => unsubscribe();
   }, []);
-
   useEffect(() => {
     if (search) {
       const filtered = courses.filter(
@@ -86,13 +95,13 @@ export default function AdminCoursesOnline() {
     setOpenForm(true);
   };
 
-  const handleUpdateActive = async (active, id) => {
+  const handleUpdateActive = async (id, currentActive) => {
     try {
-      await update(id, { active: !active }); // Toggle active status
-      toast.success(lang["course_updated_successfully"]); // Show success toast message
+      await update(id.toString(), { active: !currentActive }); // Toggle active
+      toast.success(lang["course_updated_successfully"]);
     } catch (error) {
       console.error(error);
-      toast.error(lang["update_failed"]); // Show error toast message
+      toast.error(lang["update_failed"]);
     }
   };
 
@@ -144,6 +153,16 @@ export default function AdminCoursesOnline() {
     }
   };
 
+  const handleOpenVideoModal = (video) => {
+    setSelectedVideo(video);
+    setOpenVideoModal(true);
+  };
+
+  const handleCloseVideoModal = () => {
+    setSelectedVideo(null);
+    setOpenVideoModal(false);
+  };
+
   const columes = [
     {
       field: "no",
@@ -177,6 +196,14 @@ export default function AdminCoursesOnline() {
       ),
     },
     {
+      field: "code",
+      headerName: "Code",
+      width: 150,
+      renderCell: (params) => {
+        return params.row.code.code;
+      },
+    },
+    {
       field: "name",
       headerName: "Name",
       width: 200,
@@ -193,22 +220,46 @@ export default function AdminCoursesOnline() {
       },
     },
     { field: "group", headerName: "Group", width: 150 },
-    { field: "subgroup", headerName: "SubGroup", width: 150 },
+    {
+      field: "video",
+      headerName: "Video",
+      width: 100,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        return (
+          <div className="flex flex-col gap-1">
+            {params.row.video && params.row.video.length > 0 ? (
+              <span
+                onClick={() => handleOpenVideoModal(params.row.video)}
+                className="cursor-pointer text-blue-500 underline"
+              >
+                {params.row.video.length}
+              </span>
+            ) : (
+              <span>{lang["no_video"]}</span>
+            )}
+          </div>
+        );
+      },
+    },
     {
       field: "active",
       headerName: "Active",
       width: 80,
       flex: 0.5,
-      headerAlign: "center", // ✅ จัดหัวข้อไปตรงกลาง
-      align: "center", // ✅ จัดเนื้อหาไปตรงกลาง
+      headerAlign: "center",
+      align: "center",
       renderCell: (params) => (
         <span
           className={`px-2 py-1 rounded-lg cursor-pointer ${
-            params.value ? "bg-green-500 text-white" : "bg-red-500 text-white"
+            params.row.active
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
           }`}
-          onClick={() => handleUpdateActive(params.row.id)}
+          onClick={() => handleUpdateActive(params.row.id, params.row.active)}
         >
-          {params.value ? lang["active"] : lang["inactive"]}
+          {params.row.active ? lang["active"] : lang["inactive"]}
         </span>
       ),
     },

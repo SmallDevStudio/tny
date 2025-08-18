@@ -3,15 +3,13 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
-import { Tooltip, Slide, Dialog } from "@mui/material";
+import { Tooltip, Slide, Dialog, Divider } from "@mui/material";
 import useLanguage from "@/hooks/useLanguage";
 import UploadImage from "../btn/UploadImage";
 import { deleteFile } from "@/hooks/useStorage";
 import SelectForm from "@/components/Selected/SelectForm";
 import Loading from "../utils/Loading";
 import Tags from "../Input/Tags";
-import FormatCode from "../Input/FormatCode";
-import { updateLastNumber } from "@/utils/getFormattedCode";
 import { db } from "@/services/firebase";
 import {
   doc,
@@ -29,19 +27,12 @@ import {
 } from "firebase/firestore";
 import dynamic from "next/dynamic";
 import ParticipantsModel from "@/components/modal/ParticipantsModel";
-import Video from "./Video";
-import DatePicker, { registerLocale } from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import TimePicker from "react-time-picker";
-import "react-time-picker/dist/TimePicker.css";
-import "react-clock/dist/Clock.css";
-import th from "date-fns/locale/th";
-registerLocale("th", th);
-import { CiCalendar } from "react-icons/ci";
+import VideoModal from "./VideoModal";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { FiUsers } from "react-icons/fi";
-import { FaPlusSquare } from "react-icons/fa";
-import ColorPicker from "../Input/ColorPicker";
+import { FaEdit, FaPlusSquare, FaTrash } from "react-icons/fa";
+import { RxVideo } from "react-icons/rx";
+import useCode from "@/hooks/useCode";
 const TiptapEditor = dynamic(() => import("@/components/Tiptap/TiptapEditor"), {
   ssr: false,
 });
@@ -73,22 +64,35 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
   const [image, setImage] = useState(null);
   const [imageEng, setImageEng] = useState(null);
   const [tags, setTags] = useState([]);
-  const [code, setCode] = useState({
+  const [codePreview, setCodePreview] = useState({
     docEntry: null,
     code: null,
   });
   const [content, setContent] = useState({ th: "", en: "" });
   const [participants, setParticipants] = useState([]);
-  const [lastNumber, setLastNumber] = useState(null);
   const [openModal, setOpenModal] = useState(false);
-  const [video, setVideo] = useState([
+  const [videos, setVideos] = useState([
     {
       title: { th: "", en: "" },
       description: { th: "", en: "" },
-      video: {},
+      url: "",
+      docId: "",
+      page: "",
+      fileId: "",
+      filename: "",
+      thumbnail: "",
+      isUploaded: false,
+      type: "",
     },
   ]);
+  const [openVideoModal, setOpenVideoModal] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState(null);
   const [language, setLanguage] = useState("th");
+  const { code, updateLastNumber } = useCode({
+    documentName: "online-courses",
+  });
+
+  console.log("video", videos);
 
   useEffect(() => {
     if (course) {
@@ -103,7 +107,7 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
       setImage(course.image || {});
       setImageEng(course.imageEng || {});
       setTags(course.tags || []);
-      setCode({
+      setCodePreview({
         docEntry: course.docEntry,
         code: course.code,
       });
@@ -112,54 +116,11 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
         en: course?.content?.en || sampleData.content.en,
       });
       setParticipants(course.participants);
-      setVideo(course.video || []);
     } else if (isNewCourse) {
       setTags([]);
+      setCodePreview(code);
     }
   }, [course]);
-
-  useEffect(() => {
-    if (lastNumber) {
-      const code = "OC" + String(lastNumber).padStart(4, "0");
-      setCode((prevCode) => ({
-        ...prevCode,
-        docEntry: lastNumber,
-        code: code,
-      }));
-    }
-  }, [lastNumber]);
-
-  useEffect(() => {
-    const fetchLastNumbers = async () => {
-      const snapshot = await getDocs(collection(db, "online-courses"));
-
-      const maxId = snapshot.docs
-        .map((doc) => {
-          const id = doc.id;
-          const parsed = parseInt(id, 10);
-          return isNaN(parsed) ? 0 : parsed;
-        })
-        .reduce((max, curr) => Math.max(max, curr), 0);
-
-      setLastNumber(maxId + 1);
-    };
-
-    fetchLastNumbers();
-  }, []);
-
-  const generateUniqueDocEntry = async () => {
-    let newId = lastNumber ? lastNumber : 1;
-    let docRef = doc(db, "online-courses", newId.toString());
-    let docSnap = await getDoc(docRef);
-
-    while (docSnap.exists()) {
-      newId += 1;
-      docRef = doc(db, "online-courses", newId.toString());
-      docSnap = await getDoc(docRef);
-    }
-
-    return newId;
-  };
 
   const handleClear = () => {
     setForm({
@@ -170,13 +131,13 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
       price: "",
       preview_url: "",
     });
+    setCodePreview(null);
     setTags([]);
-    setCode(null);
     setImage({});
     setImageEng({});
     setContent({ th: "", en: "" });
     setParticipants([]);
-    setVideo([]);
+    setVideos([]);
     onClose();
   };
 
@@ -204,13 +165,6 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
       .toLowerCase()
       .replace(/[\s]+/g, "-")
       .replace(/[^a-z0-9-_]/g, "");
-  };
-
-  const safeToISOString = (value) => {
-    if (!value) return null;
-    if (value instanceof Date) return value.toISOString();
-    const date = new Date(value);
-    return isNaN(date) ? null : date.toISOString();
   };
 
   const handleParticipants = (participants) => {
@@ -258,17 +212,17 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
     const nextOrder = await getNextOrder();
 
     try {
-      let newId = course?.id ? course.id : await generateUniqueDocEntry(); // กำหนดค่าเริ่มต้นที่ 1 ถ้าไม่มี id
+      let newId = course?.id ? course.id : code.docEntry; // กำหนดค่าเริ่มต้นที่ 1 ถ้าไม่มี id
 
       const slug = generateSlug(form.name.en);
 
-      let docRef = doc(db, "courses", newId.toString());
+      let docRef = doc(db, "online-courses", newId.toString());
       const docSnap = await getDoc(docRef);
 
       const data = {
         id: newId,
         code: code ? code.code : null,
-        docEntry: newId,
+        docEntry: code ? code.docEntry : null,
         name: { th: form.name.th, en: form.name.en },
         description: { th: form.description.th, en: form.description.en },
         video: video ? video : [],
@@ -292,16 +246,17 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
 
       if (isNewCourse) {
         if (docSnap.exists()) {
-          newId = await generateUniqueDocEntry(newId);
-          data.id = newId;
-          data.docEntry = newId;
+          data.id = code.docEntry;
+          data.docEntry = newIdcode.docEntry;
 
           // ✅ ต้อง update docRef ด้วย!
           docRef = doc(db, "online-courses", newId.toString());
         }
 
         data.created_by = userId;
+        data.created_at = new Date().toISOString();
         await setDoc(docRef, data);
+        await updateLastNumber(newId);
         toast.success(lang["course_added_successfully"]);
       } else {
         data.updated_at = new Date().toISOString();
@@ -327,6 +282,28 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
       ...prevContent,
       [language]: newContent, // ✅ อัปเดตค่าของภาษาที่เลือกเท่านั้น
     }));
+  };
+
+  const handleOpenVideoModal = () => {
+    setOpenVideoModal(true);
+  };
+
+  const handleCloseVideoModal = () => {
+    setOpenVideoModal(false);
+  };
+
+  const handleEditVideo = (video) => {
+    setSelectedVideo(video);
+    setOpenVideoModal(true);
+  };
+
+  const handleSaveVideo = (newVideo) => {
+    setVideos((prev) => [...prev, newVideo]);
+    setOpenVideoModal(false);
+  };
+
+  const handleDeleteVideo = (id) => {
+    setVideos((prevVideo) => prevVideo.filter((v) => v.id !== id));
   };
 
   if (loading) return <Loading />;
@@ -356,7 +333,7 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
             <input
               name="code"
               id="code"
-              value={code?.code}
+              value={codePreview?.code ? codePreview.code : code.code}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               placeholder="Code"
               disabled
@@ -649,7 +626,7 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
         </div>
         {/* Editor */}
         <div className="px-4 w-full">
-          <div className="flex flex-row items-center justify-end gap-2 w-full">
+          <div className="flex flex-row items-center gap-2 w-full">
             <button
               className={`px-4 py-1 rounded-md font-bold transition ${
                 language === "th"
@@ -678,8 +655,62 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
         </div>
         {/* Video Section */}
         <div className="p-4 mt-4">
-          <span>{lang["video"]}</span>
+          <span className="flex items-center gap-2 font-bold text-lg text-orange-500">
+            <RxVideo size={20} />
+            {lang["video_management"]}
+          </span>
+          <Divider sx={{ mb: 2 }} />
+          <Tooltip title={lang["video_management"]} placement="bottom">
+            <button
+              type="button"
+              className="flex items-center gap-2 w-40 px-4 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg"
+              onClick={handleOpenVideoModal}
+            >
+              <FaPlusSquare size={20} />
+              {lang["add_video"]}
+            </button>
+          </Tooltip>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {videos && videos.length > 0
+              ? videos.map((v, i) => (
+                  <div
+                    key={i}
+                    className="flex flex-col gap-1 border border-gray-300 p-2 shadow-sm"
+                  >
+                    <Image
+                      src={v.thumbnail}
+                      alt={v.title}
+                      width={150}
+                      height={150}
+                      className="object-cover"
+                    />
+                    <span>{v.title}</span>
+                    <div className="flex items-center justify-center gap-1">
+                      <Tooltip title={lang["edit"]} placement="top">
+                        <div
+                          className="bg-gray-50 hover:bg-gray-100 border border-gray-400 rounded-md p-1 cursor-pointer"
+                          onClick={handleEditVideo(v)}
+                        >
+                          <FaEdit size={20} />
+                        </div>
+                      </Tooltip>
+                      <Tooltip title={lang["delete"]} placement="top">
+                        <div
+                          className="bg-gray-50 hover:bg-gray-100 border border-gray-400 rounded-md p-1 cursor-pointer"
+                          onClick={handleDeleteVideo(v.id)}
+                        >
+                          <FaTrash size={20} />
+                        </div>
+                      </Tooltip>
+                    </div>
+                  </div>
+                ))
+              : null}
+          </div>
         </div>
+
+        {/* Toolbar Section */}
         <div className="flex flex-row items-center justify-center gap-2 p-4 w-full">
           <button
             type="submit"
@@ -698,6 +729,26 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
           </button>
         </div>
       </div>
+      <Dialog
+        open={openVideoModal}
+        onClose={handleCloseVideoModal}
+        TransitionComponent={Transition}
+        sx={{
+          "& .MuiDialog-paper": {
+            width: "80%",
+            maxWidth: "80%",
+          },
+        }}
+      >
+        <VideoModal
+          data={selectedVideo}
+          docId={code?.code}
+          course={course}
+          page={"online-courses"}
+          onSave={handleSaveVideo}
+          onClose={handleCloseVideoModal}
+        />
+      </Dialog>
     </div>
   );
 }

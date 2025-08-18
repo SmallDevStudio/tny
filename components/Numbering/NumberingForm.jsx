@@ -26,6 +26,7 @@ import { useSession } from "next-auth/react";
 
 const optionItems = [
   { value: "courses", name: "Courses" },
+  { value: "online-courses", name: "Courses Online" },
   { value: "blogs", name: "blog" },
   { value: "order", name: "Order" },
   { value: "invoice", name: "Invoice" },
