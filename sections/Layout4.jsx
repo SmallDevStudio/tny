@@ -44,12 +44,13 @@ export default function Layout4({
   const [title, setTitle] = useState({});
   const [description, setDescription] = useState({});
   const [image, setImage] = useState([]);
+  const [imageEng, setImageEng] = useState([]);
   const [contents, setContents] = useState([]);
   const [contentCollection, setContentCollection] = useState("");
   const [style, setStyle] = useState({});
   const [type, setType] = useState("");
 
-  const { t } = useLanguage();
+  const { t, selectedLang } = useLanguage();
   const router = useRouter();
 
   useEffect(() => {
@@ -64,6 +65,7 @@ export default function Layout4({
         setTitle(data?.title || sampleData.title);
         setDescription(data?.description || sampleData.description);
         setImage(data?.image || sampleData.image);
+        setImageEng(data?.imageEng);
         setContents(data?.contents || []);
         setContentCollection(data?.contentCollection || "");
         setStyle(data?.style || sampleData.style);
@@ -129,23 +131,39 @@ export default function Layout4({
         className={`grid max-w-screen-xl px-4 py-4 mx-auto lg:gap-${style.gap} xl:gap-${style.gap} lg:py-2 lg:grid-cols-${style.cols}`}
       >
         {type === "images"
-          ? image &&
-            image.length > 0 &&
-            image.map((m, index) => (
-              <div
-                key={index}
-                className="relative hover:scale-105 transition-all duration-500 ease-in-out hover:z-50 active:z-50"
-              >
-                <Image
-                  src={m.url}
-                  alt={`image-${index}`}
-                  width={700}
-                  height={700}
-                  loading="lazy"
-                  className="w-full h-full object-contain cursor-pointer"
-                />
-              </div>
-            ))
+          ? selectedLang === "th"
+            ? image &&
+              image.map((item, index) => (
+                <div
+                  key={index}
+                  className="relative hover:scale-105 transition-all duration-500 ease-in-out hover:z-50 active:z-50"
+                >
+                  <Image
+                    src={item.url}
+                    alt={`image-${index}`}
+                    width={700}
+                    height={700}
+                    loading="lazy"
+                    className="w-full h-full object-contain cursor-pointer"
+                  />
+                </div>
+              ))
+            : imageEng &&
+              imageEng.map((item, index) => (
+                <div
+                  key={index}
+                  className="relative hover:scale-105 transition-all duration-500 ease-in-out hover:z-50 active:z-50"
+                >
+                  <Image
+                    src={item.url}
+                    alt={`image-${index}`}
+                    width={400}
+                    height={400}
+                    loading="lazy"
+                    className="w-full h-full object-contain cursor-pointer"
+                  />
+                </div>
+              ))
           : contents.map((item, index) => (
               <div
                 key={index}
@@ -179,6 +197,8 @@ export default function Layout4({
             setDescription={setDescription}
             image={image}
             setImage={setImage}
+            imageEng={imageEng}
+            setImageEng={setImageEng}
             contents={contents}
             setContents={setContents}
             contentCollection={contentCollection}

@@ -24,6 +24,8 @@ export default function FormLayout4({
   setDescription,
   image,
   setImage,
+  imageEng,
+  setImageEng,
   contents,
   setContents,
   contentCollection,
@@ -74,14 +76,24 @@ export default function FormLayout4({
     setImage((prev) => [...(prev || []), ...newImages]);
   };
 
+  const handleUploadEng = (newImages) => {
+    // newImages = array of uploaded image objects [{url: "..."}]
+    setImageEng((prev) => [...(prev || []), ...newImages]);
+  };
+
   const handleImageRemove = (indexToRemove) => {
     setImage((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const handleImageRemoveEng = (indexToRemove) => {
+    setImageEng((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
   const handleClear = () => {
     setTitle({});
     setDescription({});
     setImage([]);
+    setImageEng([]);
     setLanguage("th");
     setEditMode(false);
   };
@@ -224,29 +236,67 @@ export default function FormLayout4({
           />
         </div>
         {type === "images" && (
-          <div className="flex flex-col gap-2 w-full">
-            <div className="relative">
-              {image &&
-                image.length > 0 &&
-                image.map((m, index) => (
-                  <div key={index} className="relative inline-block m-1">
-                    <Image
-                      src={m.url}
-                      alt={`image-${index}`}
-                      width={120}
-                      height={120}
-                      className="object-cover rounded-md border"
-                    />
-                    <button
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                      onClick={() => handleImageRemove(index)}
-                    >
-                      <IoClose size={14} />
-                    </button>
-                  </div>
-                ))}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Image Th*/}
+            <div className="flex flex-col gap-2 w-full">
+              <h3 className="text-lg font-semibold">{lang["image"]} TH</h3>
+              <div className="flex flex-wrap items-center gap-2">
+                {image &&
+                  image.length > 0 &&
+                  image.map((m, index) => (
+                    <div key={index} className="relative m-1">
+                      <Image
+                        src={m.url}
+                        alt={`image-${index}`}
+                        width={120}
+                        height={120}
+                        className="object-cover rounded-md border"
+                      />
+                      <button
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        onClick={() => handleImageRemove(index)}
+                      >
+                        <IoClose size={14} />
+                      </button>
+                    </div>
+                  ))}
+              </div>
+              <UploadImage
+                size={24}
+                onUpload={handleUpload}
+                folder="sections"
+              />
             </div>
-            <UploadImage size={24} onUpload={handleUpload} folder="sections" />
+
+            <div className="flex flex-col gap-2 w-full">
+              <h3 className="text-lg font-semibold">{lang["image"]} EN</h3>
+              <div className="flex flex-wrap items-center gap-2">
+                {imageEng &&
+                  imageEng.length > 0 &&
+                  imageEng.map((m, index) => (
+                    <div key={index} className="relative m-1">
+                      <Image
+                        src={m.url}
+                        alt={`image-${index}`}
+                        width={120}
+                        height={120}
+                        className="object-cover rounded-md border"
+                      />
+                      <button
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        onClick={() => handleImageRemoveEng(index)}
+                      >
+                        <IoClose size={14} />
+                      </button>
+                    </div>
+                  ))}
+              </div>
+              <UploadImage
+                size={24}
+                onUpload={handleUploadEng}
+                folder="sections"
+              />
+            </div>
           </div>
         )}
 
