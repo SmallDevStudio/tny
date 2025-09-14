@@ -99,7 +99,7 @@ export default function PaymentPage() {
             โอนเงิน
           </label>
 
-          <label>
+          {/* <label>
             <input
               type="radio"
               value="stripe"
@@ -108,9 +108,9 @@ export default function PaymentPage() {
               className="mr-2"
             />
             ชำระผ่านบัตร
-          </label>
+          </label> */}
 
-          <label>
+          {/* <label>
             <input
               type="radio"
               value="promptpay"
@@ -119,7 +119,7 @@ export default function PaymentPage() {
               className="mr-2"
             />
             ชำระผ่าน QR-Code
-          </label>
+          </label> */}
         </div>
 
         {/* โอนเงิน */}
@@ -162,17 +162,18 @@ export default function PaymentPage() {
         )}
 
         {/* Stripe */}
-        {method === "stripe" && (
+        {/*{method === "stripe" && (
           <div className="mt-6">
             <StripeCardForm cart={cart} userId={userId} />
           </div>
-        )}
+        )}*/}
         {/* PromptPay */}
+        {/*
         {method === "promptpay" && (
           <div className="mt-6">
             <PromptPayForm cart={cart} userId={userId} />
           </div>
-        )}
+        )}*/}
       </div>
     </div>
   );

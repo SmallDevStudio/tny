@@ -50,8 +50,6 @@ export default function OnlineContents({ pageData }) {
     }
   }, [pageData]);
 
-  console.log("pageData:", data);
-
   return (
     <div className="bg-white dark:bg-gray-800">
       <div className="max-w-screen-lg mx-auto px-4">
@@ -62,7 +60,7 @@ export default function OnlineContents({ pageData }) {
           </h1>
           <p className="text-gray-500">{t(data?.description)}</p>
 
-          <TestActions course={data} />
+          {session.user.role === "admin" && <TestActions course={data} />}
         </div>
 
         {/* Content Section */}

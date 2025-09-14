@@ -128,7 +128,12 @@ export default function Header() {
             )}
             <SearchButton size={24} />
             <LangButton />
-            {isUsePayment && (
+            {/*{isUsePayment && (
+              <Tooltip title={lang["cart"]} placement="bottom">
+                <CartButton size={24} />
+              </Tooltip>
+            )}*/}
+            {session.user.role === "admin" && (
               <Tooltip title={lang["cart"]} placement="bottom">
                 <CartButton size={24} />
               </Tooltip>
