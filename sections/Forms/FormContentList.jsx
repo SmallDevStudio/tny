@@ -118,6 +118,7 @@ export default function FormContentList({
           >
             <option value="">เลือก {lang["content"]}</option>
             <option value="courses">Courses</option>
+            <option value="online-courses">Online Courses</option>
             <option value="articles">Articles</option>
             <option value="blog">Blog</option>
           </select>

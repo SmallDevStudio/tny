@@ -23,9 +23,19 @@ export default function useVideo() {
     setLoading(false);
   };
 
-  const uploadVideo = async (file, folder, userId, onProgress) => {
+  const uploadVideo = async (files, folder, userId, onProgress) => {
     const formData = new FormData();
-    formData.append("file", file);
+
+    if (files instanceof FileList || Array.isArray(files)) {
+      // กรณีส่งมาหลายไฟล์
+      Array.from(files).forEach((file) => {
+        formData.append("file", file);
+      });
+    } else {
+      // กรณีส่งมาไฟล์เดียว
+      formData.append("file", files);
+    }
+
     formData.append("folder", folder || "");
     formData.append("creator", userId);
 
@@ -36,7 +46,11 @@ export default function useVideo() {
         if (onProgress) onProgress(percent);
       },
     });
-    return res.data;
+
+    console.log("Upload response:", res.data);
+
+    // ✅ ฝั่ง API ส่งกลับ array เสมอ
+    return res.data.data;
   };
 
   const deleteVideo = async (fileId) => {

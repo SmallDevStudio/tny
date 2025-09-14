@@ -355,6 +355,8 @@
   "use_button": "Use Button",
 
   "history-order": "History Order",
+  "preview_course": "Preview Course",
+  "add_preview_course": "Add Preview Course",
   "preview_url": "Preview URL",
   "preview_url_placeholder": "Please type preview URL",
   "create_course_online": "Create Course Online",

@@ -1,6 +1,6 @@
 import { Storage } from "@google-cloud/storage";
 import { nanoid } from "nanoid";
-import Busboy from "busboy"; // <-- import แค่ครั้งเดียว
+import Busboy from "busboy";
 import ffmpeg from "fluent-ffmpeg";
 import { tmpdir } from "os";
 import { join } from "path";
@@ -18,20 +18,24 @@ const bucket = storage.bucket("thenewyou-60d50.firebasestorage.app");
 
 export const config = {
   api: {
-    bodyParser: false, // ใช้ multer หรือ busboy สำหรับไฟล์
+    bodyParser: false,
   },
 };
 
 export default async function handler(req, res) {
-  if (req.method === "POST") {
-    const busboy = Busboy({ headers: req.headers });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-    const uploadedFiles = [];
+  const busboy = Busboy({ headers: req.headers });
+  const uploadedFiles = [];
+  const tasks = []; // promise ของการอัปโหลดแต่ละไฟล์
 
-    busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
+  busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
+    const task = new Promise((resolve, reject) => {
       const fileId = nanoid(10);
 
-      // ตรวจสอบว่าต้องเป็น string
+      // ตรวจสอบชื่อไฟล์
       let safeFilename;
       if (typeof filename === "string") {
         safeFilename = filename;
@@ -41,30 +45,25 @@ export default async function handler(req, res) {
         safeFilename = "unknown-file";
       }
 
-      // เก็บใน /video/
+      // เส้นทางจัดเก็บ
       const destFileName = `video/${fileId}-${safeFilename}`;
       const blob = bucket.file(destFileName);
-      const type = filename.mimeType;
 
       const stream = blob.createWriteStream({
         resumable: true,
         contentType: mimetype,
       });
+
       const tempFilePath = join(tmpdir(), `${fileId}-${safeFilename}`);
       const tempWriteStream = fs.createWriteStream(tempFilePath);
 
       file.pipe(stream);
       file.pipe(tempWriteStream);
 
-      // สร้าง thumbnail
       const thumbName = `video/thumbnail/${fileId}.png`;
       const thumbPath = join(tmpdir(), `${fileId}.png`);
 
       stream.on("finish", async () => {
-        // สร้าง thumbnail
-        const thumbName = `video/thumbnail/${fileId}.png`;
-        const thumbPath = join(tmpdir(), `${fileId}.png`);
-
         ffmpeg(tempFilePath)
           .screenshots({
             timestamps: ["00:00:01"],
@@ -73,44 +72,58 @@ export default async function handler(req, res) {
             size: "320x240",
           })
           .on("end", async () => {
-            // อัปโหลด thumbnail ไป Firebase Storage
-            await bucket.upload(thumbPath, { destination: thumbName });
+            try {
+              // อัปโหลด thumbnail
+              await bucket.upload(thumbPath, { destination: thumbName });
 
-            const [videoUrl] = await blob.getSignedUrl({
-              action: "read",
-              expires: Date.now() + 365 * 24 * 60 * 60 * 1000,
-            });
-            const [thumbUrl] = await bucket.file(thumbName).getSignedUrl({
-              action: "read",
-              expires: Date.now() + 365 * 24 * 60 * 60 * 1000,
-            });
+              const [videoUrl] = await blob.getSignedUrl({
+                action: "read",
+                expires: Date.now() + 365 * 24 * 60 * 60 * 1000,
+              });
+              const [thumbUrl] = await bucket.file(thumbName).getSignedUrl({
+                action: "read",
+                expires: Date.now() + 365 * 24 * 60 * 60 * 1000,
+              });
 
-            uploadedFiles.push({
-              fileId,
-              filename: safeFilename,
-              url: videoUrl,
-              thumbnail: thumbUrl,
-              type,
-            });
-            res.status(200).json({ uploadedFiles });
+              const upload = {
+                fileId,
+                filename: safeFilename,
+                url: videoUrl,
+                thumbnail: thumbUrl,
+                type: mimetype,
+                file_path: destFileName, // path ไว้ลบจาก storage ทีหลัง
+              };
 
-            // ลบไฟล์ชั่วคราว
-            fs.unlinkSync(tempFilePath);
-            fs.unlinkSync(thumbPath);
+              uploadedFiles.push(upload);
+
+              fs.unlinkSync(tempFilePath);
+              fs.unlinkSync(thumbPath);
+
+              resolve();
+            } catch (err) {
+              reject(err);
+            }
           })
-          .on("error", (err) => {
-            console.error("Thumbnail error:", err);
-          });
+          .on("error", (err) => reject(err));
       });
 
-      stream.on("error", (err) => {
-        console.error(err);
-        res.status(500).json({ error: err.message });
-      });
+      stream.on("error", (err) => reject(err));
     });
 
-    req.pipe(busboy);
-  } else {
-    res.status(405).json({ error: "Method not allowed" });
-  }
+    tasks.push(task);
+  });
+
+  busboy.on("finish", async () => {
+    try {
+      await Promise.all(tasks);
+
+      // ✅ ส่งเป็น array เสมอ
+      res.status(200).json({ data: uploadedFiles });
+    } catch (err) {
+      console.error("Upload error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  req.pipe(busboy);
 }

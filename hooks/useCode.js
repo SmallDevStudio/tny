@@ -99,5 +99,5 @@ export default function useCode({ documentName }) {
     }
   };
 
-  return { config, code, generateUniqueDocEntry };
+  return { config, code, generateUniqueDocEntry, updateLastNumber };
 }

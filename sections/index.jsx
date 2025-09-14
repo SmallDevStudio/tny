@@ -19,6 +19,8 @@ import FooterCourses from "./FooterCourses";
 import HeaderTeam from "./HeaderTeam";
 import Customs from "./Customs";
 import ButtonSession from "./Button";
+import HeaderOnline from "./HeaderOnline";
+import OnlineContents from "./OnlineContents";
 
 export const Sections = [
   {
@@ -231,5 +233,25 @@ export const Sections = [
     thumbnail: "/images/sections/previews/button.png",
     component: ButtonSession,
     group: "elements",
+  },
+  {
+    name: "headerOnline",
+    description: {
+      en: "Header for Online Courses",
+      th: "ส่วนหัวเพจ Online Courses",
+    },
+    thumbnail: "/images/sections/previews/headerCourses.png",
+    component: HeaderOnline,
+    group: "courses",
+  },
+  {
+    name: "onlineContents",
+    description: {
+      en: "show online course contents",
+      th: "แสดงเนื้อหา คอร์สออนไลน์",
+    },
+    thumbnail: "/images/sections/previews/contents.png",
+    component: OnlineContents,
+    group: "courses",
   },
 ];

@@ -29,30 +29,41 @@ export default function VideoUpload({
   }, [newUpload]);
 
   const onDrop = async (acceptedFiles) => {
-    let totalSize = acceptedFiles.reduce((sum, f) => sum + f.size, 0);
+    // ถ้า multiple = false → บังคับให้เหลือไฟล์เดียว
+    const filesToUpload = multiple ? acceptedFiles : [acceptedFiles[0]];
+
+    setUploadingFiles(
+      filesToUpload.map((f) => ({ name: f.name, progress: 0 }))
+    );
+
+    let totalSize = filesToUpload.reduce((sum, f) => sum + f.size, 0);
     let totalUploaded = 0;
 
-    const uploaded = [];
-
-    for (let i = 0; i < acceptedFiles.length; i++) {
-      const file = acceptedFiles[i];
-      console.log("fileUpload", file);
-      setUploadingFiles((prev) => [...prev, { name: file.name, progress: 0 }]);
-
-      const data = await uploadVideo(file, folder, userId, (progress) => {
-        totalUploaded += (file.size * progress) / 100;
+    const data = await uploadVideo(
+      filesToUpload,
+      folder,
+      userId,
+      (progress) => {
+        totalUploaded += (filesToUpload[0].size * progress) / 100;
         setTotalProgress((totalUploaded / totalSize) * 100);
 
-        setUploadingFiles((prev) =>
-          prev.map((f, idx) => (idx === i ? { ...f, progress } : f))
+        setUploadingFiles(
+          (prev) => prev.map((f, i) => ({ ...f, progress })) // ไฟล์เดียว
         );
-      });
+      }
+    );
 
-      if (data) uploaded.push(data);
-    }
+    const processedVideos = data.map((video) => ({
+      ...video,
+      title: { th: video.filename, en: video.filename },
+      description: { th: "", en: "" },
+      status: true,
+    }));
 
-    onProcess(uploaded);
+    onProcess(processedVideos);
     toast.success("อัปโหลดไฟล์สำเร็จ");
+    setUploadingFiles([]);
+    setTotalProgress(0);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

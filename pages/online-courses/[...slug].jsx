@@ -45,7 +45,7 @@ export default function CoursesOnlinePage() {
 
         if (slug.length === 1) {
           // ✅ /courses/the-new-you
-          const courseRef = collection(db, "courses");
+          const courseRef = collection(db, "online-courses");
           const q = query(courseRef, where("slug", "==", slug[0]));
           const snap = await getDocs(q);
 
@@ -53,7 +53,7 @@ export default function CoursesOnlinePage() {
             pageData = snap.docs[0].data();
 
             // ดึง sections จาก pages_slug (ตามระบบเดิม)
-            const pagesSlugRef = doc(db, "pages_slug", "courses");
+            const pagesSlugRef = doc(db, "pages_slug", "online-courses");
             const pagesSlugDoc = await getDoc(pagesSlugRef);
 
             if (pagesSlugDoc.exists()) {
@@ -67,7 +67,7 @@ export default function CoursesOnlinePage() {
             const pagesRef = collection(db, "pages");
             const pageQ = query(
               pagesRef,
-              where("slug", "==", `courses/${slug[0]}`)
+              where("slug", "==", `online-courses/${slug[0]}`)
             );
             const pageSnap = await getDocs(pageQ);
 
@@ -83,7 +83,7 @@ export default function CoursesOnlinePage() {
           // ✅ /courses/:group/:slug
           const [groupName, courseSlug] = slug;
 
-          const courseRef = collection(db, "courses");
+          const courseRef = collection(db, "online-courses");
           const q = query(
             courseRef,
             where("group", "==", groupName),
@@ -95,7 +95,7 @@ export default function CoursesOnlinePage() {
             pageData = snap.docs[0].data();
 
             // ดึง sections จาก pages_slug (ตามระบบเดิม)
-            const pagesSlugRef = doc(db, "pages_slug", "courses");
+            const pagesSlugRef = doc(db, "pages_slug", "online-courses");
             const pagesSlugDoc = await getDoc(pagesSlugRef);
 
             if (pagesSlugDoc.exists()) {
@@ -124,8 +124,6 @@ export default function CoursesOnlinePage() {
 
     fetchData();
   }, [slug]);
-
-  console.log("pageData", pageData);
 
   if (loading) return <div className="p-4 text-center">Loading...</div>;
   if (notFound) return <CustomErrorPage statusCode={404} />;

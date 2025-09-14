@@ -52,6 +52,8 @@ export default function SectionDynamic({ page, sections, onClose }) {
   const { lang } = useLanguage();
   const { update } = useDB("pages");
 
+  console.log("page", page);
+
   useEffect(() => {
     if (sections && sections.length > 0) {
       const withIds = sections.map((sec) => ({

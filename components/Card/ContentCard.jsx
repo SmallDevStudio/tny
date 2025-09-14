@@ -17,7 +17,9 @@ export default function ContentCard({ item, pathname }) {
         onClick={() => router.push(`/${pathname}/${item?.slug}`)}
       >
         <Image
-          src={item?.image?.url}
+          src={
+            item?.image?.url ? item?.image?.url : "/images/sample-content.png"
+          }
           alt={item?.name?.en}
           width={700}
           height={700}

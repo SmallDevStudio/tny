@@ -360,6 +360,8 @@
   "use_button": "ใช้ปุ่ม",
 
   "history-order": "ประวัติการสั่งซื้อ",
+  "preview_course": "แสดงตัวอย่างคอร์ส",
+  "add_preview_course": "เพิ่มแสดงตัวอย่างคอร์ส",
   "preview_url": "ลิงก์แสดงตัวอย่าง",
   "preview_url_placeholder": "กรอกลิงก์แสดงตัวอย่าง",
   "create_course_online": "สร้างคอร์สออนไลน์",

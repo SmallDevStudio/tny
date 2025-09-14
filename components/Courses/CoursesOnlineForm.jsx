@@ -30,9 +30,11 @@ import ParticipantsModel from "@/components/modal/ParticipantsModel";
 import VideoModal from "./VideoModal";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { FiUsers } from "react-icons/fi";
-import { FaEdit, FaPlusSquare, FaTrash } from "react-icons/fa";
+import { FaEdit, FaPlusSquare, FaTrashAlt, FaRegEye } from "react-icons/fa";
 import { RxVideo } from "react-icons/rx";
 import useCode from "@/hooks/useCode";
+import VideoUpload from "../utils/VideoUpload";
+import useVideo from "@/hooks/useVideo";
 const TiptapEditor = dynamic(() => import("@/components/Tiptap/TiptapEditor"), {
   ssr: false,
 });
@@ -71,28 +73,19 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
   const [content, setContent] = useState({ th: "", en: "" });
   const [participants, setParticipants] = useState([]);
   const [openModal, setOpenModal] = useState(false);
-  const [videos, setVideos] = useState([
-    {
-      title: { th: "", en: "" },
-      description: { th: "", en: "" },
-      url: "",
-      docId: "",
-      page: "",
-      fileId: "",
-      filename: "",
-      thumbnail: "",
-      isUploaded: false,
-      type: "",
-    },
-  ]);
+  const [priviewVideo, setPriviewVideo] = useState(null);
+  const [videos, setVideos] = useState([]);
   const [openVideoModal, setOpenVideoModal] = useState(false);
+  const [currentVideoUpload, setCurrentVideoUpload] = useState(null);
+  const [videoIndex, setVideoIndex] = useState(null);
+  const [openEditVideoModal, setOpenEditVideoModal] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [language, setLanguage] = useState("th");
   const { code, updateLastNumber } = useCode({
-    documentName: "online-courses",
+    documentName: "online-course",
   });
 
-  console.log("video", videos);
+  const { deleteVideo } = useVideo();
 
   useEffect(() => {
     if (course) {
@@ -102,10 +95,11 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
         group: course.group || "",
         subgroup: course.subgroup || "",
         price: course.price || "",
-        preview_url: course.preview_url || "",
       });
       setImage(course.image || {});
       setImageEng(course.imageEng || {});
+      setPriviewVideo(course.preview || "");
+      setVideos(course.video || []);
       setTags(course.tags || []);
       setCodePreview({
         docEntry: course.docEntry,
@@ -119,6 +113,8 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
     } else if (isNewCourse) {
       setTags([]);
       setCodePreview(code);
+      setVideos([]);
+      setPriviewVideo(null);
     }
   }, [course]);
 
@@ -129,7 +125,6 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
       group: "",
       subgroup: "",
       price: "",
-      preview_url: "",
     });
     setCodePreview(null);
     setTags([]);
@@ -137,6 +132,7 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
     setImageEng({});
     setContent({ th: "", en: "" });
     setParticipants([]);
+    setPriviewVideo(null);
     setVideos([]);
     onClose();
   };
@@ -225,29 +221,30 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
         docEntry: code ? code.docEntry : null,
         name: { th: form.name.th, en: form.name.en },
         description: { th: form.description.th, en: form.description.en },
-        video: video ? video : [],
+        preview: priviewVideo ? priviewVideo : {},
+        video: videos ? videos : [],
         image: image ? image : {},
         imageEng: imageEng ? imageEng : {},
         group: form.group,
         subgroup: form.subgroup,
         price: form.price,
-        preview_url: form.preview_url,
         participants: participants ? participants : [],
         tags: tags,
         content: content,
         active: true,
         slug: slug,
         order: isNewCourse ? nextOrder : course.order, // ✅ เพิ่มตรงนี้
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        created_at: course?.created_at || "",
+        updated_at: "",
         created_by: "",
         updated_by: "",
+        status: true,
       };
 
       if (isNewCourse) {
         if (docSnap.exists()) {
           data.id = code.docEntry;
-          data.docEntry = newIdcode.docEntry;
+          data.docEntry = code.docEntry;
 
           // ✅ ต้อง update docRef ด้วย!
           docRef = doc(db, "online-courses", newId.toString());
@@ -255,10 +252,14 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
 
         data.created_by = userId;
         data.created_at = new Date().toISOString();
+        data.updated_at = new Date().toISOString();
         await setDoc(docRef, data);
         await updateLastNumber(newId);
         toast.success(lang["course_added_successfully"]);
       } else {
+        data.created_at = course.created_at
+          ? course.created_at
+          : new Date().toISOString();
         data.updated_at = new Date().toISOString();
         data.updated_by = userId;
         await updateDoc(docRef, data, { merge: true }); // ✅ docRef ต้องตรงกับ newId ที่สุดท้าย
@@ -284,26 +285,51 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
     }));
   };
 
-  const handleOpenVideoModal = () => {
+  const handleOpenVideoModal = (current) => {
+    setCurrentVideoUpload(current);
     setOpenVideoModal(true);
   };
 
   const handleCloseVideoModal = () => {
+    setCurrentVideoUpload(null);
     setOpenVideoModal(false);
   };
 
-  const handleEditVideo = (video) => {
+  const handleEditVideo = (video, index) => {
     setSelectedVideo(video);
-    setOpenVideoModal(true);
+    setVideoIndex(index);
+    setOpenEditVideoModal(true);
   };
 
-  const handleSaveVideo = (newVideo) => {
-    setVideos((prev) => [...prev, newVideo]);
+  const handleCloseEditVideoModal = () => {
+    setVideoIndex(null);
+    setSelectedVideo(null);
+    setOpenEditVideoModal(false);
+  };
+
+  const handleUploadVideo = (newVideo) => {
+    if (currentVideoUpload === "preview") {
+      setPriviewVideo(newVideo[0]);
+    } else {
+      setVideos((prevVideos) => [...prevVideos, ...newVideo]);
+    }
+    setCurrentVideoUpload(null);
     setOpenVideoModal(false);
   };
 
-  const handleDeleteVideo = (id) => {
+  console.log("videos", videos);
+  console.log("priviewVideo", priviewVideo);
+
+  const handleDeleteVideo = async (id, fileId) => {
+    await deleteVideo(fileId);
     setVideos((prevVideo) => prevVideo.filter((v) => v.id !== id));
+  };
+
+  const handleOnEditVideo = (video) => {
+    const updatedVideos = [...videos];
+    updatedVideos[videoIndex] = { ...updatedVideos[videoIndex], ...video };
+    setVideos(updatedVideos);
+    handleCloseEditVideoModal();
   };
 
   if (loading) return <Loading />;
@@ -603,26 +629,6 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
             </label>
             <Tags tags={tags} setTags={setTags} />
           </div>
-
-          <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
-                {lang["preview_url"]}
-              </label>
-
-              <input
-                type="text"
-                id="preview_url"
-                name="preview_url"
-                value={form.preview_url}
-                onChange={(e) =>
-                  setForm({ ...form, preview_url: e.target.value })
-                }
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder={lang["preview_url_placeholder"]}
-              />
-            </div>
-          </div>
         </div>
         {/* Editor */}
         <div className="px-4 w-full">
@@ -659,19 +665,61 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
             <RxVideo size={20} />
             {lang["video_management"]}
           </span>
-          <Divider sx={{ mb: 2 }} />
-          <Tooltip title={lang["video_management"]} placement="bottom">
+          <Divider sx={{ my: 2 }} />
+          {/* Preview Video Section */}
+          <h3>{lang["preview_course"]}</h3>
+          {priviewVideo?.url && (
+            <div className="my-2 border border-gray-300 p-2 shadow-sm w-fit">
+              <div className="relative">
+                <Image
+                  src={priviewVideo?.thumbnail}
+                  alt={t(priviewVideo?.title)}
+                  width={300}
+                  height={150}
+                  loading="lazy"
+                />
+                <div className="flex flex-row gap-2 justify-center mt-1">
+                  <Tooltip title={lang["preview"]} placement="bottom">
+                    <FaRegEye
+                      size={28}
+                      className="bg-white border p-1 rounded-md cursor-pointer hover:bg-gray-200"
+                    />
+                  </Tooltip>
+                  <Tooltip title={lang["delete"]} placement="bottom">
+                    <RiDeleteBin5Line
+                      size={28}
+                      className="bg-white border p-1 rounded-md cursor-pointer hover:bg-gray-200"
+                    />
+                  </Tooltip>
+                </div>
+              </div>
+            </div>
+          )}
+          <Tooltip title={lang["add_preview_course"]} placement="bottom">
+            <button
+              type="button"
+              className="flex items-center gap-2 w-70 px-4 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg"
+              onClick={() => handleOpenVideoModal("preview")}
+            >
+              <FaPlusSquare size={20} />
+              {lang["add_preview_course"]}
+            </button>
+          </Tooltip>
+
+          <Divider sx={{ my: 2 }} />
+          {/* Video List Section */}
+          <Tooltip title={lang["add_video"]} placement="bottom">
             <button
               type="button"
               className="flex items-center gap-2 w-40 px-4 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg"
-              onClick={handleOpenVideoModal}
+              onClick={() => handleOpenVideoModal("video")}
             >
               <FaPlusSquare size={20} />
               {lang["add_video"]}
             </button>
           </Tooltip>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 mt-4">
             {videos && videos.length > 0
               ? videos.map((v, i) => (
                   <div
@@ -680,29 +728,29 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
                   >
                     <Image
                       src={v.thumbnail}
-                      alt={v.title}
-                      width={150}
-                      height={150}
-                      className="object-cover"
+                      alt={t(v.title)}
+                      width={200}
+                      height={100}
+                      loading="lazy"
                     />
-                    <span>{v.title}</span>
-                    <div className="flex items-center justify-center gap-1">
-                      <Tooltip title={lang["edit"]} placement="top">
-                        <div
-                          className="bg-gray-50 hover:bg-gray-100 border border-gray-400 rounded-md p-1 cursor-pointer"
-                          onClick={handleEditVideo(v)}
-                        >
-                          <FaEdit size={20} />
-                        </div>
-                      </Tooltip>
-                      <Tooltip title={lang["delete"]} placement="top">
-                        <div
-                          className="bg-gray-50 hover:bg-gray-100 border border-gray-400 rounded-md p-1 cursor-pointer"
-                          onClick={handleDeleteVideo(v.id)}
-                        >
-                          <FaTrash size={20} />
-                        </div>
-                      </Tooltip>
+                    <p className="text-sm text-black text-center">
+                      {t(v.title)}
+                    </p>
+                    <div className="flex flex-row gap-2 justify-center">
+                      <FaRegEye
+                        size={28}
+                        className="bg-white border p-1 rounded-md cursor-pointer hover:bg-gray-200"
+                      />
+                      <FaEdit
+                        size={28}
+                        className="bg-white border p-1 rounded-md cursor-pointer hover:bg-gray-200"
+                        onClick={() => handleEditVideo(v, i)}
+                      />
+                      <RiDeleteBin5Line
+                        size={28}
+                        className="bg-white border p-1 rounded-md cursor-pointer hover:bg-gray-200"
+                        onClick={() => handleDeleteVideo(i, v.fileId)}
+                      />
                     </div>
                   </div>
                 ))
@@ -733,20 +781,25 @@ export default function CoursesOnlineForm({ onClose, course, isNewCourse }) {
         open={openVideoModal}
         onClose={handleCloseVideoModal}
         TransitionComponent={Transition}
-        sx={{
-          "& .MuiDialog-paper": {
-            width: "80%",
-            maxWidth: "80%",
-          },
-        }}
+      >
+        <VideoUpload
+          onClose={handleCloseVideoModal}
+          onProcess={handleUploadVideo}
+          folder="online-courses"
+          multiple={currentVideoUpload === "video"}
+        />
+      </Dialog>
+
+      <Dialog
+        open={openEditVideoModal}
+        onClose={handleCloseEditVideoModal}
+        TransitionComponent={Transition}
+        fullScreen
       >
         <VideoModal
           data={selectedVideo}
-          docId={code?.code}
-          course={course}
-          page={"online-courses"}
-          onSave={handleSaveVideo}
-          onClose={handleCloseVideoModal}
+          onClose={handleCloseEditVideoModal}
+          onEdit={handleOnEditVideo}
         />
       </Dialog>
     </div>

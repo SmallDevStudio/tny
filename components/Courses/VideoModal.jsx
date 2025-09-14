@@ -6,118 +6,61 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { Tooltip, Slide, Dialog, Divider } from "@mui/material";
 import { IoClose } from "react-icons/io5";
-import { FaPlusSquare, FaVideo } from "react-icons/fa";
-import { useVideoThumbnail } from "@/hooks/useVideoThumbnail";
-import Loading from "../utils/Loading";
-import VideoUpload from "../utils/VideoUpload";
-import { db } from "@/services/firebase";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  setDoc,
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  query,
-  where,
-  orderBy,
-  limit,
-} from "firebase/firestore";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
+import dynamic from "next/dynamic";
+const TiptapEditor = dynamic(() => import("@/components/Tiptap/TiptapEditor"), {
+  ssr: false,
 });
 
-export default function VideoModal({
-  data,
-  docId,
-  course,
-  page,
-  onSave,
-  onClose,
-}) {
-  const [textUrl, setTextUrl] = useState({
-    url: "",
-    isUploaded: false,
-  });
-  const [video, setVideo] = useState({});
+export default function VideoModal({ data, onEdit, onClose }) {
   const [title, setTitle] = useState({ th: "", en: "" });
   const [description, setDescription] = useState({ th: "", en: "" });
+  const [content, setContent] = useState({
+    th: "กรอกรายละเอียด",
+    en: "Start typing here...",
+  });
   const [thumbnail, setThumbnail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [language, setLanguage] = useState("th");
 
   const { t, lang } = useLanguage();
   const router = useRouter();
 
   useEffect(() => {
     if (data) {
-      setTextUrl({ url: data.url, isUploaded: data.isUploaded });
-      setVideo(data.video);
       setThumbnail(data.thumbnail);
       setTitle({ th: data.title.th, en: data.title.en });
       setDescription({ th: data.description.th, en: data.description.en });
+      setContent({ th: data.content.th, en: data.content.en });
     }
   }, [data]);
 
-  useEffect(() => {
-    if (textUrl.url && textUrl.isUploaded === false) {
-      fetchYoutube(textUrl.url);
-    } else {
-      setLoading(false);
-    }
-  }, [textUrl]);
-
-  const fetchYoutube = async (url) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`/api/get-youtube?youtubeUrl=${url}`);
-      setVideo(response.data.video);
-      setThumbnail(response.data.thumbnail);
-      setTitle({ th: response.data.title, en: response.data.title });
-      setDescription({
-        th: response.data.description,
-        en: response.data.description,
-      });
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
-
-  const handleUpload = (videos) => {
-    const uploadedVideo = videos[0];
-    setVideo(uploadedVideo.uploadedFiles[0]);
-    setTextUrl({ url: uploadedVideo.uploadedFiles[0].url, isUploaded: true });
-    setThumbnail(uploadedVideo.uploadedFiles[0].thumbnail);
-  };
-
-  const handleOpen = () => setOpen(true);
-
-  const handleClose = () => setOpen(false);
-
   const handleClear = () => {
-    setTextUrl({ url: "", isUploaded: false });
-    setVideo({});
     setThumbnail(null);
     setTitle({ th: "", en: "" });
     setDescription({ th: "", en: "" });
+    setContent({ th: "กรอกรายละเอียด", en: "Start typing here..." });
+    setLanguage("th");
     onClose();
   };
 
-  const handleProcess = async () => {
-    const data = {
-      ...video,
-      title: title,
-      description: description,
-      thumbnail: thumbnail,
-      isUploaded: textUrl.isUploaded,
+  const handleEdit = () => {
+    if (!title.th || !title.en) {
+      toast.error(t("please_fill_in_title"));
+      return;
+    }
+    const editData = {
+      ...data,
+      title,
+      description,
+      content,
     };
-    onSave(data);
-    handleClear();
+    onEdit(editData);
+  };
+
+  const handleContentChange = (newContent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      [language]: newContent, // ✅ อัปเดตค่าของภาษาที่เลือกเท่านั้น
+    }));
   };
 
   return (
@@ -132,28 +75,13 @@ export default function VideoModal({
 
       {/* Body */}
       <div className="flex flex-col gap-4 bg-white p-4">
-        <div className="flex items-center gap-2">
-          <label htmlFor="url" className="block font-bold">
-            {lang["url"]}:
-          </label>
-          <input
-            type="text"
-            id="url"
-            value={textUrl.url}
-            onChange={(e) =>
-              setTextUrl({ ...textUrl, url: e.target.value, isUploaded: false })
-            }
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            placeholder={lang["video_url_placeholder"]}
-          />
-        </div>
         {/* video & thumbnail */}
         <div className="flex flex-col gap-2">
           {/* Video Thumbnail */}
-          {video?.thumbnail && (
+          {thumbnail && (
             <div>
               <Image
-                src={video?.thumbnail}
+                src={thumbnail}
                 alt="thumbnail"
                 width={200}
                 height={200}
@@ -161,35 +89,36 @@ export default function VideoModal({
               />
             </div>
           )}
-          <Tooltip title={lang["upload_video"]} placement="top">
-            <div
-              className="flex items-center gap-4 bg-orange-500 hover:bg-orange-600 text-white border border-gray-300 p-2 rounded-lg w-40 cursor-pointer"
-              onClick={handleOpen}
-            >
-              <FaVideo size={20} />
-              <span>{lang["upload_video"]}</span>
-            </div>
-          </Tooltip>
         </div>
         <div>
           <label htmlFor="title" className="block font-bold">
             {lang["title"]}:
           </label>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-            <input
-              name="title-th"
-              value={title.th}
-              onChange={(e) => setTitle({ ...title, th: e.target.value })}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-              placeholder={lang["title_placeholder"] + " (th)"}
-            />
-            <input
-              name="title-en"
-              value={title.en}
-              onChange={(e) => setTitle({ ...title, en: e.target.value })}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-              placeholder={lang["title_placeholder"] + " (en)"}
-            />
+            <div className="flex flex-row items-center gap-2">
+              <label htmlFor="title.th" className="block font-bold">
+                TH:
+              </label>
+              <input
+                name="title-th"
+                value={title.th}
+                onChange={(e) => setTitle({ ...title, th: e.target.value })}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                placeholder={lang["title_placeholder"] + " (th)"}
+              />
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <label htmlFor="title.en" className="block font-bold">
+                EN:
+              </label>
+              <input
+                name="title-en"
+                value={title.en}
+                onChange={(e) => setTitle({ ...title, en: e.target.value })}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                placeholder={lang["title_placeholder"] + " (en)"}
+              />
+            </div>
           </div>
         </div>
         <div>
@@ -197,34 +126,74 @@ export default function VideoModal({
             {lang["description"]}:
           </label>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-            <textarea
-              name="description-th"
-              value={description.th}
-              onChange={(e) =>
-                setDescription({ ...description, th: e.target.value })
-              }
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-              placeholder={lang["description_placeholder"] + " (th)"}
-              rows="4"
-            />
-            <textarea
-              name="description-th"
-              value={description.en}
-              onChange={(e) =>
-                setDescription({ ...description, en: e.target.value })
-              }
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-              placeholder={lang["description_placeholder"] + " (en)"}
-              rows="4"
+            <div className="flex flex-row gap-2">
+              <label htmlFor="description.th" className="block font-bold">
+                TH:
+              </label>
+              <textarea
+                name="description-th"
+                value={description.th}
+                onChange={(e) =>
+                  setDescription({ ...description, th: e.target.value })
+                }
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                placeholder={lang["description_placeholder"] + " (th)"}
+                rows="4"
+              />
+            </div>
+            <div className="flex flex-row gap-2">
+              <label htmlFor="description.en" className="block font-bold">
+                EN:
+              </label>
+              <textarea
+                name="description-th"
+                value={description.en}
+                onChange={(e) =>
+                  setDescription({ ...description, en: e.target.value })
+                }
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                placeholder={lang["description_placeholder"] + " (en)"}
+                rows="4"
+              />
+            </div>
+          </div>
+
+          {/* Editor */}
+          <div className="w-full mt-4">
+            <div className="flex flex-row items-center gap-1 w-full">
+              <button
+                className={`px-4 py-1 rounded-t-md font-bold transition ${
+                  language === "th"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-300 dark:bg-gray-700"
+                }`}
+                onClick={() => setLanguage("th")}
+              >
+                TH
+              </button>
+              <button
+                className={`px-4 py-1 rounded-t-md font-bold transition ${
+                  language === "en"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-300 dark:bg-gray-700"
+                }`}
+                onClick={() => setLanguage("en")}
+              >
+                EN
+              </button>
+            </div>
+            <TiptapEditor
+              content={content[language]}
+              onChange={(contents) => handleContentChange(contents)}
             />
           </div>
         </div>
-        <Divider sx={{ my: 2 }} />
+        <Divider />
         <div className="flex flex-row justify-center items-center gap-4">
           <Tooltip title={lang["save"]} placement="top">
             <button
               className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-lg"
-              onClick={handleProcess}
+              onClick={handleEdit}
             >
               {lang["save"]}
             </button>
@@ -239,19 +208,6 @@ export default function VideoModal({
           </Tooltip>
         </div>
       </div>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        TransitionComponent={Transition}
-      >
-        <VideoUpload
-          onClose={handleClose}
-          onProcess={handleUpload}
-          folder="online"
-          newUpload={!video}
-          multiple={false}
-        />
-      </Dialog>
     </div>
   );
 }

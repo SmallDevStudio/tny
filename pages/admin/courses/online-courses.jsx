@@ -244,6 +244,11 @@ export default function AdminCoursesOnline() {
       },
     },
     {
+      field: "price",
+      headerName: "Price",
+      width: 100,
+    },
+    {
       field: "active",
       headerName: "Active",
       width: 80,
@@ -292,7 +297,7 @@ export default function AdminCoursesOnline() {
             <button
               type="button"
               className="text-green-500 hover:text-green-600"
-              onClick={() => router.push(`/courses/${params.row.id}`)}
+              onClick={() => router.push(`/online-courses/${params.row.slug}`)}
             >
               <FaEye size={25} />
             </button>
@@ -347,7 +352,6 @@ export default function AdminCoursesOnline() {
             columns={columes}
             pageSize={10}
             rowsPerPageOptions={[10]}
-            checkboxSelection
             disableSelectionOnClick
             autoHeight
           />
