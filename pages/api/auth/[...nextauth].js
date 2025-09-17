@@ -156,11 +156,24 @@ export default NextAuth({
       return token;
     },
     async session({ session, token }) {
-      const userRef = doc(db, "users", token.sub);
-      const userSnap = await getDoc(userRef);
+      try {
+        const userRef = doc(db, "users", token.id || token.sub);
+        const userSnap = await getDoc(userRef);
 
-      if (userSnap.exists()) {
-        session.user = userSnap.data(); // ✅ ดึงข้อมูลจาก Firestore
+        if (userSnap.exists()) {
+          session.user = { id: token.id || token.sub, ...userSnap.data() };
+        } else {
+          session.user = {
+            id: token.id || token.sub,
+            email: token.email || null,
+          };
+        }
+      } catch (err) {
+        console.error("Session callback error:", err);
+        session.user = {
+          id: token.id || token.sub,
+          email: token.email || null,
+        };
       }
 
       return session;
@@ -169,6 +182,7 @@ export default NextAuth({
       return baseUrl;
     },
   },
+
   session: {
     strategy: "jwt",
   },
