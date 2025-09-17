@@ -60,7 +60,9 @@ export default function OnlineContents({ pageData }) {
           </h1>
           <p className="text-gray-500">{t(data?.description)}</p>
 
-          {session?.user?.role === "admin" && <TestActions course={data} />}
+          {session && session?.user?.role === "admin" && (
+            <TestActions course={data} />
+          )}
         </div>
 
         {/* Content Section */}
