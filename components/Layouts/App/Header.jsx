@@ -133,7 +133,7 @@ export default function Header() {
                 <CartButton size={24} />
               </Tooltip>
             )}*/}
-            {session.user.role === "admin" && (
+            {session?.user?.role === "admin" && (
               <Tooltip title={lang["cart"]} placement="bottom">
                 <CartButton size={24} />
               </Tooltip>
