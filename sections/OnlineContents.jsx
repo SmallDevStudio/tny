@@ -10,20 +10,11 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db } from "@/services/firebase";
-import { Breadcrumbs, Divider } from "@mui/material";
-import Link from "next/link";
-import moment from "moment";
 import "moment/locale/th";
 import "moment/locale/en-gb";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import ReactPlayer from "react-player";
-
-import CourseActions from "@/components/Cart/CourseActions";
 import TestActions from "@/components/Cart/TestActions";
 
 const CustomErrorPage = dynamic(() => import("@/pages/_error/error"), {
@@ -49,6 +40,8 @@ export default function OnlineContents({ pageData }) {
       return;
     }
   }, [pageData]);
+
+  console.log("data", data);
 
   return (
     <div className="bg-white dark:bg-gray-800">

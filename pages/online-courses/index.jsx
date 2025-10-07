@@ -22,8 +22,6 @@ export default function CoursesOnlinePage() {
   const router = useRouter();
   const page = router.pathname.replace("/", "");
 
-  console.log("sesion", session);
-
   useEffect(() => {
     if (!page) return; // รอจนกว่าจะได้ค่าจาก query
 

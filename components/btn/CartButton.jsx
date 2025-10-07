@@ -140,7 +140,7 @@ export default function CartButton({ size = 24 }) {
                 <button
                   onClick={() => {
                     setOpen(false);
-                    router.push("/checkout");
+                    router.push("/payments/checkout");
                   }}
                   className="mt-2 w-full bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600 transition"
                 >

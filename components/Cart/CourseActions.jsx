@@ -33,6 +33,7 @@ export default function CourseActions({ course }) {
         title: course.name,
         price: course.price,
         image: course.image || "",
+        type: course.type || "offline",
       })
     );
   };
@@ -45,9 +46,10 @@ export default function CourseActions({ course }) {
         title: course.name,
         price: course.price,
         image: course.image || "",
+        type: course.type || "offline",
       })
     );
-    router.push("/checkout");
+    router.push("/payments/checkout");
   };
 
   return isUsePayment ? (
