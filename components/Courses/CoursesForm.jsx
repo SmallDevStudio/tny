@@ -11,7 +11,6 @@ import SelectForm from "@/components/Selected/SelectForm";
 import Loading from "../utils/Loading";
 import Tags from "../Input/Tags";
 import FormatCode from "../Input/FormatCode";
-import { updateLastNumber } from "@/utils/getFormattedCode";
 import { db } from "@/services/firebase";
 import {
   doc,
@@ -394,7 +393,6 @@ export default function CoursesForm({ onClose, course, isNewCourse }) {
 
         data.created_by = userId;
         await setDoc(docRef, data);
-        await updateLastNumber("courses", newId);
         toast.success(lang["course_added_successfully"]);
       } else {
         data.updated_at = new Date().toISOString();
